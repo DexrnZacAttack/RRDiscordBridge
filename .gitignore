@@ -45,3 +45,4 @@ dependency-reduced-pom.xml
 /.idea
 /.idea
 /gradle
+/buildSrc/.gradle
