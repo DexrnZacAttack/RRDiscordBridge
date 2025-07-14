@@ -43,20 +43,15 @@ Note: I am not a java developer, although I was able to find my way around this 
     - Syntax: ## \<msg\>
 
 ## Tested versions
-- [X] b1.7.3 (using [Project Poseidon](https://github.com/retromcorg/Project-Poseidon))
-  - [LegacyPlayerChat.java](src/main/java/io/github/dexrnzacattack/rrdiscordbridge/eventcompatibility/legacy/LegacyPlayerChat.java)
-  - No MOTD
+- [X] a1.2.6-b1.7.2 (using [UberBukkit](https://github.com/Moresteck/uberbukkit))
+  - NOTE: UberBukkit is a fork of Project Poseidon (which is b1.7.3) with added support for older clients 
+- [X] b1.7.3 (using [Project Poseidon](https://github.com/retromcorg/Project-Poseidon)/[UberBukkit](https://github.com/Moresteck/uberbukkit))
 - [ ] b1.8.1
 - [ ] 1.0   
-  - (Event registering was really different in this version, I couldn't get it working using reflection.) 
 - [X] 1.1
-  - [LegacyPlayerChat.java](src/main/java/io/github/dexrnzacattack/rrdiscordbridge/eventcompatibility/legacy/LegacyPlayerChat.java)
-  - [LegacyPlayerDeath.java](src/main/java/io/github/dexrnzacattack/rrdiscordbridge/eventcompatibility/legacy/LegacyPlayerDeath.java)
-  - No MOTD
 - [X] 1.2.5
-  - [LegacyPlayerChat.java](src/main/java/io/github/dexrnzacattack/rrdiscordbridge/eventcompatibility/legacy/LegacyPlayerChat.java)
 - [X] 1.3.2
-- [X] 1.4.7 (Being used for development)
+- [X] 1.4.7
 - [X] 1.5.2
 - [X] 1.6.4
 - [X] 1.7.2

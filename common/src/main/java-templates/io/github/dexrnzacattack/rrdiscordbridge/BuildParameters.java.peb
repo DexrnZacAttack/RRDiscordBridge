@@ -1,0 +1,5 @@
+package io.github.dexrnzacattack.rrdiscordbridge;
+
+public class BuildParameters {
+    public static final String VERSION = "{{ version }}";
+}
