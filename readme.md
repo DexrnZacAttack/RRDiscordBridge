@@ -1,12 +1,11 @@
 # Retro-Release Discord Bridge
 [![](https://dcbadge.limes.pink/api/server/k2wGKEaCRA)](https://discord.gg/k2wGKEaCRA)   
 
-Discord bridge/relay plugin for both [old and new release (plus some Beta) versions](#tested-versions) (b1.7.3*-1.21.1) of Minecraft.   
+Discord bridge/relay plugin that [supports old Minecraft versions and server software](#tested-versions) (Beta 1.4-Release 1.21.1)
 
 For config info, check out [this](https://github.com/DexrnZacAttack/RRDiscordBridge/wiki/Config).
 
 Download: https://modrinth.com/plugin/rrdiscordbridge   
-Note: I am not a java developer, although I was able to find my way around this pretty easily.
 
 ## Features
 - Message Relay
@@ -42,12 +41,20 @@ Note: I am not a java developer, although I was able to find my way around this 
     - Inspired by MCGalaxy's OPChat feature.
     - Syntax: ## \<msg\>
 
-## Tested versions
-- [X] a1.2.6-b1.7.2 (using [UberBukkit](https://github.com/Moresteck/uberbukkit))
-  - NOTE: UberBukkit is a fork of Project Poseidon (which is b1.7.3) with added support for older clients 
-- [X] b1.7.3 (using [Project Poseidon](https://github.com/retromcorg/Project-Poseidon)/[UberBukkit](https://github.com/Moresteck/uberbukkit))
-- [ ] b1.8.1
-- [ ] 1.0   
+## Supported versions
+### CraftBukkit (and forks)
+- [X] [UberBukkit](https://github.com/Moresteck/uberbukkit)
+- [ ] b1.2-b1.2_02
+- [ ] b1.3-b1.3_01
+- [X] b1.4-b1.4_01
+- [X] b1.5-b1.5_01
+- [X] b1.6-b1.6.6
+- [X] b1.7
+- [X] b1.7.2
+- [X] [Project Poseidon](https://github.com/retromcorg/Project-Poseidon)
+- [X] b1.7.3 
+- [X] b1.8.1
+- [X] 1.0   
 - [X] 1.1
 - [X] 1.2.5
 - [X] 1.3.2
@@ -65,3 +72,4 @@ Note: I am not a java developer, although I was able to find my way around this 
 - [X] 1.18.2
 - [X] 1.21.1
 - [X] 1.21.4
+- [X] 1.21.7

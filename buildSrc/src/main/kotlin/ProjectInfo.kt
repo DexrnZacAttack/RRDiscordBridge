@@ -25,6 +25,9 @@ val Project.paperVersion: String get() = properties["paper_version"].toString()
 
 val Project.poseidonVersion: String get() = properties["poseidon_version"].toString()
 
+val Project.bukkit10Version: String get() = properties["bukkit10_version"].toString()
+val Project.bukkit10McVersion: String get() = properties["bukkit10_mc_version"].toString()
+
 val Project.bukkit11Version: String get() = properties["bukkit11_version"].toString()
 val Project.bukkit11McVersion: String get() = properties["bukkit11_mc_version"].toString()
 

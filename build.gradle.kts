@@ -29,6 +29,7 @@ subprojects {
             exclude("google/protobuf/**")
             exclude("club/minnced/opus/util/*")
             exclude("tomp2p/opuswrapper/*")
+            exclude("org/bukkit/craftbukkit/**") // stub for old craftbukkit, would shove in it's build script if I knew how to append to shadowJar config without outright copying and pasting this block to the script
         }
 
 
@@ -108,12 +109,20 @@ val fabric: SourceSet by sourceSets.creating
 val neoforge: SourceSet by sourceSets.creating
 val paper: SourceSet by sourceSets.creating
 val poseidon: SourceSet by sourceSets.creating
+val bukkit10: SourceSet by sourceSets.creating
 val bukkit11: SourceSet by sourceSets.creating
 val bukkit13: SourceSet by sourceSets.creating
 val bukkit17: SourceSet by sourceSets.creating
 
 listOf(bukkit13).forEach {
     listOf(common).forEach { sourceSet ->
+        it.compileClasspath += sourceSet.output
+        it.runtimeClasspath += sourceSet.output
+    }
+}
+
+listOf(bukkit10).forEach {
+    listOf(common, bukkit11, bukkit13).forEach { sourceSet ->
         it.compileClasspath += sourceSet.output
         it.runtimeClasspath += sourceSet.output
     }
@@ -149,12 +158,13 @@ val paperCompileOnly: Configuration by configurations.getting {
     extendsFrom(mainCompileOnly)
 }
 val poseidonCompileOnly: Configuration by configurations.getting
+val bukkit10CompileOnly: Configuration by configurations.getting
 val bukkit11CompileOnly: Configuration by configurations.getting
 val bukkit13CompileOnly: Configuration by configurations.getting
 val bukkit17CompileOnly: Configuration by configurations.getting
 
 listOf(fabricCompileOnly, neoforgeCompileOnly,
-    paperCompileOnly, bukkit11CompileOnly, bukkit13CompileOnly, bukkit17CompileOnly, poseidonCompileOnly).forEach {
+    paperCompileOnly, bukkit10CompileOnly, bukkit11CompileOnly, bukkit13CompileOnly, bukkit17CompileOnly, poseidonCompileOnly).forEach {
     it.extendsFrom(commonCompileOnly)
 }
 val modImplementation: Configuration by configurations.creating
@@ -242,6 +252,12 @@ tasks.register<Jar>("bukkit11Jar") {
     from(bukkit11.output)
 }
 
+tasks.register<Jar>("bukkit10Jar") {
+    group = "build"
+    archiveBaseName.set("${modName}-${bukkit11.name.replace(" ", "_")}")
+    from(bukkit10.output)
+}
+
 tasks.register<Jar>("bukkit13Jar") {
     group = "build"
     archiveBaseName.set("${modName}-${bukkit13.name.replace(" ", "_")}")
@@ -297,6 +313,7 @@ tasks.jar {
         neoforge.output,
         paper.output,
         bukkit13.output,
+        bukkit10.output,
         bukkit11.output,
         bukkit17.output
     )

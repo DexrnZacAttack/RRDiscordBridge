@@ -27,6 +27,10 @@ public class BukkitPlugin extends JavaPlugin {
 
         // then we init
         RRDiscordBridge.instance.initialize();
+        setSupportedFeatures();
+    }
+
+    public void setSupportedFeatures() {
         RRDiscordBridge.instance.setSupportedFeatures(new SupportedFeatures()
                 .setCanGetServerMotd(doesMethodExist("org.bukkit.Server", "getMotd"))
                 .setCanGetServerName(doesMethodExist("org.bukkit.Server", "getServerName"))
