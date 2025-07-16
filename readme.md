@@ -73,3 +73,7 @@ Download: https://modrinth.com/plugin/rrdiscordbridge
 - [X] 1.21.1
 - [X] 1.21.4
 - [X] 1.21.7
+
+## Credits
+- [p0t4t0sandwich](https://github.com/p0t4t0sandwich)
+  - Was very helpful in helping me set up gradle and helped me through every issue I had 

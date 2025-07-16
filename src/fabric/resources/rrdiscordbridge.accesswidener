@@ -1,0 +1,3 @@
+accessWidener v1 named
+accessible method net/minecraft/server/MinecraftServer getPlayerList ()Lnet/minecraft/server/players/PlayerList;
+accessible method net/minecraft/server/players/PlayerList broadcastSystemMessage (Lnet/minecraft/network/chat/Component;Z)V;

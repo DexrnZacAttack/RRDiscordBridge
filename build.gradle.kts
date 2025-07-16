@@ -1,10 +1,23 @@
-import bukkit17McVersion
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import org.gradle.kotlin.dsl.assign
+import org.gradle.kotlin.dsl.java
 import xyz.wagyourtail.unimined.api.minecraft.task.RemapJarTask
 import java.time.Instant
 
+// NOTE: NOT FINISHED
+// When I originally set up the script, I didn't understand how to use it, and accidentally just started making separate build scripts everywhere lmao
+// I have attempted to reverse this, and properly match the original template's structure.
+// This means all other build scripts for each platform are not used.
+// This was committed for debugging, currently Bukkit builds do not work properly to my knowledge.
+// The current issue is that Fabric builds do not remap properly, it almost looks like the symbols get re-obfuscated instead
+// This leads to NoSuchMethodException whenever one of these methods are called, ex:
+/* [21:31:23] [JDA MainWS-ReadThread/ERROR]: One of the EventListeners had an uncaught exception
+ * java.lang.NoSuchMethodError: 'net.minecraft.class_3324 net.minecraft.server.MinecraftServer.ag()'
+ *      at knot/io.github.dexrnzacattack.rrdiscordbridge.impls.FabricServer.broadcastMessage(FabricServer.java:23) ~[RRDiscordBridge-2.1.0-shaded.jar:?]
+*/
+
+
 plugins {
-//    id("com.gradleup.shadow") version "9.0.0-beta15" apply false
     id("java")
     id("maven-publish")
     id("idea")
@@ -15,50 +28,8 @@ plugins {
     alias(libs.plugins.unimined)
 }
 
-subprojects {
-    plugins.withId("com.gradleup.shadow") {
-        tasks.withType<ShadowJar>().configureEach {
-            duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-            archiveClassifier = ""
-            exclude("META-INF")
-
-            exclude("natives/**")
-            exclude("com/sun/jna/**")
-            exclude("com/google/crypto/tink/**")
-            exclude("com/google/protobuf/**")
-            exclude("google/protobuf/**")
-            exclude("club/minnced/opus/util/*")
-            exclude("tomp2p/opuswrapper/*")
-            exclude("org/bukkit/craftbukkit/**") // stub for old craftbukkit, would shove in it's build script if I knew how to append to shadowJar config without outright copying and pasting this block to the script
-        }
-
-
-    tasks.named("build").configure {
-        dependsOn("shadowJar")
-    }
-
-    tasks.withType<JavaCompile>().configureEach {
-        options.encoding = "UTF-8"
-    }
-
-    tasks.named<ProcessResources>("processResources").configure {
-        filesMatching("plugin.yml") {
-            expand(
-                mapOf(
-                "version" to version,
-                "name" to modName,
-                "author" to author,
-                "description" to description,
-                "homepage_url" to homepageUrl
-                )
-            )
-        }
-    }
-}
-
-    tasks.withType<Jar>().configureEach {
-        archiveBaseName.set("${modName}-${project.name.replace(" ", "_")}")
-    }
+tasks.named("build").configure {
+    dependsOn("shadowJar")
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(javaVersion)
@@ -86,10 +57,10 @@ spotless {
         trimTrailingWhitespace()
         leadingTabsToSpaces()
         endWithNewline()
-        licenseHeader("""/**
- * Copyright (c) 2025 $author
- * This project is Licensed under <a href="$sourceUrl/blob/main/LICENSE">$license</a>
- */""")
+//        licenseHeader("""/**
+// * Copyright (c) 2025 $author
+// * This project is Licensed under <a href="$sourceUrl/blob/main/LICENSE">$license</a>
+// */""")
     }
 }
 
@@ -155,7 +126,7 @@ val commonCompileOnly: Configuration by configurations.getting
 val fabricCompileOnly: Configuration by configurations.getting
 val neoforgeCompileOnly: Configuration by configurations.getting
 val paperCompileOnly: Configuration by configurations.getting {
-    extendsFrom(mainCompileOnly)
+    extendsFrom(commonCompileOnly)
 }
 val poseidonCompileOnly: Configuration by configurations.getting
 val bukkit10CompileOnly: Configuration by configurations.getting
@@ -170,6 +141,9 @@ listOf(fabricCompileOnly, neoforgeCompileOnly,
 val modImplementation: Configuration by configurations.creating
 val fabricModImplementation: Configuration by configurations.creating {
     extendsFrom(modImplementation)
+}
+val commonImplementation: Configuration by configurations.getting {
+    extendsFrom(configurations.implementation.get())
 }
 
 tasks.withType<JavaCompile> {
@@ -194,29 +168,29 @@ repositories {
     maven("https://repo.md-5.net/content/groups/public") // Bukkit
     maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
+    maven("https://nexus.scarsz.me/content/repositories/releases")
+    maven("https://repository.johnymuffin.com/repository/maven-public/") // PP
 }
 
 unimined.minecraft {
-    combineWith(common)
+    combineWith(common);
     version(minecraftVersion)
     mappings {
         parchment(parchmentMinecraft, parchmentVersion)
         mojmap()
         devFallbackNamespace("official")
     }
-    defaultRemapJar = false
-}
 
-tasks.register<Jar>("commonJar") {
-    archiveClassifier.set("common")
-    from(common.output)
+    defaultRemapJar = false
 }
 
 unimined.minecraft(fabric) {
     combineWith(sourceSets.main.get())
     fabric {
         loader(fabricLoaderVersion)
+        accessWidener(project.projectDir.resolve("src/fabric/resources/rrdiscordbridge.accesswidener"))
     }
+
     defaultRemapJar = true
 }
 
@@ -238,7 +212,7 @@ unimined.minecraft(neoforge) {
 
 unimined.minecraft(paper) {
     combineWith(sourceSets.main.get())
-    combineWith(bukkit13)
+    combineWith(bukkit17)
     accessTransformer {
         // https://github.com/PaperMC/Paper/blob/main/build-data/paper.at
 //        accessTransformer("${rootProject.projectDir}/src/paper/paper.at")
@@ -254,7 +228,7 @@ tasks.register<Jar>("bukkit11Jar") {
 
 tasks.register<Jar>("bukkit10Jar") {
     group = "build"
-    archiveBaseName.set("${modName}-${bukkit11.name.replace(" ", "_")}")
+    archiveBaseName.set("${modName}-${bukkit10.name.replace(" ", "_")}")
     from(bukkit10.output)
 }
 
@@ -277,16 +251,24 @@ tasks.register<Jar>("bukkit17Jar") {
 }
 
 dependencies {
-    mainCompileOnly(libs.annotations)
-    mainCompileOnly(libs.mixin)
-    commonCompileOnly(libs.slf4j)
-    listOf("api-base", "command-api-v2", "lifecycle-events-v1", "networking-api-v1").forEach {
+    commonCompileOnly(libs.annotations)
+    commonCompileOnly(libs.mixin)
+    listOf("api-base", "command-api-v2", "lifecycle-events-v1", "networking-api-v1", "entity-events-v1", "message-api-v1").forEach {
         fabricModImplementation(fabricApi.fabricModule("fabric-$it", fabricVersion))
     }
     paperCompileOnly("io.papermc.paper:paper-api:$minecraftVersion-$paperVersion")
     paperCompileOnly(libs.ignite.api)
+    bukkit10CompileOnly("org.bukkit:bukkit:$bukkit10McVersion-$bukkit10Version")
+    bukkit11CompileOnly("org.bukkit:bukkit:$bukkit11McVersion-$bukkit11Version")
     bukkit13CompileOnly("org.bukkit:bukkit:$bukkit13McVersion-$bukkit13Version")
-    bukkit13CompileOnly("org.bukkit:bukkit:$bukkit17McVersion-$bukkit17Version")
+    bukkit17CompileOnly("org.bukkit:bukkit:$bukkit17McVersion-$bukkit17Version")
+    poseidonCompileOnly("com.legacyminecraft.poseidon:poseidon-craftbukkit:${poseidonVersion}")
+
+    implementation("com.google.code.gson:gson:2.13.0")
+    implementation("club.minnced:discord-webhooks:0.8.4")
+    implementation("net.dv8tion:JDA:5.5.1")
+    implementation("me.scarsz.jdaappender:jda5:1.2.3")
+    implementation("org.slf4j:slf4j-jdk14:2.0.17")
 }
 
 tasks.withType<ProcessResources> {
@@ -306,16 +288,16 @@ tasks.withType<ProcessResources> {
     }
 }
 
-tasks.jar {
+tasks.shadowJar {
     dependsOn("relocateFabricJar")
     from(
         zipTree(tasks.getByName<Jar>("relocateFabricJar").archiveFile.get().asFile),
-        neoforge.output,
-        paper.output,
-        bukkit13.output,
-        bukkit10.output,
-        bukkit11.output,
-        bukkit17.output
+//        neoforge.output,
+//        paper.output,
+//        bukkit13.output,
+//        bukkit10.output,
+//        bukkit11.output,
+//        bukkit17.output
     )
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     manifest {
@@ -336,5 +318,17 @@ tasks.jar {
     from(listOf("README.md", "LICENSE")) {
         into("META-INF")
     }
+
+    archiveClassifier = "shaded"
+    exclude("META-INF")
+
+    exclude("natives/**")
+    exclude("com/sun/jna/**")
+    exclude("com/google/crypto/tink/**")
+    exclude("com/google/protobuf/**")
+    exclude("google/protobuf/**")
+    exclude("club/minnced/opus/util/*")
+    exclude("tomp2p/opuswrapper/*")
+    exclude("org/bukkit/craftbukkit/**") // stub for old craftbukkit, would shove in it's build script if I knew how to append to shadowJar config without outright copying and pasting this block to the script
 }
 tasks.build.get().dependsOn("spotlessApply")

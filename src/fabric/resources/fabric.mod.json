@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "id": "rrdiscordbridge",
+  "version": "${version}",
+  "name": "${mod_name}",
+  "environment": "server",
+  "entrypoints": {
+    "main": [
+      "io.github.dexrnzacattack.rrdiscordbridge.FabricMod"
+    ]
+  },
+  "accessWidener": "rrdiscordbridge.accesswidener",
+  "mixins": [],
+  "depends": {}
+}
