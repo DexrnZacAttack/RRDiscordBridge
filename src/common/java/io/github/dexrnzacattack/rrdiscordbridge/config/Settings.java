@@ -1,13 +1,11 @@
 package io.github.dexrnzacattack.rrdiscordbridge.config;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import io.github.dexrnzacattack.rrdiscordbridge.BuildParameters;
 
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,10 +13,11 @@ import java.util.List;
 
 /** The plugin's config */
 public class Settings {
-    public static final String CONFIG_PATH = "plugins/RRDiscordBridge/config.json";
-
     /** For the JSON file */
     public final String SETTINGS_VERSION = BuildParameters.VERSION;
+
+    /** The config path */
+    public final String configPath;
 
     /** The bot token */
     public String botToken;
@@ -81,7 +80,9 @@ public class Settings {
     public boolean useDiscordRelativeTimestamp;
 
     /** Settings constructor, uses default values until Settings.loadConfig() is called. */
-    public Settings() {
+    public Settings(String configPath) {
+        this.configPath = configPath;
+
         useDisplayNames = true;
         useNicknames = false;
         enabledEvents = Arrays.asList(Events.values());
@@ -98,6 +99,7 @@ public class Settings {
         broadcastSkinName = "CONSOLE";
         enabledChatExtensions = new ArrayList<String>();
         enabledChatExtensions.add("Waypoints");
+        enabledChatExtensions.add("OpChat");
         showServerIcon = true;
         useDiscordRelativeTimestamp = true;
     }
@@ -106,11 +108,11 @@ public class Settings {
         Gson gson = new Gson();
         Settings settings;
 
-        File configFile = new File(CONFIG_PATH);
+        File configFile = new File(configPath);
 
         if (!configFile.exists()) createConfig();
 
-        try (FileReader reader = new FileReader(CONFIG_PATH)) {
+        try (FileReader reader = new FileReader(configPath)) {
             settings = gson.fromJson(reader, Settings.class);
         } catch (IOException e) {
             System.err.println("Exception while reading the config file: " + e.getMessage());
@@ -122,16 +124,17 @@ public class Settings {
     }
 
     public void writeConfig() {
-        try (FileWriter writer = new FileWriter(CONFIG_PATH)) {
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
-            writer.write(gson.toJson(this));
-        } catch (IOException e) {
-            System.err.println("Exception while writing the config: " + e.getMessage());
-        }
+        // TODO: fix on nf
+        //        try (FileWriter writer = new FileWriter(configPath)) {
+        //            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        //            writer.write(gson.toJson(this));
+        //        } catch (IOException e) {
+        //            System.err.println("Exception while writing the config: " + e.getMessage());
+        //        }
     }
 
     public void createConfig() {
-        File configFile = new File(CONFIG_PATH);
+        File configFile = new File(configPath);
         File parent = configFile.getParentFile();
 
         if (parent != null && !parent.exists()) parent.mkdirs();

@@ -1,12 +1,13 @@
 package io.github.dexrnzacattack.rrdiscordbridge.discord;
 
+import static io.github.dexrnzacattack.rrdiscordbridge.RRDiscordBridge.instance;
+
 import club.minnced.discord.webhook.WebhookClient;
 import club.minnced.discord.webhook.WebhookClientBuilder;
 import club.minnced.discord.webhook.send.AllowedMentions;
 import club.minnced.discord.webhook.send.WebhookMessage;
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 
-import io.github.dexrnzacattack.rrdiscordbridge.RRDiscordBridge;
 import io.github.dexrnzacattack.rrdiscordbridge.chat.extension.result.ChatExtensionResult;
 import io.github.dexrnzacattack.rrdiscordbridge.chat.extension.result.DiscordChatExtensionResult;
 import io.github.dexrnzacattack.rrdiscordbridge.config.Settings;
@@ -44,32 +45,31 @@ public class DiscordBot extends ListenerAdapter {
 
     /** Starts the bot */
     public static void start() throws InterruptedException {
-        if (RRDiscordBridge.instance.getSettings().botToken.isEmpty()) {
-            RRDiscordBridge.instance
-                    .getServer()
+        if (instance.getSettings().botToken.isEmpty()) {
+            instance.getServer()
                     .broadcastMessage(
                             "Failed to load RRDiscordBridge, please check the console logs.");
             throw new RuntimeException(
-                    String.format("Please set the bot token in %s", Settings.CONFIG_PATH));
+                    String.format(
+                            "Please set the bot token in %s", instance.getSettings().configPath));
         }
 
         // afaik we can make our own exception for this that will automatically yell in chat on
         // throw
-        if (RRDiscordBridge.instance.getSettings().relayChannelId.isEmpty()) {
-            RRDiscordBridge.instance
-                    .getServer()
+        if (instance.getSettings().relayChannelId.isEmpty()) {
+            instance.getServer()
                     .broadcastMessage(
                             "Failed to load RRDiscordBridge, please check the console logs.");
             throw new RuntimeException(
                     String.format(
                             "Please set the channel id (of the relay channel) in %s",
-                            Settings.CONFIG_PATH));
+                            instance.getSettings().configPath));
         }
 
         JDALogger.setFallbackLoggerEnabled(false);
 
         jda =
-                JDABuilder.createDefault(RRDiscordBridge.instance.getSettings().botToken)
+                JDABuilder.createDefault(instance.getSettings().botToken)
                         .addEventListeners(
                                 new DiscordBot(), new PlayersCommand(), new AboutCommand())
                         .enableIntents(GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT)
@@ -131,8 +131,8 @@ public class DiscordBot extends ListenerAdapter {
                 Activity.playing(
                         String.format(
                                 "with %s %s",
-                                RRDiscordBridge.instance.getServer().getOnlinePlayers().length,
-                                RRDiscordBridge.instance.getServer().getOnlinePlayers().length != 1
+                                instance.getServer().getOnlinePlayers().length,
+                                instance.getServer().getOnlinePlayers().length != 1
                                         ? "players"
                                         : "player"));
         jda.getPresence().setActivity(activity);
@@ -153,9 +153,7 @@ public class DiscordBot extends ListenerAdapter {
         String nickname = member.getNickname();
 
         if (member.getUser().isBot()) {
-            return RRDiscordBridge.instance.getSettings().useNicknames
-                            && nickname != null
-                            && !nickname.isEmpty()
+            return instance.getSettings().useNicknames && nickname != null && !nickname.isEmpty()
                     ? nickname
                     : member.getUser().getName();
         }
@@ -163,11 +161,9 @@ public class DiscordBot extends ListenerAdapter {
         // explanation:
         // if useNicknames is enabled, and there is a nickname, use the nickname, otherwise, if
         // useDisplayNames is enabled, use their displayname, otherwise use their username.
-        return RRDiscordBridge.instance.getSettings().useNicknames
-                        && nickname != null
-                        && !nickname.isEmpty()
+        return instance.getSettings().useNicknames && nickname != null && !nickname.isEmpty()
                 ? nickname
-                : RRDiscordBridge.instance.getSettings().useDisplayNames
+                : instance.getSettings().useDisplayNames
                         ? member.getUser().getGlobalName()
                         : member.getUser().getName();
     }
@@ -179,20 +175,14 @@ public class DiscordBot extends ListenerAdapter {
 
         // explanation:
         // if useDisplayNames is enabled, use their displayname, otherwise use their username.
-        return RRDiscordBridge.instance.getSettings().useDisplayNames
-                ? user.getGlobalName()
-                : user.getName();
+        return instance.getSettings().useDisplayNames ? user.getGlobalName() : user.getName();
     }
 
     /** Sends a message using a webhook that uses the player's name and skin. */
     public static void sendPlayerMessage(String playerName, String message, ICancellable event) {
-        if (!RRDiscordBridge.instance
-                .getSettings()
-                .enabledEvents
-                .contains(Settings.Events.PLAYER_CHAT)) return;
+        if (!instance.getSettings().enabledEvents.contains(Settings.Events.PLAYER_CHAT)) return;
 
-        ChatExtensionResult chatExt =
-                RRDiscordBridge.instance.getChatExtensions().tryParseMC(message, playerName);
+        ChatExtensionResult chatExt = instance.getChatExtensions().tryParseMC(message, playerName);
         String msg = chatExt.string;
 
         if (!chatExt.sendMc) event.cancel();
@@ -207,9 +197,7 @@ public class DiscordBot extends ListenerAdapter {
                 new WebhookMessageBuilder()
                         .setUsername(playerName)
                         .setAvatarUrl(
-                                String.format(
-                                        RRDiscordBridge.instance.getSettings().skinProvider,
-                                        playerName))
+                                String.format(instance.getSettings().skinProvider, playerName))
                         .setContent(msg)
                         .setAllowedMentions(allowedMentions)
                         .build();
@@ -224,10 +212,7 @@ public class DiscordBot extends ListenerAdapter {
      * @param message The message
      */
     public static void sendPlayerMessage(String playerName, String message) {
-        if (!RRDiscordBridge.instance
-                .getSettings()
-                .enabledEvents
-                .contains(Settings.Events.PLAYER_CHAT)) return;
+        if (!instance.getSettings().enabledEvents.contains(Settings.Events.PLAYER_CHAT)) return;
 
         AllowedMentions allowedMentions =
                 new AllowedMentions().withParseUsers(true).withParseEveryone(false);
@@ -236,9 +221,7 @@ public class DiscordBot extends ListenerAdapter {
                 new WebhookMessageBuilder()
                         .setUsername(playerName)
                         .setAvatarUrl(
-                                String.format(
-                                        RRDiscordBridge.instance.getSettings().skinProvider,
-                                        playerName))
+                                String.format(instance.getSettings().skinProvider, playerName))
                         .setContent(message)
                         .setAllowedMentions(allowedMentions)
                         .build();
@@ -254,10 +237,7 @@ public class DiscordBot extends ListenerAdapter {
      * @param wc The webhook
      */
     public static void sendPlayerMessage(String playerName, String message, WebhookClient wc) {
-        if (!RRDiscordBridge.instance
-                .getSettings()
-                .enabledEvents
-                .contains(Settings.Events.PLAYER_CHAT)) return;
+        if (!instance.getSettings().enabledEvents.contains(Settings.Events.PLAYER_CHAT)) return;
 
         AllowedMentions allowedMentions =
                 new AllowedMentions().withParseUsers(true).withParseEveryone(false);
@@ -266,9 +246,7 @@ public class DiscordBot extends ListenerAdapter {
                 new WebhookMessageBuilder()
                         .setUsername(playerName)
                         .setAvatarUrl(
-                                String.format(
-                                        RRDiscordBridge.instance.getSettings().skinProvider,
-                                        playerName))
+                                String.format(instance.getSettings().skinProvider, playerName))
                         .setContent(message)
                         .setAllowedMentions(allowedMentions)
                         .build();
@@ -284,10 +262,9 @@ public class DiscordBot extends ListenerAdapter {
      */
     public static void sendPlayerMessage(
             Settings.Events eventType, String playerName, String message) {
-        if (!RRDiscordBridge.instance.getSettings().enabledEvents.contains(eventType)) return;
+        if (!instance.getSettings().enabledEvents.contains(eventType)) return;
 
-        ChatExtensionResult chatExt =
-                RRDiscordBridge.instance.getChatExtensions().tryParseMC(message, playerName);
+        ChatExtensionResult chatExt = instance.getChatExtensions().tryParseMC(message, playerName);
         String msg = chatExt.string;
 
         if (!(boolean) chatExt.sendDiscord) return;
@@ -299,9 +276,7 @@ public class DiscordBot extends ListenerAdapter {
                 new WebhookMessageBuilder()
                         .setUsername(playerName)
                         .setAvatarUrl(
-                                String.format(
-                                        RRDiscordBridge.instance.getSettings().skinProvider,
-                                        playerName))
+                                String.format(instance.getSettings().skinProvider, playerName))
                         .setContent(msg)
                         .setAllowedMentions(allowedMentions)
                         .build();
@@ -316,10 +291,7 @@ public class DiscordBot extends ListenerAdapter {
      * @param message The message
      */
     public static void sendPlayerMessage(String playerName, String playerSkinName, String message) {
-        if (!RRDiscordBridge.instance
-                .getSettings()
-                .enabledEvents
-                .contains(Settings.Events.PLAYER_CHAT)) return;
+        if (!instance.getSettings().enabledEvents.contains(Settings.Events.PLAYER_CHAT)) return;
 
         AllowedMentions allowedMentions =
                 new AllowedMentions().withParseUsers(true).withParseEveryone(false);
@@ -328,9 +300,7 @@ public class DiscordBot extends ListenerAdapter {
                 new WebhookMessageBuilder()
                         .setUsername(playerName)
                         .setAvatarUrl(
-                                String.format(
-                                        RRDiscordBridge.instance.getSettings().skinProvider,
-                                        playerSkinName))
+                                String.format(instance.getSettings().skinProvider, playerSkinName))
                         .setContent(message)
                         .setAllowedMentions(allowedMentions)
                         .build();
@@ -347,10 +317,9 @@ public class DiscordBot extends ListenerAdapter {
      */
     public static void sendPlayerMessage(
             Settings.Events eventType, String playerName, String playerSkinName, String message) {
-        if (!RRDiscordBridge.instance.getSettings().enabledEvents.contains(eventType)) return;
+        if (!instance.getSettings().enabledEvents.contains(eventType)) return;
 
-        ChatExtensionResult chatExt =
-                RRDiscordBridge.instance.getChatExtensions().tryParseMC(message, playerName);
+        ChatExtensionResult chatExt = instance.getChatExtensions().tryParseMC(message, playerName);
         String msg = chatExt.string;
 
         if (!(boolean) chatExt.sendDiscord) return;
@@ -362,9 +331,7 @@ public class DiscordBot extends ListenerAdapter {
                 new WebhookMessageBuilder()
                         .setUsername(playerName)
                         .setAvatarUrl(
-                                String.format(
-                                        RRDiscordBridge.instance.getSettings().skinProvider,
-                                        playerSkinName))
+                                String.format(instance.getSettings().skinProvider, playerSkinName))
                         .setContent(msg)
                         .setAllowedMentions(allowedMentions)
                         .build();
@@ -386,7 +353,7 @@ public class DiscordBot extends ListenerAdapter {
             String description,
             Color color,
             String title) {
-        if (!RRDiscordBridge.instance.getSettings().enabledEvents.contains(eventType)) return;
+        if (!instance.getSettings().enabledEvents.contains(eventType)) return;
 
         EmbedBuilder embed =
                 new EmbedBuilder()
@@ -397,9 +364,7 @@ public class DiscordBot extends ListenerAdapter {
                         .setAuthor(
                                 playerName,
                                 null,
-                                String.format(
-                                        RRDiscordBridge.instance.getSettings().skinProvider,
-                                        playerName));
+                                String.format(instance.getSettings().skinProvider, playerName));
 
         channel.sendMessageEmbeds(embed.build()).queue();
     }
@@ -421,7 +386,7 @@ public class DiscordBot extends ListenerAdapter {
             String description,
             Color color,
             String title) {
-        if (!RRDiscordBridge.instance.getSettings().enabledEvents.contains(eventType)) return;
+        if (!instance.getSettings().enabledEvents.contains(eventType)) return;
 
         EmbedBuilder embed =
                 new EmbedBuilder()
@@ -432,9 +397,7 @@ public class DiscordBot extends ListenerAdapter {
                         .setAuthor(
                                 authorName,
                                 null,
-                                String.format(
-                                        RRDiscordBridge.instance.getSettings().skinProvider,
-                                        playerName));
+                                String.format(instance.getSettings().skinProvider, playerName));
 
         channel.sendMessageEmbeds(embed.build()).queue();
     }
@@ -454,7 +417,7 @@ public class DiscordBot extends ListenerAdapter {
             String description,
             Color color,
             String title) {
-        if (!RRDiscordBridge.instance.getSettings().enabledEvents.contains(eventType)) return;
+        if (!instance.getSettings().enabledEvents.contains(eventType)) return;
 
         EmbedBuilder embed =
                 new EmbedBuilder()
@@ -476,7 +439,7 @@ public class DiscordBot extends ListenerAdapter {
         if (channel != null) {
             channel.sendMessage(message).queue();
         } else {
-            RRDiscordBridge.instance.getLogger().warning("bot isn't ready!");
+            instance.getLogger().warn("bot isn't ready!");
         }
     }
 
@@ -491,9 +454,7 @@ public class DiscordBot extends ListenerAdapter {
             MessageCreateAction action = channel.sendMessage(message);
             return action.complete();
         } else {
-            RRDiscordBridge.instance
-                    .getLogger()
-                    .warning("Cannot send because provided channel is null.");
+            instance.getLogger().warn("Cannot send because provided channel is null.");
         }
         return null;
     }
@@ -510,7 +471,7 @@ public class DiscordBot extends ListenerAdapter {
             MessageCreateAction action = txtChannel.sendMessage(message);
             return action.complete();
         } else {
-            RRDiscordBridge.instance.getLogger().warning("Could not find channel " + channel);
+            instance.getLogger().warn("Could not find channel " + channel);
         }
         return null;
     }
@@ -525,18 +486,14 @@ public class DiscordBot extends ListenerAdapter {
         if (msg != null) {
             msg.editMessage(newMessage).queue();
         } else {
-            RRDiscordBridge.instance
-                    .getLogger()
-                    .warning("Cannot edit because provided messages is null.");
+            instance.getLogger().warn("Cannot edit because provided messages is null.");
         }
     }
 
     /** Runs when the bot is ready for use */
     @Override
     public void onReady(ReadyEvent event) {
-        channel =
-                event.getJDA()
-                        .getTextChannelById(RRDiscordBridge.instance.getSettings().relayChannelId);
+        channel = event.getJDA().getTextChannelById(instance.getSettings().relayChannelId);
     }
 
     /** Runs when someone runs a command in the channel the bot is watching */
@@ -546,16 +503,15 @@ public class DiscordBot extends ListenerAdapter {
         String channel = event.getChannel().getId();
         String sender = event.getInteraction().getMember().getId();
 
-        if (channel.equals(RRDiscordBridge.instance.getSettings().relayChannelId)
+        if (channel.equals(instance.getSettings().relayChannelId)
                 && !sender.equals(self.getId())
                 && !sender.equals(webhook.getId())) {
 
             String author =
-                    RRDiscordBridge.instance.getSettings().useDisplayNames
+                    instance.getSettings().useDisplayNames
                             ? event.getUser().getGlobalName()
                             : event.getUser().getName();
-            RRDiscordBridge.instance
-                    .getServer()
+            instance.getServer()
                     .broadcastMessage(
                             String.format(
                                     "§d[Discord] §e%s ran Discord command \"/%s\".",
@@ -576,13 +532,12 @@ public class DiscordBot extends ListenerAdapter {
         // will look like (2, T, R)
         List<String> traits = new java.util.ArrayList<>(Collections.emptyList());
         Message message = event.getMessage();
-        DiscordChatExtensionResult ext =
-                RRDiscordBridge.instance.getChatExtensions().tryParseDiscord(message);
+        DiscordChatExtensionResult ext = instance.getChatExtensions().tryParseDiscord(message);
         message = ext.message;
 
         if (!ext.sendMc) return;
 
-        if (channel.equals(RRDiscordBridge.instance.getSettings().relayChannelId)
+        if (channel.equals(instance.getSettings().relayChannelId)
                 && !author2.equals(self.getId())
                 && !author2.equals(webhook.getId())) {
             String author;
@@ -602,8 +557,7 @@ public class DiscordBot extends ListenerAdapter {
                                 .substring(
                                         0,
                                         Math.min(
-                                                RRDiscordBridge.instance.getSettings()
-                                                        .maxMessageSize,
+                                                instance.getSettings().maxMessageSize,
                                                 message.getContentDisplay().length()));
             }
 
@@ -624,56 +578,47 @@ public class DiscordBot extends ListenerAdapter {
             // I doubt the message will have more than that
             switch (message.getType()) {
                 case GUILD_MEMBER_JOIN:
-                    if (RRDiscordBridge.instance
-                            .getSettings()
+                    if (instance.getSettings()
                             .enabledDiscordEvents
                             .contains(Settings.DiscordEvents.USER_JOIN))
-                        RRDiscordBridge.instance
-                                .getServer()
+                        instance.getServer()
                                 .broadcastMessage(
                                         String.format(
                                                 "§d[Discord] §e%s has joined the Discord server.",
                                                 author));
                     return;
                 case GUILD_MEMBER_BOOST:
-                    if (RRDiscordBridge.instance
-                            .getSettings()
+                    if (instance.getSettings()
                             .enabledDiscordEvents
                             .contains(Settings.DiscordEvents.USER_BOOST))
-                        RRDiscordBridge.instance
-                                .getServer()
+                        instance.getServer()
                                 .broadcastMessage(
                                         String.format(
                                                 "§d[Discord] §e%s has boosted the Discord server.",
                                                 author));
                     return;
                 case THREAD_CREATED:
-                    if (RRDiscordBridge.instance
-                            .getSettings()
+                    if (instance.getSettings()
                             .enabledDiscordEvents
                             .contains(Settings.DiscordEvents.THREAD_CREATION))
-                        RRDiscordBridge.instance
-                                .getServer()
+                        instance.getServer()
                                 .broadcastMessage(
                                         String.format(
                                                 "§d[Discord] §e%s has created the thread \"%s\".",
                                                 author, messageTrimmed));
                     return;
                 case CHANNEL_PINNED_ADD:
-                    if (RRDiscordBridge.instance
-                            .getSettings()
+                    if (instance.getSettings()
                             .enabledDiscordEvents
                             .contains(Settings.DiscordEvents.MESSAGE_PIN))
-                        RRDiscordBridge.instance
-                                .getServer()
+                        instance.getServer()
                                 .broadcastMessage(
                                         String.format(
                                                 "§d[Discord] §e%s has pinned a message to the channel.",
                                                 author));
                     return;
                 case POLL_RESULT:
-                    if (!RRDiscordBridge.instance
-                            .getSettings()
+                    if (!instance.getSettings()
                             .enabledDiscordEvents
                             .contains(Settings.DiscordEvents.POLL_ENDED)) return;
 
@@ -695,8 +640,7 @@ public class DiscordBot extends ListenerAdapter {
 
                     if (mPoll == null) return;
 
-                    RRDiscordBridge.instance
-                            .getServer()
+                    instance.getServer()
                             .broadcastMessage(
                                     String.format(
                                             "§d[Discord] §e%s's poll \"%s\" has ended.\nResults:",
@@ -705,8 +649,7 @@ public class DiscordBot extends ListenerAdapter {
                             .getAnswers()
                             .forEach(
                                     answer -> {
-                                        RRDiscordBridge.instance
-                                                .getServer()
+                                        instance.getServer()
                                                 .broadcastMessage(
                                                         String.format(
                                                                 "§3%s: §b%s",
@@ -715,16 +658,14 @@ public class DiscordBot extends ListenerAdapter {
                                     });
                     return;
                 case CONTEXT_COMMAND:
-                    if (!RRDiscordBridge.instance
-                            .getSettings()
+                    if (!instance.getSettings()
                             .enabledDiscordEvents
                             .contains(Settings.DiscordEvents.USER_APP)) return;
 
                     if (message.getInteractionMetadata() == null) return;
 
                     // those weird activity messages and user crapps
-                    RRDiscordBridge.instance
-                            .getServer()
+                    instance.getServer()
                             .broadcastMessage(
                                     String.format(
                                             "§d[Discord] §e%s used app \"%s\".",
@@ -739,13 +680,11 @@ public class DiscordBot extends ListenerAdapter {
             if (message.getMessageReference() != null
                     && message.getMessageReference().getType()
                             == MessageReference.MessageReferenceType.FORWARD) {
-                if (!RRDiscordBridge.instance
-                        .getSettings()
+                if (!instance.getSettings()
                         .enabledDiscordEvents
                         .contains(Settings.DiscordEvents.FORWARDED_MESSAGE)) return;
 
-                RRDiscordBridge.instance
-                        .getServer()
+                instance.getServer()
                         .broadcastMessage(
                                 String.format("§d[Discord] §e%s forwarded a message.", author));
                 return;
@@ -753,13 +692,11 @@ public class DiscordBot extends ListenerAdapter {
 
             // polls
             if (message.getPoll() != null) {
-                if (!RRDiscordBridge.instance
-                        .getSettings()
+                if (!instance.getSettings()
                         .enabledDiscordEvents
                         .contains(Settings.DiscordEvents.POLL_CREATION)) return;
 
-                RRDiscordBridge.instance
-                        .getServer()
+                instance.getServer()
                         .broadcastMessage(
                                 String.format(
                                         "§d[Discord] §e%s has created a poll \"%s\".",
@@ -767,8 +704,7 @@ public class DiscordBot extends ListenerAdapter {
                 return;
             }
 
-            if (!RRDiscordBridge.instance
-                    .getSettings()
+            if (!instance.getSettings()
                     .enabledDiscordEvents
                     .contains(Settings.DiscordEvents.USER_MESSAGE)) return;
 
@@ -784,13 +720,12 @@ public class DiscordBot extends ListenerAdapter {
 
             // add trait if message is too long
             if (event.getMessage().getContentDisplay().length()
-                    > RRDiscordBridge.instance.getSettings().maxMessageSize) {
+                    > instance.getSettings().maxMessageSize) {
                 traits.add("T");
                 event.getMessage().addReaction(Emoji.fromUnicode("\uD83D\uDCCF")).queue();
             }
 
-            RRDiscordBridge.instance
-                    .getServer()
+            instance.getServer()
                     .broadcastMessage(
                             String.format(
                                     "§d[Discord]%s%s §e%s§f: %s%s",

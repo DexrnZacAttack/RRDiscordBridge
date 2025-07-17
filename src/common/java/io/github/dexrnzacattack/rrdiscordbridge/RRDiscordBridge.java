@@ -8,6 +8,7 @@ import io.github.dexrnzacattack.rrdiscordbridge.command.commands.DiscordLinkComm
 import io.github.dexrnzacattack.rrdiscordbridge.command.commands.ReloadCommand;
 import io.github.dexrnzacattack.rrdiscordbridge.config.Settings;
 import io.github.dexrnzacattack.rrdiscordbridge.discord.DiscordBot;
+import io.github.dexrnzacattack.rrdiscordbridge.interfaces.ILogger;
 import io.github.dexrnzacattack.rrdiscordbridge.interfaces.IServer;
 
 import me.scarsz.jdaappender.ChannelLoggingHandler;
@@ -46,13 +47,13 @@ public class RRDiscordBridge {
     private final IServer server;
 
     /** The server's logger */
-    private final Logger logger;
+    private final ILogger logger;
 
     /** JDA's console logger */
     public ChannelLoggingHandler logHandler;
 
     /** Registered in-game commands */
-    public CommandRegistry commandRegistry;
+    private final CommandRegistry commandRegistry;
 
     /** The plugin's settings */
     private Settings settings;
@@ -73,7 +74,7 @@ public class RRDiscordBridge {
      * @param logger The logger to use
      * @param server The server impl to use
      */
-    public RRDiscordBridge(IServer server, Logger logger) {
+    public RRDiscordBridge(IServer server, ILogger logger, String configPath) {
         this.server = server;
         this.logger = logger;
 
@@ -86,7 +87,7 @@ public class RRDiscordBridge {
 
         try {
             // load settings
-            this.settings = new Settings().loadConfig();
+            this.settings = new Settings(configPath).loadConfig();
         } catch (IOException e) {
             // just throw if caught some weird error
             throw new RuntimeException(e);
@@ -205,7 +206,7 @@ public class RRDiscordBridge {
     /**
      * @return The instance of {@link #logger the logger}
      */
-    public Logger getLogger() {
+    public ILogger getLogger() {
         return logger;
     }
 
@@ -217,7 +218,8 @@ public class RRDiscordBridge {
     }
 
     public void reload() throws IOException {
-        this.settings = new Settings().loadConfig();
+        this.settings =
+                new Settings(RRDiscordBridge.instance.getSettings().configPath).loadConfig();
         this.extensions = new ChatExtensions();
     }
 
@@ -246,5 +248,9 @@ public class RRDiscordBridge {
      */
     public Settings getSettings() {
         return settings;
+    }
+
+    public CommandRegistry getCommandRegistry() {
+        return commandRegistry;
     }
 }

@@ -1,6 +1,7 @@
 package io.github.dexrnzacattack.rrdiscordbridge;
 
 import io.github.dexrnzacattack.rrdiscordbridge.events.*;
+import io.github.dexrnzacattack.rrdiscordbridge.impls.JavaLogger;
 import io.github.dexrnzacattack.rrdiscordbridge.impls.OldBukkitServer;
 
 import org.bukkit.event.Event;
@@ -10,7 +11,10 @@ public class OldBukkitPlugin extends BukkitPlugin {
     public void setupBridge() {
         // ctor
         RRDiscordBridge.instance =
-                new RRDiscordBridge(new OldBukkitServer(), getServer().getLogger());
+                new RRDiscordBridge(
+                        new OldBukkitServer(),
+                        new JavaLogger(getServer().getLogger()),
+                        bukkitConfigPath);
 
         // then we init
         RRDiscordBridge.instance.initialize();

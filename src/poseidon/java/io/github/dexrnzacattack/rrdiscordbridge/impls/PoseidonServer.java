@@ -7,12 +7,12 @@ import org.bukkit.Bukkit;
 import java.util.Arrays;
 import java.util.Objects;
 
-public class PoseidonServer extends Server {
+public class PoseidonServer extends BukkitServer {
     @Override
     public IPlayer[] getOnlinePlayers() {
         return Arrays.stream(Bukkit.getOnlinePlayers())
                 .filter(Objects::nonNull)
-                .map(Player::new)
+                .map(BukkitPlayer::new)
                 .toArray(IPlayer[]::new);
     }
 }

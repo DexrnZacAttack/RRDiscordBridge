@@ -4,10 +4,10 @@ import io.github.dexrnzacattack.rrdiscordbridge.interfaces.ICommandCaller;
 
 import org.bukkit.command.CommandSender;
 
-public class CommandCaller implements ICommandCaller {
+public class BukkitCommandCaller implements ICommandCaller {
     CommandSender inst;
 
-    public CommandCaller(CommandSender caller) {
+    public BukkitCommandCaller(CommandSender caller) {
         this.inst = caller;
     }
 

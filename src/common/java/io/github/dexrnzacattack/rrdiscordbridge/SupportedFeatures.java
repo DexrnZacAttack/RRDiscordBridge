@@ -16,7 +16,7 @@ public class SupportedFeatures {
         if (!v)
             RRDiscordBridge.instance
                     .getLogger()
-                    .warning(
+                    .warn(
                             "server.properties' server-name is not supported in this environment. There will be no server name when /about is used.");
         hasServerName = v;
         return this;
@@ -27,7 +27,7 @@ public class SupportedFeatures {
         if (!v)
             RRDiscordBridge.instance
                     .getLogger()
-                    .warning(
+                    .warn(
                             "MOTD is not supported in this environment. There will be no MOTD when /about is used.");
         hasServerMotd = v;
         return this;

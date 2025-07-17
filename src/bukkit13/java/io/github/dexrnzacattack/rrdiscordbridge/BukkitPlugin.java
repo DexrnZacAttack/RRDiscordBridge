@@ -9,7 +9,8 @@ import io.github.dexrnzacattack.rrdiscordbridge.commands.FancyBroadcastCommand;
 import io.github.dexrnzacattack.rrdiscordbridge.commands.ReloadConfigCommand;
 import io.github.dexrnzacattack.rrdiscordbridge.events.PlayerChat;
 import io.github.dexrnzacattack.rrdiscordbridge.events.PlayerDeath;
-import io.github.dexrnzacattack.rrdiscordbridge.impls.Server;
+import io.github.dexrnzacattack.rrdiscordbridge.impls.BukkitServer;
+import io.github.dexrnzacattack.rrdiscordbridge.impls.JavaLogger;
 
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -20,7 +21,11 @@ public class BukkitPlugin extends JavaPlugin {
     // so it can be overridden
     public void setupBridge() {
         // ctor
-        RRDiscordBridge.instance = new RRDiscordBridge(new Server(), getServer().getLogger());
+        RRDiscordBridge.instance =
+                new RRDiscordBridge(
+                        new BukkitServer(),
+                        new JavaLogger(getServer().getLogger()),
+                        ConfigDirectory.PLUGIN.getPath());
 
         // then we init
         RRDiscordBridge.instance.initialize();

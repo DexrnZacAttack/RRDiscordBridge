@@ -1,7 +1,6 @@
 package io.github.dexrnzacattack.rrdiscordbridge.discord.commands;
 
 import io.github.dexrnzacattack.rrdiscordbridge.RRDiscordBridge;
-import io.github.dexrnzacattack.rrdiscordbridge.interfaces.IPlayer;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -16,9 +15,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.stream.Collectors;
 
 /**
  * Sends an embed containing the following server information:
@@ -68,15 +64,10 @@ public class AboutCommand extends ListenerAdapter {
 
         if (RRDiscordBridge.instance.getSettings().publicOperatorNames) {
             if (RRDiscordBridge.instance.getSupportedFeatures().canQueryServerOperators()) {
-                Set<IPlayer> ops = RRDiscordBridge.instance.getServer().getOperators();
+                String[] ops = RRDiscordBridge.instance.getServer().getOperators();
                 builder.addField(
                         "Operators",
-                        (!ops.isEmpty()
-                                ? " - "
-                                        + ops.stream()
-                                                .map(IPlayer::getName)
-                                                .collect(Collectors.joining("\n - "))
-                                : "No operators"),
+                        (ops.length > 0 ? " - " + String.join("\n - ", ops) : "No operators"),
                         false);
             } else {
                 // note to self: can't seem to easily refactor since readAllLines demands a Path
@@ -98,8 +89,7 @@ public class AboutCommand extends ListenerAdapter {
                 } catch (IOException e) {
                     RRDiscordBridge.instance
                             .getLogger()
-                            .log(
-                                    Level.WARNING,
+                            .warn(
                                     String.format(
                                             "Couldn't get the OPs list at %s",
                                             opsTxt.toAbsolutePath()),

@@ -9,10 +9,8 @@ import org.bukkit.OfflinePlayer;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 
-public class Server implements IServer {
+public class BukkitServer implements IServer {
     @Override
     public void broadcastMessage(String message) {
         Bukkit.broadcastMessage(message);
@@ -23,22 +21,24 @@ public class Server implements IServer {
         return Arrays.stream(Bukkit.getOnlinePlayers())
                 .map(OfflinePlayer::getPlayer)
                 .filter(Objects::nonNull)
-                .map(Player::new)
+                .map(BukkitPlayer::new)
                 .toArray(IPlayer[]::new);
     }
 
     @Override
-    public Set<IPlayer> getOperators() {
+    public String[] getOperators() {
         return Bukkit.getOperators().stream()
                 .map(OfflinePlayer::getPlayer)
                 .filter(Objects::nonNull)
-                .map(Player::new)
-                .collect(Collectors.toSet());
+                .map(BukkitPlayer::new)
+                .map(BukkitPlayer::getName) // might want to just make it call getName on
+                // OfflinePlayer instead
+                .toArray(String[]::new);
     }
 
     @Override
     public IPlayer getPlayer(String name) {
-        return new Player(Bukkit.getPlayer(name));
+        return new BukkitPlayer(Bukkit.getPlayer(name));
     }
 
     @Override

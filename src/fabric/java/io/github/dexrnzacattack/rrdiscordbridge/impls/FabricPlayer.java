@@ -2,11 +2,11 @@ package io.github.dexrnzacattack.rrdiscordbridge.impls;
 
 import io.github.dexrnzacattack.rrdiscordbridge.interfaces.IPlayer;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 
-// unfinished
 public class FabricPlayer implements IPlayer {
-    Player player;
+    protected final Player player;
 
     public FabricPlayer(Player player) {
         this.player = player;
@@ -14,7 +14,7 @@ public class FabricPlayer implements IPlayer {
 
     @Override
     public boolean isOperator() {
-        return player.getPermissionLevel() > 0;
+        return player.getPermissionLevel() > 1;
     }
 
     @Override
@@ -23,10 +23,12 @@ public class FabricPlayer implements IPlayer {
     }
 
     @Override
-    public void sendMessage(String message) {}
+    public void sendMessage(String message) {
+        player.displayClientMessage(Component.literal(message), false);
+    }
 
     @Override
     public boolean hasPlayedBefore() {
-        return false;
+        return true;
     }
 }

@@ -7,13 +7,13 @@ import org.bukkit.OfflinePlayer;
 
 import java.util.Objects;
 
-public class ModernServer extends Server {
+public class ModernBukkitServer extends BukkitServer {
     @Override
     public IPlayer[] getOnlinePlayers() {
         return Bukkit.getServer().getOnlinePlayers().stream()
                 .map(OfflinePlayer::getPlayer)
                 .filter(Objects::nonNull)
-                .map(Player::new)
+                .map(BukkitPlayer::new)
                 .toArray(IPlayer[]::new);
     }
 }

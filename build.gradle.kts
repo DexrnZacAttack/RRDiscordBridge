@@ -4,19 +4,6 @@ import org.gradle.kotlin.dsl.java
 import xyz.wagyourtail.unimined.api.minecraft.task.RemapJarTask
 import java.time.Instant
 
-// NOTE: NOT FINISHED
-// When I originally set up the script, I didn't understand how to use it, and accidentally just started making separate build scripts everywhere lmao
-// I have attempted to reverse this, and properly match the original template's structure.
-// This means all other build scripts for each platform are not used.
-// This was committed for debugging, currently Bukkit builds do not work properly to my knowledge.
-// The current issue is that Fabric builds do not remap properly, it almost looks like the symbols get re-obfuscated instead
-// This leads to NoSuchMethodException whenever one of these methods are called, ex:
-/* [21:31:23] [JDA MainWS-ReadThread/ERROR]: One of the EventListeners had an uncaught exception
- * java.lang.NoSuchMethodError: 'net.minecraft.class_3324 net.minecraft.server.MinecraftServer.ag()'
- *      at knot/io.github.dexrnzacattack.rrdiscordbridge.impls.FabricServer.broadcastMessage(FabricServer.java:23) ~[RRDiscordBridge-2.1.0-shaded.jar:?]
-*/
-
-
 plugins {
     id("java")
     id("maven-publish")
@@ -28,9 +15,7 @@ plugins {
     alias(libs.plugins.unimined)
 }
 
-tasks.named("build").configure {
-    dependsOn("shadowJar")
-}
+
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(javaVersion)
 java.sourceCompatibility = JavaVersion.toVersion(javaVersion)
@@ -64,6 +49,7 @@ spotless {
     }
 }
 
+/* Source Sets */
 val common: SourceSet by sourceSets.creating {
     blossom.javaSources {
         property("mod_id", modId)
@@ -76,14 +62,35 @@ val common: SourceSet by sourceSets.creating {
     }
 }
 
-val fabric: SourceSet by sourceSets.creating
-val neoforge: SourceSet by sourceSets.creating
+val fabric: SourceSet by sourceSets.creating {
+    extra.set("deps", listOf(sourceSets.main.get().output))
+    extra.set("name", "F")
+}
+val neoforge: SourceSet by sourceSets.creating {
+    extra.set("deps", listOf(sourceSets.main.get().output))
+    extra.set("name", "NF")
+}
 val paper: SourceSet by sourceSets.creating
-val poseidon: SourceSet by sourceSets.creating
-val bukkit10: SourceSet by sourceSets.creating
-val bukkit11: SourceSet by sourceSets.creating
-val bukkit13: SourceSet by sourceSets.creating
-val bukkit17: SourceSet by sourceSets.creating
+val bukkit13: SourceSet by sourceSets.creating {
+    extra.set("deps", listOf<SourceSet>())
+    extra.set("name", "Bukkit 1.3.1-1.7.8")
+}
+val bukkit11: SourceSet by sourceSets.creating {
+    extra.set("deps", listOf(bukkit13.output))
+    extra.set("name", "Bukkit 1.1-1.2.5")
+}
+val poseidon: SourceSet by sourceSets.creating {
+    extra.set("deps", listOf(bukkit11.output, bukkit13.output))
+    extra.set("name", "Project Poseidon")
+}
+val bukkit10: SourceSet by sourceSets.creating {
+    extra.set("deps", listOf(bukkit11.output, bukkit13.output))
+    extra.set("name", "Bukkit b1.4-r1.0.1")
+}
+val bukkit17: SourceSet by sourceSets.creating {
+    extra.set("deps", listOf(bukkit13.output))
+    extra.set("name", "Bukkit 1.7.9+")
+}
 
 listOf(bukkit13).forEach {
     listOf(common).forEach { sourceSet ->
@@ -120,6 +127,7 @@ listOf(bukkit17).forEach {
     }
 }
 
+/* CompileOnly */
 val mainCompileOnly: Configuration by configurations.creating
 configurations.compileOnly.get().extendsFrom(mainCompileOnly)
 val commonCompileOnly: Configuration by configurations.getting
@@ -134,10 +142,10 @@ val bukkit11CompileOnly: Configuration by configurations.getting
 val bukkit13CompileOnly: Configuration by configurations.getting
 val bukkit17CompileOnly: Configuration by configurations.getting
 
-listOf(fabricCompileOnly, neoforgeCompileOnly,
-    paperCompileOnly, bukkit10CompileOnly, bukkit11CompileOnly, bukkit13CompileOnly, bukkit17CompileOnly, poseidonCompileOnly).forEach {
+listOf(fabricCompileOnly, neoforgeCompileOnly, paperCompileOnly, bukkit10CompileOnly, bukkit11CompileOnly, bukkit13CompileOnly, bukkit17CompileOnly, poseidonCompileOnly).forEach {
     it.extendsFrom(commonCompileOnly)
 }
+/* Implementation */
 val modImplementation: Configuration by configurations.creating
 val fabricModImplementation: Configuration by configurations.creating {
     extendsFrom(modImplementation)
@@ -220,34 +228,68 @@ unimined.minecraft(paper) {
     defaultRemapJar = true
 }
 
-tasks.register<Jar>("bukkit11Jar") {
-    group = "build"
-    archiveBaseName.set("${modName}-${bukkit11.name.replace(" ", "_")}")
-    from(bukkit11.output)
+unimined.minecraft(bukkit10) {
+
+    combineWith(sourceSets.main.get())
+    defaultRemapJar = true
 }
 
-tasks.register<Jar>("bukkit10Jar") {
-    group = "build"
-    archiveBaseName.set("${modName}-${bukkit10.name.replace(" ", "_")}")
-    from(bukkit10.output)
+unimined.minecraft(bukkit11) {
+    combineWith(sourceSets.main.get())
+    defaultRemapJar = true
 }
 
-tasks.register<Jar>("bukkit13Jar") {
-    group = "build"
-    archiveBaseName.set("${modName}-${bukkit13.name.replace(" ", "_")}")
-    from(bukkit13.output)
+unimined.minecraft(bukkit13) {
+    combineWith(sourceSets.main.get())
+    defaultRemapJar = true
 }
 
-tasks.register<Jar>("poseidonJar") {
-    group = "build"
-    archiveBaseName.set("${modName}-${poseidon.name.replace(" ", "_")}")
-    from(poseidon.output)
+unimined.minecraft(bukkit17) {
+    combineWith(sourceSets.main.get())
+    defaultRemapJar = true
 }
 
-tasks.register<Jar>("bukkit17Jar") {
-    group = "build"
-    archiveBaseName.set("${modName}-${bukkit17.name.replace(" ", "_")}")
-    from(bukkit17.output)
+unimined.minecraft(poseidon) {
+    combineWith(sourceSets.main.get())
+    defaultRemapJar = true
+}
+
+val bukkit = listOf(
+    bukkit10,
+    bukkit11,
+    bukkit13,
+    bukkit17,
+    poseidon
+)
+
+val loaders = listOf(
+//    fabric,
+    neoforge
+)
+
+val commonShadowJar = tasks.register<ShadowJar>("commonShadowJar") {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    manifest {
+        attributes(
+            mapOf(
+                "Specification-Title" to modName,
+                "Specification-Version" to version,
+                "Specification-Vendor" to "SomeVendor",
+                "Implementation-Version" to version,
+                "Implementation-Vendor" to "SomeVendor",
+                "Implementation-Timestamp" to Instant.now().toString(),
+                "FMLCorePluginContainsFMLMod" to "true",
+                "TweakClass" to "org.spongepowered.asm.launch.MixinTweaker",
+                "MixinConfigs" to "$modId.mixins.vanilla.json,$modId.mixins.forge.json"
+            )
+        )
+    }
+
+    from(listOf("README.md", "LICENSE")) {
+        into("META-INF")
+    }
+
+    archiveClassifier = ""
 }
 
 dependencies {
@@ -271,6 +313,35 @@ dependencies {
     implementation("org.slf4j:slf4j-jdk14:2.0.17")
 }
 
+tasks.named("build").configure {
+    dependsOn("shadowJar")
+}
+
+listOf("compileBukkit10Java", "compileBukkit11Java", "compileBukkit13Java", "compileBukkit17Java", "compilePoseidonJava").forEach { name ->
+    tasks.named<JavaCompile>(name).configure {
+        sourceCompatibility = "1.8"
+        targetCompatibility = "1.8"
+    }
+}
+
+tasks.named<JavaCompile>("compileCommonJava").configure {
+    sourceCompatibility = "1.8"
+    targetCompatibility = "1.8"
+}
+
+bukkit.forEach { set ->
+    tasks.named("${set.name}Jar").configure {
+        dependsOn("${set.name}ShadowJar")
+    }
+}
+
+loaders.forEach { set ->
+    tasks.named("${set.name}Jar").configure {
+        dependsOn("${set.name}ShadowJar")
+    }
+}
+
+
 tasks.withType<ProcessResources> {
     filesMatching(listOf(
         "bungee.yml",
@@ -288,47 +359,65 @@ tasks.withType<ProcessResources> {
     }
 }
 
-tasks.shadowJar {
-    dependsOn("relocateFabricJar")
-    from(
-        zipTree(tasks.getByName<Jar>("relocateFabricJar").archiveFile.get().asFile),
-//        neoforge.output,
-//        paper.output,
-//        bukkit13.output,
-//        bukkit10.output,
-//        bukkit11.output,
-//        bukkit17.output
-    )
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    manifest {
-        attributes(
-            mapOf(
-                "Specification-Title" to modName,
-                "Specification-Version" to version,
-                "Specification-Vendor" to "SomeVendor",
-                "Implementation-Version" to version,
-                "Implementation-Vendor" to "SomeVendor",
-                "Implementation-Timestamp" to Instant.now().toString(),
-                "FMLCorePluginContainsFMLMod" to "true",
-                "TweakClass" to "org.spongepowered.asm.launch.MixinTweaker",
-                "MixinConfigs" to "$modId.mixins.vanilla.json,$modId.mixins.forge.json"
-            )
+val ex = listOf(
+    "natives/**",
+    "com/sun/jna/**",
+    "com/google/crypto/tink/**",
+    "com/google/protobuf/**",
+    "google/protobuf/**",
+    "club/minnced/opus/util/*",
+    "tomp2p/opuswrapper/*",
+)
+
+/* Shadow Jar */
+bukkit.forEach { set ->
+    tasks.register<ShadowJar>("${set.name}ShadowJar") {
+        archiveClassifier = set.extra["name"] as? String ?: set.name
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        configurations = listOf(project.configurations.getByName("commonRuntimeClasspath"))
+        dependsOn(commonShadowJar)
+        from(
+            sourceSets.main.get().output,
+            common.output,
+            set.output,
+            set.extra["deps"] as? List<SourceSetOutput>
         )
-    }
-    from(listOf("README.md", "LICENSE")) {
-        into("META-INF")
-    }
 
-    archiveClassifier = "shaded"
-    exclude("META-INF")
+        if (set.name == "bukkit10")
+            exclude("org/bukkit/craftbukkit/**") // stub for old craftbukkit
 
-    exclude("natives/**")
-    exclude("com/sun/jna/**")
-    exclude("com/google/crypto/tink/**")
-    exclude("com/google/protobuf/**")
-    exclude("google/protobuf/**")
-    exclude("club/minnced/opus/util/*")
-    exclude("tomp2p/opuswrapper/*")
-    exclude("org/bukkit/craftbukkit/**") // stub for old craftbukkit, would shove in it's build script if I knew how to append to shadowJar config without outright copying and pasting this block to the script
+        exclude(ex)
+    }
 }
+
+loaders.forEach { set ->
+    tasks.register<ShadowJar>("${set.name}ShadowJar") {
+        archiveClassifier = set.extra["name"] as? String ?: set.name
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        configurations = listOf(project.configurations.getByName("commonRuntimeClasspath"))
+
+        dependsOn("relocateFabricJar")
+        dependsOn("commonShadowJar")
+        from(
+            sourceSets.main.get().output,
+            common.output,
+            set.output,
+            set.extra["deps"] as? List<SourceSetOutput>,
+            zipTree(tasks.getByName<Jar>("relocateFabricJar").archiveFile.get().asFile),
+        )
+
+        exclude(ex)
+        exclude(listOf(
+            "com/google/errorprone/**",
+            "com/fasterxml/jackson/**",
+            "META-INF/services/com.fasterxml.jackson.core.JsonFactory/**",
+            "META-INF/services/com.fasterxml.jackson.core.ObjectCodec/**",
+            "META-INF/services/org.slf4j.spi.SLF4JServiceProvider/**",
+            "javax/annotation/**",
+            "com/google/gson/**",
+            "org/slf4j/**"
+        ))
+    }
+}
+
 tasks.build.get().dependsOn("spotlessApply")

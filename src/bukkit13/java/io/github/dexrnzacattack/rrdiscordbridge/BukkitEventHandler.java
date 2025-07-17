@@ -1,6 +1,6 @@
 package io.github.dexrnzacattack.rrdiscordbridge;
 
-import io.github.dexrnzacattack.rrdiscordbridge.impls.Player;
+import io.github.dexrnzacattack.rrdiscordbridge.impls.BukkitPlayer;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -14,7 +14,7 @@ public class BukkitEventHandler implements Listener {
 
     @EventHandler
     public void onPlayerCommand(PlayerCommandPreprocessEvent event) {
-        Events.onPlayerCommand(new Player(event.getPlayer()), event.getMessage());
+        Events.onPlayerCommand(new BukkitPlayer(event.getPlayer()), event.getMessage());
     }
 
     @EventHandler
@@ -24,16 +24,16 @@ public class BukkitEventHandler implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        Events.onPlayerJoin(new Player(event.getPlayer()));
+        Events.onPlayerJoin(new BukkitPlayer(event.getPlayer()));
     }
 
     @EventHandler
     public void onPlayerLeave(PlayerQuitEvent event) {
-        Events.onPlayerLeave(new Player(event.getPlayer()));
+        Events.onPlayerLeave(new BukkitPlayer(event.getPlayer()));
     }
 
     @EventHandler
     public void onPlayerKick(PlayerKickEvent event) {
-        Events.onPlayerKick(new Player(event.getPlayer()), event.getReason());
+        Events.onPlayerKick(new BukkitPlayer(event.getPlayer()), event.getReason());
     }
 }

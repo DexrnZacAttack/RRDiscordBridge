@@ -2,6 +2,7 @@ package io.github.dexrnzacattack.rrdiscordbridge;
 
 import io.github.dexrnzacattack.rrdiscordbridge.events.LegacyPlayerChat;
 import io.github.dexrnzacattack.rrdiscordbridge.events.PoseidonPlayerDeath;
+import io.github.dexrnzacattack.rrdiscordbridge.impls.JavaLogger;
 import io.github.dexrnzacattack.rrdiscordbridge.impls.PoseidonServer;
 
 public class PoseidonPlugin extends BukkitPlugin {
@@ -9,7 +10,10 @@ public class PoseidonPlugin extends BukkitPlugin {
     public void setupBridge() {
         // ctor
         RRDiscordBridge.instance =
-                new RRDiscordBridge(new PoseidonServer(), getServer().getLogger());
+                new RRDiscordBridge(
+                        new PoseidonServer(),
+                        new JavaLogger(getServer().getLogger()),
+                        bukkitConfigPath);
 
         // then we init
         RRDiscordBridge.instance.initialize();

@@ -1,7 +1,6 @@
 package io.github.dexrnzacattack.rrdiscordbridge.interfaces;
 
 import java.io.InputStream;
-import java.util.Set;
 
 /**
  * Common server methods
@@ -20,7 +19,7 @@ public interface IServer {
     /**
      * @return A list of all operators on the server
      */
-    Set<IPlayer> getOperators();
+    String[] getOperators();
 
     /**
      * @return A player with the given username (if they've joined before)

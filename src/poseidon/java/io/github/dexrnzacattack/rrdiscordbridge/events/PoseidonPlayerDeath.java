@@ -3,7 +3,7 @@ package io.github.dexrnzacattack.rrdiscordbridge.events;
 import com.legacyminecraft.poseidon.event.PlayerDeathEvent;
 
 import io.github.dexrnzacattack.rrdiscordbridge.Events;
-import io.github.dexrnzacattack.rrdiscordbridge.impls.Player;
+import io.github.dexrnzacattack.rrdiscordbridge.impls.BukkitPlayer;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -18,7 +18,7 @@ public class PoseidonPlayerDeath implements Listener {
         if (event.getEntity() instanceof org.bukkit.entity.Player
                 && event instanceof PlayerDeathEvent)
             Events.onPlayerDeath(
-                    new Player((org.bukkit.entity.Player) event.getEntity()),
+                    new BukkitPlayer((org.bukkit.entity.Player) event.getEntity()),
                     ((PlayerDeathEvent) event).getDeathMessage());
     }
 }

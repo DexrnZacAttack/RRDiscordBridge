@@ -10,7 +10,6 @@ import net.dv8tion.jda.api.entities.Message;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 
 public class ChatExtensions {
     // TODO:
@@ -131,15 +130,14 @@ public class ChatExtensions {
         } catch (Exception e) {
             RRDiscordBridge.instance
                     .getLogger()
-                    .log(
-                            Level.SEVERE,
+                    .error(
                             String.format(
                                     "Failed to register chat extension %s: %s", name, e.toString()),
                             e);
         } finally {
             RRDiscordBridge.instance
                     .getLogger()
-                    .log(Level.INFO, String.format("Registered chat extension %s", name));
+                    .info(String.format("Registered chat extension %s", name));
         }
     }
 
@@ -154,7 +152,7 @@ public class ChatExtensions {
         extensions.remove(ext);
         RRDiscordBridge.instance
                 .getLogger()
-                .log(Level.INFO, String.format("Unregistered chat extension %s", ext.getName()));
+                .info(String.format("Unregistered chat extension %s", ext.getName()));
     }
 
     /**
@@ -168,7 +166,7 @@ public class ChatExtensions {
         RRDiscordBridge.instance.getSettings().enabledChatExtensions.remove(ext.getName());
         RRDiscordBridge.instance
                 .getLogger()
-                .log(Level.INFO, String.format("Disabled chat extension %s", ext.getName()));
+                .info(String.format("Disabled chat extension %s", ext.getName()));
     }
 
     /**
@@ -182,6 +180,6 @@ public class ChatExtensions {
         RRDiscordBridge.instance.getSettings().enabledChatExtensions.add(ext.getName());
         RRDiscordBridge.instance
                 .getLogger()
-                .log(Level.INFO, String.format("Enabled chat extension %s", ext.getName()));
+                .info(String.format("Enabled chat extension %s", ext.getName()));
     }
 }

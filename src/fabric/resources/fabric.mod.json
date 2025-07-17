@@ -10,6 +10,8 @@
     ]
   },
   "accessWidener": "rrdiscordbridge.accesswidener",
-  "mixins": [],
+  "mixins": [
+    "rrdiscordbridge.mixins.json"
+  ],
   "depends": {}
 }

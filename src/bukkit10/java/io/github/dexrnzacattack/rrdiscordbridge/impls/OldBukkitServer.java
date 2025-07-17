@@ -8,10 +8,8 @@ import org.bukkit.OfflinePlayer;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 
-public class OldBukkitServer extends Server {
+public class OldBukkitServer extends BukkitServer {
     public void broadcastMessage(String message) {
         Bukkit.getServer().broadcastMessage(message);
     }
@@ -20,22 +18,23 @@ public class OldBukkitServer extends Server {
     public IPlayer[] getOnlinePlayers() {
         return Arrays.stream(Bukkit.getServer().getOnlinePlayers())
                 .filter(Objects::nonNull)
-                .map(Player::new)
+                .map(BukkitPlayer::new)
                 .toArray(IPlayer[]::new);
     }
 
     @Override
-    public Set<IPlayer> getOperators() {
+    public String[] getOperators() {
         return Bukkit.getServer().getOperators().stream()
                 .map(OfflinePlayer::getPlayer)
                 .filter(Objects::nonNull)
-                .map(Player::new)
-                .collect(Collectors.toSet());
+                .map(BukkitPlayer::new)
+                .map(BukkitPlayer::getName)
+                .toArray(String[]::new);
     }
 
     @Override
     public IPlayer getPlayer(String name) {
-        return new Player(Bukkit.getServer().getPlayer(name));
+        return new BukkitPlayer(Bukkit.getServer().getPlayer(name));
     }
 
     @Override

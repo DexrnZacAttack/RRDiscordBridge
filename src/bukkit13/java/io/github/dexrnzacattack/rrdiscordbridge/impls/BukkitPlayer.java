@@ -2,10 +2,10 @@ package io.github.dexrnzacattack.rrdiscordbridge.impls;
 
 import io.github.dexrnzacattack.rrdiscordbridge.interfaces.IPlayer;
 
-public class Player implements IPlayer {
+public class BukkitPlayer implements IPlayer {
     private final org.bukkit.entity.Player inst;
 
-    public Player(org.bukkit.entity.Player player) {
+    public BukkitPlayer(org.bukkit.entity.Player player) {
         inst = player;
     }
 

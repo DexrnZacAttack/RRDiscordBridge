@@ -3,19 +3,19 @@ package io.github.dexrnzacattack.rrdiscordbridge.impls;
 import io.github.dexrnzacattack.rrdiscordbridge.interfaces.ICancellable;
 
 public class Cancellable implements ICancellable {
-    private final org.bukkit.event.Cancellable inst;
-
-    public Cancellable(org.bukkit.event.Cancellable inst) {
-        this.inst = inst;
-    }
+    private boolean cancelled = false;
 
     @Override
     public void cancel() {
-        inst.setCancelled(true);
+        cancelled = true;
     }
 
     @Override
     public void uncancel() {
-        inst.setCancelled(false);
+        cancelled = false;
+    }
+
+    public boolean isCancelled() {
+        return cancelled;
     }
 }
