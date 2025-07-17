@@ -13,7 +13,7 @@ public class PoseidonPlugin extends BukkitPlugin {
                 new RRDiscordBridge(
                         new PoseidonServer(),
                         new JavaLogger(getServer().getLogger()),
-                        bukkitConfigPath);
+                        ConfigDirectory.PLUGIN.getPath());
 
         // then we init
         RRDiscordBridge.instance.initialize();

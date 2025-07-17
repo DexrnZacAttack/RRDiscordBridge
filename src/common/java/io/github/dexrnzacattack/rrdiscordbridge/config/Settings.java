@@ -1,12 +1,17 @@
 package io.github.dexrnzacattack.rrdiscordbridge.config;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.InstanceCreator;
+import com.vdurmont.semver4j.Semver;
 
-import io.github.dexrnzacattack.rrdiscordbridge.BuildParameters;
+import io.github.dexrnzacattack.rrdiscordbridge.RRDiscordBridge;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -14,10 +19,10 @@ import java.util.List;
 /** The plugin's config */
 public class Settings {
     /** For the JSON file */
-    public final String SETTINGS_VERSION = BuildParameters.VERSION;
+    public String version;
 
     /** The config path */
-    public final String configPath;
+    public final transient String configPath;
 
     /** The bot token */
     public String botToken;
@@ -105,10 +110,16 @@ public class Settings {
     }
 
     public Settings loadConfig() throws IOException {
-        Gson gson = new Gson();
+        Gson gson =
+                new GsonBuilder()
+                        .registerTypeAdapter(
+                                Settings.class, new GsonSettingsInstanceCreator(this.configPath))
+                        .create();
+
         Settings settings;
 
         File configFile = new File(configPath);
+        System.out.println(configFile.getAbsolutePath());
 
         if (!configFile.exists()) createConfig();
 
@@ -119,18 +130,41 @@ public class Settings {
             throw e;
         }
 
+        settings.updateConfig();
         settings.writeConfig();
         return settings;
     }
 
     public void writeConfig() {
         // TODO: fix on nf
-        //        try (FileWriter writer = new FileWriter(configPath)) {
-        //            Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        //            writer.write(gson.toJson(this));
-        //        } catch (IOException e) {
-        //            System.err.println("Exception while writing the config: " + e.getMessage());
-        //        }
+        File file = new File(configPath);
+        System.out.println(file.getAbsolutePath());
+
+        try (FileWriter writer = new FileWriter(file)) {
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            writer.write(gson.toJson(this));
+        } catch (IOException e) {
+            System.err.println("Exception while writing the config: " + e.getMessage());
+        }
+    }
+
+    // might have to figure out a better way to do this as this will likely get messy
+    public void updateConfig() {
+        String version = this.version == null ? "2.1.0" : this.version;
+
+        Semver ver = new Semver(version);
+
+        if (ver.isLowerThan(RRDiscordBridge.getVersion()))
+            System.out.printf(
+                    "Config version is older than mod/plugin version (%s < %s), attempting to upgrade%n",
+                    version, RRDiscordBridge.getVersion());
+        else return;
+
+        if (ver.isLowerThan("2.2.0")) {
+            this.enabledEvents.add(Events.PLAYER_ACHIEVEMENT);
+        }
+
+        this.version = RRDiscordBridge.getVersion();
     }
 
     public void createConfig() {
@@ -168,6 +202,8 @@ public class Settings {
         PLAYER_DEATH,
         /** Sends a message on player chat */
         PLAYER_CHAT,
+        /** Sends a message when the player gets an achievement/advancement/goal */
+        PLAYER_ACHIEVEMENT,
         /** Sends an event message on server start */
         SERVER_START,
         /** Sends an event message on server stop */
@@ -220,5 +256,18 @@ public class Settings {
         USER_APP,
         /** When a message is forwarded to the channel */
         FORWARDED_MESSAGE,
+    }
+}
+
+class GsonSettingsInstanceCreator implements InstanceCreator<Settings> {
+    private final String configPath;
+
+    public GsonSettingsInstanceCreator(String configPath) {
+        this.configPath = configPath;
+    }
+
+    @Override
+    public Settings createInstance(Type type) {
+        return new Settings(configPath);
     }
 }

@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.util.EnumSet;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Handler;
-import java.util.logging.Logger;
 
 /** RRDiscordBridge's main common class */
 public class RRDiscordBridge {
@@ -116,32 +115,24 @@ public class RRDiscordBridge {
                 this.logger.info("Registering console channel handler");
                 this.logHandler =
                         new ChannelLoggingHandler(
-                                () ->
-                                        DiscordBot.jda.getTextChannelById(
-                                                this.settings.consoleChannelId),
-                                config -> {
-                                    config.setLogLevels(EnumSet.allOf(LogLevel.class));
-                                    config.mapLoggerName("Minecraft", "");
-                                });
-
-                try {
-                    Class.forName("org.apache.logging.log4j.core.Logger");
-                    this.logHandler.attachLog4jLogging();
-                } catch (Throwable ignored) {
-                    this.logHandler.attachJavaLogging();
-
-                    // Because for some reason, instead of letting me simply do
-                    // .attachJavaLogging("Minecraft"), I have to do this.
-                    Logger global = Logger.getLogger("");
-                    Handler[] handlers = global.getHandlers();
-
-                    for (Handler handler : handlers) {
-                        if (handler.getClass() == JavaLoggingAdapter.class) {
-                            this.logger.addHandler(handler);
-                        }
-                    }
-                }
-                this.logHandler.schedule();
+                                        () ->
+                                                DiscordBot.jda.getTextChannelById(
+                                                        this.settings.consoleChannelId),
+                                        config -> {
+                                            config.setLogLevels(EnumSet.allOf(LogLevel.class));
+                                            config.setColored(true);
+                                            config.mapLoggerName("net.dv8tion.jda", "JDA");
+                                            config.mapLoggerName(
+                                                    "net.minecraft.server.MinecraftServer",
+                                                    "MinecraftServer");
+                                            config.setLogLevels(
+                                                    EnumSet.of(
+                                                            LogLevel.INFO,
+                                                            LogLevel.WARN,
+                                                            LogLevel.ERROR));
+                                        })
+                                .attach()
+                                .schedule();
             }
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
@@ -178,9 +169,6 @@ public class RRDiscordBridge {
                                     "Server stopped!");
                         });
 
-        // java has some weird ass syntax, why is it C++ method syntax?
-        eventFuture.thenRun(DiscordBot::stop);
-
         if (this.logHandler != null) {
             // Because of the hack above we have to manually remove the handler before shutting down
             // the log manager.
@@ -193,15 +181,17 @@ public class RRDiscordBridge {
 
             this.logHandler.shutdown();
         }
+
+        // java has some weird ass syntax, why is it C++ method syntax?
+        eventFuture.thenRun(DiscordBot::stop);
     }
 
     /**
      * @return The plugin's version
      */
-    public String getVersion() {
+    public static String getVersion() {
         return BuildParameters.VERSION;
     }
-    ;
 
     /**
      * @return The instance of {@link #logger the logger}

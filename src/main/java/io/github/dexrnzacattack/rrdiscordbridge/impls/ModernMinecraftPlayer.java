@@ -5,10 +5,10 @@ import io.github.dexrnzacattack.rrdiscordbridge.interfaces.IPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 
-public class NeoForgeMinecraftPlayer implements IPlayer {
+public class ModernMinecraftPlayer implements IPlayer {
     protected final Player player;
 
-    public NeoForgeMinecraftPlayer(Player player) {
+    public ModernMinecraftPlayer(Player player) {
         this.player = player;
     }
 

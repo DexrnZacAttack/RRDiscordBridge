@@ -14,7 +14,7 @@ public class OldBukkitPlugin extends BukkitPlugin {
                 new RRDiscordBridge(
                         new OldBukkitServer(),
                         new JavaLogger(getServer().getLogger()),
-                        bukkitConfigPath);
+                        ConfigDirectory.PLUGIN.getPath());
 
         // then we init
         RRDiscordBridge.instance.initialize();

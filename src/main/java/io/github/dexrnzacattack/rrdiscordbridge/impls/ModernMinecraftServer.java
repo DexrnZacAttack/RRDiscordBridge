@@ -11,11 +11,12 @@ import java.util.Objects;
 import java.util.UUID;
 
 // TODO: had to move this back in here cuz couldn't get other sourceset to work
-// This is meant to be just a core MinecraftServer and MinecraftPlayer that we extend from on Fabric and NeoForge.
-public class NeoForgeMinecraftServer implements IServer {
+// This is meant to be just a core MinecraftServer and MinecraftPlayer that we extend from on Fabric
+// and NeoForge.
+public class ModernMinecraftServer implements IServer {
     protected final MinecraftServer server;
 
-    public NeoForgeMinecraftServer(MinecraftServer server) {
+    public ModernMinecraftServer(MinecraftServer server) {
         this.server = server;
     }
 
@@ -28,7 +29,7 @@ public class NeoForgeMinecraftServer implements IServer {
     public IPlayer[] getOnlinePlayers() {
         return server.getPlayerList().getPlayers().stream()
                 .filter(Objects::nonNull)
-                .map(NeoForgeMinecraftPlayer::new)
+                .map(ModernMinecraftPlayer::new)
                 .toArray(IPlayer[]::new);
     }
 
@@ -39,11 +40,11 @@ public class NeoForgeMinecraftServer implements IServer {
 
     @Override
     public IPlayer getPlayer(String name) {
-        return new NeoForgeMinecraftPlayer(server.getPlayerList().getPlayerByName(name));
+        return new ModernMinecraftPlayer(server.getPlayerList().getPlayerByName(name));
     }
 
     public IPlayer getPlayer(UUID id) {
-        return new NeoForgeMinecraftPlayer(server.getPlayerList().getPlayer(id));
+        return new ModernMinecraftPlayer(server.getPlayerList().getPlayer(id));
     }
 
     @Override

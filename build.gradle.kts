@@ -262,11 +262,6 @@ val bukkit = listOf(
     poseidon
 )
 
-val loaders = listOf(
-//    fabric,
-    neoforge
-)
-
 val commonShadowJar = tasks.register<ShadowJar>("commonShadowJar") {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     manifest {
@@ -311,6 +306,7 @@ dependencies {
     implementation("net.dv8tion:JDA:5.5.1")
     implementation("me.scarsz.jdaappender:jda5:1.2.3")
     implementation("org.slf4j:slf4j-jdk14:2.0.17")
+    implementation("com.vdurmont:semver4j:3.1.0")
 }
 
 tasks.named("build").configure {
@@ -330,12 +326,6 @@ tasks.named<JavaCompile>("compileCommonJava").configure {
 }
 
 bukkit.forEach { set ->
-    tasks.named("${set.name}Jar").configure {
-        dependsOn("${set.name}ShadowJar")
-    }
-}
-
-loaders.forEach { set ->
     tasks.named("${set.name}Jar").configure {
         dependsOn("${set.name}ShadowJar")
     }
@@ -390,9 +380,8 @@ bukkit.forEach { set ->
     }
 }
 
-loaders.forEach { set ->
-    tasks.register<ShadowJar>("${set.name}ShadowJar") {
-        archiveClassifier = set.extra["name"] as? String ?: set.name
+tasks.shadowJar {
+        archiveClassifier = "Fabric-NeoForge"
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         configurations = listOf(project.configurations.getByName("commonRuntimeClasspath"))
 
@@ -401,8 +390,8 @@ loaders.forEach { set ->
         from(
             sourceSets.main.get().output,
             common.output,
-            set.output,
-            set.extra["deps"] as? List<SourceSetOutput>,
+//            zipTree(tasks.getByName<Jar>("commonShadowJar").archiveFile.get().asFile),
+            neoforge.output,
             zipTree(tasks.getByName<Jar>("relocateFabricJar").archiveFile.get().asFile),
         )
 
@@ -417,7 +406,7 @@ loaders.forEach { set ->
             "com/google/gson/**",
             "org/slf4j/**"
         ))
-    }
 }
+
 
 tasks.build.get().dependsOn("spotlessApply")

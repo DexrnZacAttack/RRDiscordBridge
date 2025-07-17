@@ -3,7 +3,7 @@ package io.github.dexrnzacattack.rrdiscordbridge.impls;
 import net.minecraft.server.MinecraftServer;
 import net.neoforged.fml.ModList;
 
-public class NeoForgeServer extends NeoForgeMinecraftServer {
+public class NeoForgeServer extends ModernMinecraftServer {
     public NeoForgeServer(MinecraftServer server) {
         super(server);
     }

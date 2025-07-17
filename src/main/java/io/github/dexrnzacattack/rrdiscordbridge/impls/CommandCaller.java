@@ -19,6 +19,6 @@ public class CommandCaller implements ICommandCaller {
 
     @Override
     public String getName() {
-        return new FabricPlayer(stack.getPlayer()).getName();
+        return new ModernMinecraftPlayer(stack.getPlayer()).getName();
     }
 }

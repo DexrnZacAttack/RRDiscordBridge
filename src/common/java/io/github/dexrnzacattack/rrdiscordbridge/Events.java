@@ -4,6 +4,7 @@ import static io.github.dexrnzacattack.rrdiscordbridge.RRDiscordBridge.REAL_ORAN
 
 import io.github.dexrnzacattack.rrdiscordbridge.config.Settings;
 import io.github.dexrnzacattack.rrdiscordbridge.discord.DiscordBot;
+import io.github.dexrnzacattack.rrdiscordbridge.game.Advancement;
 import io.github.dexrnzacattack.rrdiscordbridge.helpers.ReflectionHelper;
 import io.github.dexrnzacattack.rrdiscordbridge.interfaces.ICancellable;
 import io.github.dexrnzacattack.rrdiscordbridge.interfaces.IPlayer;
@@ -14,6 +15,49 @@ import java.awt.*;
 
 /** In-game event handlers */
 public class Events {
+    public static void onPlayerAchievement(
+            Advancement.Type type, IPlayer player, String achievement) {
+        String str =
+                achievement.startsWith("[") && achievement.endsWith("]")
+                        ? achievement.substring(1, achievement.length() - 1)
+                        : achievement;
+
+        switch (type) {
+            case ACHIEVEMENT:
+                str =
+                        String.format(
+                                "%s has just earned the achievement [[%s]](<https://minecraft.wiki/w/Achievement/Java_Edition#%s>)",
+                                player.getName(), str, str);
+                break;
+            case ADVANCEMENT:
+                str =
+                        String.format(
+                                "%s has made the advancement [[%s]](<https://minecraft.wiki/w/Advancement#%s>)",
+                                player.getName(), str, str);
+                break;
+            case GOAL:
+                str =
+                        String.format(
+                                "%s has reached the goal [[%s]](<https://minecraft.wiki/w/Advancement#%s>)",
+                                player.getName(), str, str);
+                break;
+            case CHALLENGE:
+                str =
+                        String.format(
+                                "%s has completed the challenge [[%s]](<https://minecraft.wiki/w/Advancement#%s>)",
+                                player.getName(), str, str);
+                break;
+        }
+
+        DiscordBot.sendPlayerEvent(
+                Settings.Events.PLAYER_ACHIEVEMENT,
+                player.getName(),
+                type == Advancement.Type.ACHIEVEMENT ? "Achievement Get!" : "Advancement Get!",
+                str,
+                type == Advancement.Type.CHALLENGE ? Color.MAGENTA : Color.CYAN,
+                null);
+    }
+
     public static void onPlayerJoin(IPlayer player) {
         DiscordBot.setPlayerCount();
         if (ReflectionHelper.doesMethodExist("org.bukkit.entity.Player", "hasPlayedBefore")
