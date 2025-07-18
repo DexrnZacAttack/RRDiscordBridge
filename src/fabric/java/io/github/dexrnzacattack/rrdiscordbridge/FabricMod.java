@@ -57,10 +57,6 @@ public class FabricMod implements ModInitializer {
                             t -> RRDiscordBridge.instance.shutdown());
                 });
 
-        // I know you can register subcommands, but I would like to refactor the ChatExt command
-        // before doing so.
-        // I do intend on doing that as I would like Brigadier's command arg stuff to be usable.
-        // Plus, /cext list would be available to all.
         CommandRegistrationCallback.EVENT.register(
                 (dispatcher, registryAccess, environment) -> {
                     ModernMinecraftCommands.register(dispatcher);
