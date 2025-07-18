@@ -22,30 +22,32 @@ public class Events {
                         ? achievement.substring(1, achievement.length() - 1)
                         : achievement;
 
+        String wiki = str.replaceAll(" ", "_");
+
         switch (type) {
             case ACHIEVEMENT:
                 str =
                         String.format(
                                 "%s has just earned the achievement [[%s]](<https://minecraft.wiki/w/Achievement/Java_Edition#%s>)",
-                                player.getName(), str, str);
+                                player.getName(), str, wiki);
                 break;
             case ADVANCEMENT:
                 str =
                         String.format(
                                 "%s has made the advancement [[%s]](<https://minecraft.wiki/w/Advancement#%s>)",
-                                player.getName(), str, str);
+                                player.getName(), str, wiki);
                 break;
             case GOAL:
                 str =
                         String.format(
                                 "%s has reached the goal [[%s]](<https://minecraft.wiki/w/Advancement#%s>)",
-                                player.getName(), str, str);
+                                player.getName(), str, wiki);
                 break;
             case CHALLENGE:
                 str =
                         String.format(
                                 "%s has completed the challenge [[%s]](<https://minecraft.wiki/w/Advancement#%s>)",
-                                player.getName(), str, str);
+                                player.getName(), str, wiki);
                 break;
         }
 
