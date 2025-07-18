@@ -2,6 +2,8 @@ package io.github.dexrnzacattack.rrdiscordbridge;
 
 import static io.github.dexrnzacattack.rrdiscordbridge.command.CommandRegistry.CommandName.*;
 
+import io.github.dexrnzacattack.rrdiscordbridge.events.AdvancementAwardEvent;
+import io.github.dexrnzacattack.rrdiscordbridge.events.PlayerDeathEvent;
 import io.github.dexrnzacattack.rrdiscordbridge.impls.*;
 
 import net.fabricmc.api.ModInitializer;
@@ -9,6 +11,9 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
+import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.DisplayInfo;
+import net.minecraft.network.chat.Component;
 
 import org.slf4j.LoggerFactory;
 
@@ -43,18 +48,29 @@ public class FabricMod implements ModInitializer {
                                 return !c.isCancelled();
                             });
 
-                    ServerPlayerEvents.JOIN.register(
-                            t -> {
-                                Events.onPlayerJoin(new FabricPlayer(t));
-                            });
+                    ServerPlayerEvents.JOIN.register(t -> Events.onPlayerJoin(new FabricPlayer(t)));
 
                     ServerPlayerEvents.LEAVE.register(
-                            t -> {
-                                Events.onPlayerLeave(new FabricPlayer(t));
-                            });
+                            t -> Events.onPlayerLeave(new FabricPlayer(t)));
 
                     ServerLifecycleEvents.SERVER_STOPPED.register(
                             t -> RRDiscordBridge.instance.shutdown());
+
+                    AdvancementAwardEvent.EVENT.register(
+                            (p, a) -> {
+                                Advancement adv = a.value();
+                                DisplayInfo info = adv.display().orElse(null);
+
+                                if (info == null) return;
+
+                                Events.onPlayerAchievement(
+                                        AdvancementType.getType(info.getType()),
+                                        new FabricPlayer(p),
+                                        adv.name().orElse(Component.literal("")).getString());
+                            });
+
+                    PlayerDeathEvent.EVENT.register(
+                            (p, c) -> Events.onPlayerDeath(new FabricPlayer(p), c.getString()));
                 });
 
         CommandRegistrationCallback.EVENT.register(

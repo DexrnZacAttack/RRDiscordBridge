@@ -1,7 +1,6 @@
 package io.github.dexrnzacattack.rrdiscordbridge.mixins;
 
-import io.github.dexrnzacattack.rrdiscordbridge.Events;
-import io.github.dexrnzacattack.rrdiscordbridge.impls.FabricPlayer;
+import io.github.dexrnzacattack.rrdiscordbridge.events.PlayerDeathEvent;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
@@ -13,10 +12,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerPlayer.class)
 public class OnDeathMixin {
-    @Inject(method = "die", at = @At("TAIL"))
+    @Inject(method = "die", at = @At("HEAD"))
     private void onDeath(DamageSource cause, CallbackInfo ci) {
-        Events.onPlayerDeath(
-                new FabricPlayer((ServerPlayer) (Object) this),
-                cause.getLocalizedDeathMessage((ServerPlayer) (Object) this).getString());
+        ServerPlayer player = (ServerPlayer) (Object) this;
+        PlayerDeathEvent.EVENT
+                .invoker()
+                .onPlayerDeath(player, cause.getLocalizedDeathMessage(player));
     }
 }
