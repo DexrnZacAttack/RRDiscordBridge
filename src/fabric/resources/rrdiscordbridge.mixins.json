@@ -6,9 +6,14 @@
   "mixins": [],
   "client": [],
   "server": [
+    "OnAdvancementAwardMixin",
+    "On1201AdvancementAwardMixin",
+    "OnChatMessageMixin",
     "OnDeathMixin",
-    "OnAdvancementAwardMixin"
+    "OnPlayerCommandMixin",
+    "OnConsoleCommandMixin"
   ],
+  "plugin": "io.github.dexrnzacattack.rrdiscordbridge.plugins.VersionMixinPlugin",
   "injectors": {
     "defaultRequire": 1
   }

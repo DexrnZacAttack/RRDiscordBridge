@@ -1,4 +1,4 @@
-package io.github.dexrnzacattack.rrdiscordbridge.impls;
+package io.github.dexrnzacattack.rrdiscordbridge.impls.vanilla;
 
 import io.github.dexrnzacattack.rrdiscordbridge.interfaces.IPlayer;
 import io.github.dexrnzacattack.rrdiscordbridge.interfaces.IServer;

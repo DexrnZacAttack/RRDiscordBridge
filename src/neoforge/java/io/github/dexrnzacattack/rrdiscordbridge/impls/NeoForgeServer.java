@@ -1,5 +1,7 @@
 package io.github.dexrnzacattack.rrdiscordbridge.impls;
 
+import io.github.dexrnzacattack.rrdiscordbridge.impls.vanilla.ModernMinecraftServer;
+
 import net.minecraft.server.MinecraftServer;
 import net.neoforged.fml.ModList;
 

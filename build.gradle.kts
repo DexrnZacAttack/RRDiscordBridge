@@ -15,8 +15,6 @@ plugins {
     alias(libs.plugins.unimined)
 }
 
-
-
 java.toolchain.languageVersion = JavaLanguageVersion.of(javaVersion)
 java.sourceCompatibility = JavaVersion.toVersion(javaVersion)
 java.targetCompatibility = JavaVersion.toVersion(javaVersion)
@@ -62,14 +60,9 @@ val common: SourceSet by sourceSets.creating {
     }
 }
 
-val fabric: SourceSet by sourceSets.creating {
-    extra.set("deps", listOf(sourceSets.main.get().output))
-    extra.set("name", "F")
-}
-val neoforge: SourceSet by sourceSets.creating {
-    extra.set("deps", listOf(sourceSets.main.get().output))
-    extra.set("name", "NF")
-}
+val fabric: SourceSet by sourceSets.creating
+val fabric1201: SourceSet by sourceSets.creating
+val neoforge: SourceSet by sourceSets.creating
 val paper: SourceSet by sourceSets.creating
 val bukkit13: SourceSet by sourceSets.creating {
     extra.set("deps", listOf<SourceSet>())
@@ -132,6 +125,7 @@ val mainCompileOnly: Configuration by configurations.creating
 configurations.compileOnly.get().extendsFrom(mainCompileOnly)
 val commonCompileOnly: Configuration by configurations.getting
 val fabricCompileOnly: Configuration by configurations.getting
+val fabric1201CompileOnly: Configuration by configurations.getting
 val neoforgeCompileOnly: Configuration by configurations.getting
 val paperCompileOnly: Configuration by configurations.getting {
     extendsFrom(commonCompileOnly)
@@ -142,13 +136,16 @@ val bukkit11CompileOnly: Configuration by configurations.getting
 val bukkit13CompileOnly: Configuration by configurations.getting
 val bukkit17CompileOnly: Configuration by configurations.getting
 
-listOf(fabricCompileOnly, neoforgeCompileOnly, paperCompileOnly, bukkit10CompileOnly, bukkit11CompileOnly, bukkit13CompileOnly, bukkit17CompileOnly, poseidonCompileOnly).forEach {
+listOf(fabricCompileOnly, fabric1201CompileOnly, neoforgeCompileOnly, paperCompileOnly, bukkit10CompileOnly, bukkit11CompileOnly, bukkit13CompileOnly, bukkit17CompileOnly, poseidonCompileOnly).forEach {
     it.extendsFrom(commonCompileOnly)
 }
 /* Implementation */
 val modImplementation: Configuration by configurations.creating
 val fabricModImplementation: Configuration by configurations.creating {
     extendsFrom(modImplementation)
+}
+val fabric1201ModImplementation: Configuration by configurations.creating {
+    extendsFrom(fabricModImplementation)
 }
 val commonImplementation: Configuration by configurations.getting {
     extendsFrom(configurations.implementation.get())
@@ -194,9 +191,29 @@ unimined.minecraft {
 
 unimined.minecraft(fabric) {
     combineWith(sourceSets.main.get())
+//    combineWith(fabric1201)
     fabric {
         loader(fabricLoaderVersion)
         accessWidener(project.projectDir.resolve("src/fabric/resources/rrdiscordbridge.accesswidener"))
+    }
+
+    defaultRemapJar = true
+}
+
+unimined.footgunChecks = false
+
+unimined.minecraft(fabric1201) {
+    combineWith(sourceSets.main.get())
+    version(fabric1201MinecraftVersion)
+    mappings {
+        parchment(fabric1201ParchmentMinecraft, fabric1201ParchmentVersion)
+        mojmap()
+        devFallbackNamespace("official")
+    }
+
+    fabric {
+        loader(fabricLoaderVersion)
+//        accessWidener(project.projectDir.resolve("src/fabric/resources/rrdiscordbridge.accesswidener"))
     }
 
     defaultRemapJar = true
@@ -206,8 +223,20 @@ tasks.register<ShadowJar>("relocateFabricJar") {
     dependsOn("remapFabricJar")
     from(zipTree(tasks.getByName<Jar>("remapFabricJar").archiveFile.get().asFile))
     archiveClassifier.set("fabric-relocated")
-    relocate("io.github.dexrnzacattack.rrdiscordbridge.mixin.vanilla", "io.github.dexrnzacattack.rrdiscordbridge.mixin.y_intmdry")
-    relocate("io.github.dexrnzacattack.rrdiscordbridge.vanilla", "io.github.dexrnzacattack.rrdiscordbridge.y_intmdry")
+    relocate("io.github.dexrnzacattack.rrdiscordbridge.mixins.vanilla", "io.github.dexrnzacattack.rrdiscordbridge.mixins.vanilla_intmdry")
+    relocate("io.github.dexrnzacattack.rrdiscordbridge.impls.vanilla", "io.github.dexrnzacattack.rrdiscordbridge.impls.vanilla_intmdry")
+//    relocate("io.github.dexrnzacattack.rrdiscordbridge.impls.vanilla.advancements", "io.github.dexrnzacattack.rrdiscordbridge.mixins.vanilla_intmdry")
+
+}
+
+tasks.register<ShadowJar>("relocateFabric1201Jar") {
+    dependsOn("remapFabric1201Jar")
+    from(zipTree(tasks.getByName<Jar>("remapFabric1201Jar").archiveFile.get().asFile))
+    archiveClassifier.set("fabric1201-relocated")
+    relocate("io.github.dexrnzacattack.rrdiscordbridge.mixins.vanilla", "io.github.dexrnzacattack.rrdiscordbridge.mixins.vanilla_intmdry")
+    relocate("io.github.dexrnzacattack.rrdiscordbridge.impls.vanilla", "io.github.dexrnzacattack.rrdiscordbridge.impls.vanilla_intmdry")
+//    relocate("io.github.dexrnzacattack.rrdiscordbridge.impls.vanilla.advancements", "io.github.dexrnzacattack.rrdiscordbridge.mixins.vanilla_intmdry")
+
 }
 
 unimined.minecraft(neoforge) {
@@ -218,15 +247,15 @@ unimined.minecraft(neoforge) {
     defaultRemapJar = true
 }
 
-unimined.minecraft(paper) {
-    combineWith(sourceSets.main.get())
-    combineWith(bukkit17)
-    accessTransformer {
-        // https://github.com/PaperMC/Paper/blob/main/build-data/paper.at
-//        accessTransformer("${rootProject.projectDir}/src/paper/paper.at")
-    }
-    defaultRemapJar = true
-}
+//unimined.minecraft(paper) {
+//    combineWith(sourceSets.main.get())
+//    combineWith(bukkit17)
+//    accessTransformer {
+//        // https://github.com/PaperMC/Paper/blob/main/build-data/paper.at
+////        accessTransformer("${rootProject.projectDir}/src/paper/paper.at")
+//    }
+//    defaultRemapJar = true
+//}
 
 unimined.minecraft(bukkit10) {
 
@@ -283,17 +312,18 @@ val commonShadowJar = tasks.register<ShadowJar>("commonShadowJar") {
     from(listOf("README.md", "LICENSE")) {
         into("META-INF")
     }
-
-    archiveClassifier = ""
 }
 
 dependencies {
     commonCompileOnly(libs.annotations)
     commonCompileOnly(libs.mixin)
-    listOf("api-base", "command-api-v2", "lifecycle-events-v1", "networking-api-v1", "entity-events-v1", "message-api-v1").forEach {
+    listOf("api-base", "lifecycle-events-v1", "message-api-v1", "networking-api-v1", "entity-events-v1", "command-api-v2").forEach {
         fabricModImplementation(fabricApi.fabricModule("fabric-$it", fabricVersion))
     }
-    paperCompileOnly("io.papermc.paper:paper-api:$minecraftVersion-$paperVersion")
+    listOf("api-base", "lifecycle-events-v1", "networking-api-v1", "entity-events-v1", "command-api-v1").forEach {
+        fabric1201ModImplementation(fabricApi.fabricModule("fabric-$it", fabric1201Version))
+    }
+//    paperCompileOnly("io.papermc.paper:paper-api:$minecraftVersion-$paperVersion")
     paperCompileOnly(libs.ignite.api)
     bukkit10CompileOnly("org.bukkit:bukkit:$bukkit10McVersion-$bukkit10Version")
     bukkit11CompileOnly("org.bukkit:bukkit:$bukkit11McVersion-$bukkit11Version")
@@ -301,12 +331,18 @@ dependencies {
     bukkit17CompileOnly("org.bukkit:bukkit:$bukkit17McVersion-$bukkit17Version")
     poseidonCompileOnly("com.legacyminecraft.poseidon:poseidon-craftbukkit:${poseidonVersion}")
 
+    fabricModImplementation("com.moulberry:mixinconstraints:1.1.0")
+    fabricCompileOnly(fabric1201.output)
+
+//    implementation("com.moulberry:mixinconstraints:1.1.0")
     implementation("com.google.code.gson:gson:2.13.0")
     implementation("club.minnced:discord-webhooks:0.8.4")
     implementation("net.dv8tion:JDA:5.5.1")
     implementation("me.scarsz.jdaappender:jda5:1.2.3")
     implementation("org.slf4j:slf4j-jdk14:2.0.17")
     implementation("com.vdurmont:semver4j:3.1.0")
+    fabricModImplementation("com.vdurmont:semver4j:3.1.0")
+
 }
 
 tasks.named("build").configure {
@@ -382,29 +418,28 @@ bukkit.forEach { set ->
 
 tasks.shadowJar {
         archiveClassifier = "Fabric-NeoForge"
-        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-        configurations = listOf(project.configurations.getByName("commonRuntimeClasspath"))
 
-        dependsOn("relocateFabricJar")
         dependsOn("commonShadowJar")
-        from(
-            sourceSets.main.get().output,
-            common.output,
-//            zipTree(tasks.getByName<Jar>("commonShadowJar").archiveFile.get().asFile),
+        dependsOn("relocateFabric1201Jar")
+        dependsOn("relocateFabricJar")
+    from(
+        zipTree(tasks.getByName<Jar>("relocateFabricJar").archiveFile.get().asFile),
+        zipTree(tasks.getByName<Jar>("relocateFabric1201Jar").archiveFile.get().asFile),
             neoforge.output,
-            zipTree(tasks.getByName<Jar>("relocateFabricJar").archiveFile.get().asFile),
-        )
+            )
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
-        exclude(ex)
+
+    exclude(ex)
         exclude(listOf(
             "com/google/errorprone/**",
-            "com/fasterxml/jackson/**",
+//            "com/fasterxml/jackson/**",
             "META-INF/services/com.fasterxml.jackson.core.JsonFactory/**",
             "META-INF/services/com.fasterxml.jackson.core.ObjectCodec/**",
             "META-INF/services/org.slf4j.spi.SLF4JServiceProvider/**",
             "javax/annotation/**",
             "com/google/gson/**",
-            "org/slf4j/**"
+//            "org/slf4j/**"
         ))
 }
 

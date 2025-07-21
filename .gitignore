@@ -46,3 +46,4 @@ dependency-reduced-pom.xml
 /.idea
 #/gradle
 /buildSrc/.gradle
+/tests

@@ -18,6 +18,7 @@ Download: https://modrinth.com/plugin/rrdiscordbridge
   - Player Kick
   - Player Death
   - Player Chat
+  - Player Advancements
   - Server Start
   - Server Stop
   - /say
@@ -73,6 +74,12 @@ Download: https://modrinth.com/plugin/rrdiscordbridge
 - [X] 1.21.1
 - [X] 1.21.4
 - [X] 1.21.7
+### Fabric
+- [ ] 1.14.4
+- [X] 1.21.5
+- [X] 1.21.6
+- [X] 1.21.7
+### NeoForge
 
 ## Credits
 - [p0t4t0sandwich](https://github.com/p0t4t0sandwich)

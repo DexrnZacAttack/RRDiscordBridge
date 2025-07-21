@@ -113,13 +113,12 @@ public class Settings {
         Gson gson =
                 new GsonBuilder()
                         .registerTypeAdapter(
-                                Settings.class, new GsonSettingsInstanceCreator(this.configPath))
+                                Settings.class, new GsonInstanceCreator(this.configPath))
                         .create();
 
         Settings settings;
 
         File configFile = new File(configPath);
-        System.out.println(configFile.getAbsolutePath());
 
         if (!configFile.exists()) createConfig();
 
@@ -257,17 +256,18 @@ public class Settings {
         /** When a message is forwarded to the channel */
         FORWARDED_MESSAGE,
     }
-}
 
-class GsonSettingsInstanceCreator implements InstanceCreator<Settings> {
-    private final String configPath;
+    // wonder if I can just make Settings implement the InstanceCreator
+    private static class GsonInstanceCreator implements InstanceCreator<Settings> {
+        private final String configPath;
 
-    public GsonSettingsInstanceCreator(String configPath) {
-        this.configPath = configPath;
-    }
+        public GsonInstanceCreator(String configPath) {
+            this.configPath = configPath;
+        }
 
-    @Override
-    public Settings createInstance(Type type) {
-        return new Settings(configPath);
+        @Override
+        public Settings createInstance(Type type) {
+            return new Settings(configPath);
+        }
     }
 }

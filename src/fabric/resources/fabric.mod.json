@@ -9,7 +9,6 @@
       "io.github.dexrnzacattack.rrdiscordbridge.FabricMod"
     ]
   },
-  "accessWidener": "rrdiscordbridge.accesswidener",
   "mixins": [
     "rrdiscordbridge.mixins.json"
   ],

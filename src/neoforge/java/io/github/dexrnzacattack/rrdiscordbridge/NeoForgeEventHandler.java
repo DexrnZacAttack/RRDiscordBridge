@@ -2,6 +2,7 @@ package io.github.dexrnzacattack.rrdiscordbridge;
 
 import io.github.dexrnzacattack.rrdiscordbridge.impls.NeoForgeCancellable;
 import io.github.dexrnzacattack.rrdiscordbridge.impls.NeoForgePlayer;
+import io.github.dexrnzacattack.rrdiscordbridge.impls.vanilla.advancement.AdvancementType;
 
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.DisplayInfo;
@@ -20,7 +21,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 public class NeoForgeEventHandler {
     @SubscribeEvent
     public void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event) {
-        Events.onPlayerJoin(new NeoForgePlayer(event.getEntity()));
+        Events.onPlayerJoin(new NeoForgePlayer((ServerPlayer) event.getEntity()));
     }
 
     @SubscribeEvent
@@ -33,7 +34,7 @@ public class NeoForgeEventHandler {
 
     @SubscribeEvent
     public void onPlayerLeave(PlayerEvent.PlayerLoggedOutEvent event) {
-        Events.onPlayerLeave(new NeoForgePlayer(event.getEntity()));
+        Events.onPlayerLeave(new NeoForgePlayer((ServerPlayer) event.getEntity()));
     }
 
     @SubscribeEvent
@@ -41,7 +42,7 @@ public class NeoForgeEventHandler {
         LivingEntity entity = event.getEntity();
         if (entity instanceof Player player) {
             Events.onPlayerDeath(
-                    new NeoForgePlayer(player),
+                    new NeoForgePlayer((ServerPlayer) player),
                     player.getCombatTracker().getDeathMessage().getString());
         }
     }
@@ -67,7 +68,7 @@ public class NeoForgeEventHandler {
 
         Events.onPlayerAchievement(
                 AdvancementType.getType(info.getType()),
-                new NeoForgePlayer(event.getEntity()),
+                new NeoForgePlayer((ServerPlayer) event.getEntity()),
                 adv.name().orElse(Component.literal("")).getString());
     }
 }

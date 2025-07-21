@@ -1,4 +1,4 @@
-package io.github.dexrnzacattack.rrdiscordbridge.impls;
+package io.github.dexrnzacattack.rrdiscordbridge.impls.vanilla;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
 

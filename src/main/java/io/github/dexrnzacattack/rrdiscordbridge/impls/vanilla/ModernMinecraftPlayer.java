@@ -1,14 +1,14 @@
-package io.github.dexrnzacattack.rrdiscordbridge.impls;
+package io.github.dexrnzacattack.rrdiscordbridge.impls.vanilla;
 
 import io.github.dexrnzacattack.rrdiscordbridge.interfaces.IPlayer;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
 
 public class ModernMinecraftPlayer implements IPlayer {
-    protected final Player player;
+    protected final ServerPlayer player;
 
-    public ModernMinecraftPlayer(Player player) {
+    public ModernMinecraftPlayer(ServerPlayer player) {
         this.player = player;
     }
 

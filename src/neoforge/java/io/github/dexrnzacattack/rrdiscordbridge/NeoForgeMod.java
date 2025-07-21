@@ -1,8 +1,8 @@
 package io.github.dexrnzacattack.rrdiscordbridge;
 
-import io.github.dexrnzacattack.rrdiscordbridge.impls.ModernMinecraftCommands;
 import io.github.dexrnzacattack.rrdiscordbridge.impls.NeoForgeServer;
 import io.github.dexrnzacattack.rrdiscordbridge.impls.SLF4JLogger;
+import io.github.dexrnzacattack.rrdiscordbridge.impls.vanilla.ModernMinecraftCommands;
 
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
