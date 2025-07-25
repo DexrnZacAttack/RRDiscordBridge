@@ -18,6 +18,8 @@ Download: https://modrinth.com/plugin/rrdiscordbridge
   - Player Kick
   - Player Death
   - Player Chat
+  - Player Advancements/Achievements
+    - Contains advancement description (if applicable) and link to wiki page 
   - Server Start
   - Server Stop
   - /say
@@ -43,33 +45,48 @@ Download: https://modrinth.com/plugin/rrdiscordbridge
 
 ## Supported versions
 ### CraftBukkit (and forks)
-- [X] [UberBukkit](https://github.com/Moresteck/uberbukkit)
-- [ ] b1.2-b1.2_02
-- [ ] b1.3-b1.3_01
-- [X] b1.4-b1.4_01
-- [X] b1.5-b1.5_01
-- [X] b1.6-b1.6.6
-- [X] b1.7
-- [X] b1.7.2
-- [X] [Project Poseidon](https://github.com/retromcorg/Project-Poseidon)
-- [X] b1.7.3 
-- [X] b1.8.1
-- [X] 1.0   
-- [X] 1.1
-- [X] 1.2.5
-- [X] 1.3.2
-- [X] 1.4.7
-- [X] 1.5.2
-- [X] 1.6.4
-- [X] 1.7.2
-- [X] 1.8.8
-- [X] 1.9.4
-- [X] 1.10.2
-- [X] 1.14.4
-- [X] 1.15.2
-- [X] 1.16.5
-- [X] 1.17.1
-- [X] 1.18.2
-- [X] 1.21.1
-- [X] 1.21.4
-- [X] 1.21.7
+  - [X] [UberBukkit](https://github.com/Moresteck/uberbukkit)
+  - [ ] b1.2-b1.2_02
+  - [ ] b1.3-b1.3_01
+  - [X] b1.4-b1.4_01
+  - [X] b1.5-b1.5_01
+  - [X] b1.6-b1.6.6
+  - [X] b1.7
+  - [X] b1.7.2
+  - [X] [Project Poseidon](https://github.com/retromcorg/Project-Poseidon)
+  - [X] b1.7.3 
+  - [X] b1.8.1
+  - [X] 1.0   
+  - [X] 1.1
+  - [X] 1.2.5
+  - [X] 1.3.2
+  - [X] 1.4.7
+  - [X] 1.5.2
+  - [X] 1.6.4
+  - [X] 1.7.2
+  - [X] 1.8.8
+  - [X] 1.9.4
+  - [X] 1.10.2
+  - [X] 1.14.4
+  - [X] 1.15.2
+  - [X] 1.16.5
+  - [X] 1.17.1
+  - [X] 1.18.2
+  - [X] 1.21.1
+  - [X] 1.21.4
+  - [X] 1.21.7
+### Fabric
+  - [ ] 1.14.4
+  - [ ] 1.15.2
+  - [X] 1.16.4-1.18.2
+  - [X] 1.19
+  - [X] 1.19.1-1.19.2
+  - [X] 1.19.3-1.20.1
+  - [X] 1.20.2-1.21.8
+### NeoForge
+  - [ ] 1.20.2-1.20.4
+    - `neoforge.mods.toml` was unused until 1.20.5 
+  - [X] 1.20.5-1.21.8
+## Credits
+- [p0t4t0sandwich](https://github.com/p0t4t0sandwich)
+  - Was very helpful in helping me set up gradle and helped me through every issue I had 
