@@ -87,13 +87,10 @@ public class AboutCommand extends ListenerAdapter {
                     }
 
                 } catch (IOException e) {
-                    RRDiscordBridge.instance
-                            .getLogger()
-                            .warn(
-                                    String.format(
-                                            "Couldn't get the OPs list at %s",
-                                            opsTxt.toAbsolutePath()),
-                                    e);
+                    RRDiscordBridge.logger.warn(
+                            String.format(
+                                    "Couldn't get the OPs list at %s", opsTxt.toAbsolutePath()),
+                            e);
                 }
             }
         }

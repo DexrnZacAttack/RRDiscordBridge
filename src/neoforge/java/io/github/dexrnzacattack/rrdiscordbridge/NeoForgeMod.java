@@ -38,7 +38,8 @@ public class NeoForgeMod {
                 new SupportedFeatures()
                         .setCanGetServerMotd(true)
                         .setCanGetServerName(false)
-                        .setCanQueryServerOperators(true));
+                        .setCanQueryServerOperators(true)
+                        .setCanQueryPlayerHasJoinedBefore(false));
 
         NeoForge.EVENT_BUS.register(new NeoForgeEventHandler());
     }

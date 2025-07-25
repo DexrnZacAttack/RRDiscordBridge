@@ -128,16 +128,11 @@ public class ChatExtensions {
                 inst.onEnable();
             }
         } catch (Exception e) {
-            RRDiscordBridge.instance
-                    .getLogger()
-                    .error(
-                            String.format(
-                                    "Failed to register chat extension %s: %s", name, e.toString()),
-                            e);
+            RRDiscordBridge.logger.error(
+                    String.format("Failed to register chat extension %s: %s", name, e.toString()),
+                    e);
         } finally {
-            RRDiscordBridge.instance
-                    .getLogger()
-                    .info(String.format("Registered chat extension %s", name));
+            RRDiscordBridge.logger.info(String.format("Registered chat extension %s", name));
         }
     }
 
@@ -150,9 +145,7 @@ public class ChatExtensions {
         ext.onDisable();
         enabledExtensions.remove(ext);
         extensions.remove(ext);
-        RRDiscordBridge.instance
-                .getLogger()
-                .info(String.format("Unregistered chat extension %s", ext.getName()));
+        RRDiscordBridge.logger.info(String.format("Unregistered chat extension %s", ext.getName()));
     }
 
     /**
@@ -164,9 +157,7 @@ public class ChatExtensions {
         ext.onDisable();
         enabledExtensions.remove(ext);
         RRDiscordBridge.instance.getSettings().enabledChatExtensions.remove(ext.getName());
-        RRDiscordBridge.instance
-                .getLogger()
-                .info(String.format("Disabled chat extension %s", ext.getName()));
+        RRDiscordBridge.logger.info(String.format("Disabled chat extension %s", ext.getName()));
     }
 
     /**
@@ -178,8 +169,6 @@ public class ChatExtensions {
         ext.onEnable();
         enabledExtensions.add(ext);
         RRDiscordBridge.instance.getSettings().enabledChatExtensions.add(ext.getName());
-        RRDiscordBridge.instance
-                .getLogger()
-                .info(String.format("Enabled chat extension %s", ext.getName()));
+        RRDiscordBridge.logger.info(String.format("Enabled chat extension %s", ext.getName()));
     }
 }

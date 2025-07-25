@@ -1,6 +1,7 @@
 package io.github.dexrnzacattack.rrdiscordbridge.discord;
 
 import static io.github.dexrnzacattack.rrdiscordbridge.RRDiscordBridge.instance;
+import static io.github.dexrnzacattack.rrdiscordbridge.RRDiscordBridge.logger;
 
 import club.minnced.discord.webhook.WebhookClient;
 import club.minnced.discord.webhook.WebhookClientBuilder;
@@ -42,6 +43,12 @@ public class DiscordBot extends ListenerAdapter {
     public static User self;
     public static JDA jda;
     private static TextChannel channel;
+
+    public static final Runnable updatePlayerCountRunnable =
+            () -> {
+                if (instance != null && instance.getServer() != null)
+                    DiscordBot.setPlayerCount(instance.getServer().getOnlinePlayers().length);
+            };
 
     /** Starts the bot */
     public static void start() throws InterruptedException {
@@ -385,7 +392,8 @@ public class DiscordBot extends ListenerAdapter {
             String authorName,
             String description,
             Color color,
-            String title) {
+            String title,
+            String footer) {
         if (!instance.getSettings().enabledEvents.contains(eventType)) return;
 
         EmbedBuilder embed =
@@ -394,6 +402,7 @@ public class DiscordBot extends ListenerAdapter {
                         .setDescription(description)
                         .setTitle(title)
                         .setTimestamp(java.time.Instant.now())
+                        .setFooter(footer)
                         .setAuthor(
                                 authorName,
                                 null,
@@ -439,7 +448,7 @@ public class DiscordBot extends ListenerAdapter {
         if (channel != null) {
             channel.sendMessage(message).queue();
         } else {
-            instance.getLogger().warn("bot isn't ready!");
+            logger.warn("bot isn't ready!");
         }
     }
 
@@ -454,7 +463,7 @@ public class DiscordBot extends ListenerAdapter {
             MessageCreateAction action = channel.sendMessage(message);
             return action.complete();
         } else {
-            instance.getLogger().warn("Cannot send because provided channel is null.");
+            logger.warn("Cannot send because provided channel is null.");
         }
         return null;
     }
@@ -471,7 +480,7 @@ public class DiscordBot extends ListenerAdapter {
             MessageCreateAction action = txtChannel.sendMessage(message);
             return action.complete();
         } else {
-            instance.getLogger().warn("Could not find channel " + channel);
+            logger.warn("Could not find channel " + channel);
         }
         return null;
     }
@@ -486,7 +495,7 @@ public class DiscordBot extends ListenerAdapter {
         if (msg != null) {
             msg.editMessage(newMessage).queue();
         } else {
-            instance.getLogger().warn("Cannot edit because provided messages is null.");
+            logger.warn("Cannot edit because provided messages is null.");
         }
     }
 

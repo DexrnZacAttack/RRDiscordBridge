@@ -5,7 +5,7 @@ import io.github.dexrnzacattack.rrdiscordbridge.events.PoseidonPlayerDeath;
 import io.github.dexrnzacattack.rrdiscordbridge.impls.JavaLogger;
 import io.github.dexrnzacattack.rrdiscordbridge.impls.PoseidonServer;
 
-public class PoseidonPlugin extends BukkitPlugin {
+public class PoseidonPlugin extends EmeraldBukkitPlugin {
     @Override
     public void setupBridge() {
         // ctor

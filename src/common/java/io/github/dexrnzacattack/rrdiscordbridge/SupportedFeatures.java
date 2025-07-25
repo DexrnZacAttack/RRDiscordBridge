@@ -11,13 +11,14 @@ public class SupportedFeatures {
     /** Whether the server supports querying for a list of server operators */
     private boolean canQueryServerOperators = false;
 
+    /** Whether the server supports seeing if the player has played before */
+    private boolean canQueryPlayerHasJoinedBefore = false;
+
     /** Sets {@link #hasServerName} */
     public SupportedFeatures setCanGetServerName(boolean v) {
         if (!v)
-            RRDiscordBridge.instance
-                    .getLogger()
-                    .warn(
-                            "server.properties' server-name is not supported in this environment. There will be no server name when /about is used.");
+            RRDiscordBridge.logger.warn(
+                    "server.properties' server-name is not supported in this environment. There will be no server name when /about is used.");
         hasServerName = v;
         return this;
     }
@@ -25,10 +26,8 @@ public class SupportedFeatures {
     /** Sets {@link #hasServerMotd} */
     public SupportedFeatures setCanGetServerMotd(boolean v) {
         if (!v)
-            RRDiscordBridge.instance
-                    .getLogger()
-                    .warn(
-                            "MOTD is not supported in this environment. There will be no MOTD when /about is used.");
+            RRDiscordBridge.logger.warn(
+                    "MOTD is not supported in this environment. There will be no MOTD when /about is used.");
         hasServerMotd = v;
         return this;
     }
@@ -36,6 +35,15 @@ public class SupportedFeatures {
     /** Sets {@link #canQueryServerOperators} */
     public SupportedFeatures setCanQueryServerOperators(boolean v) {
         canQueryServerOperators = v;
+        return this;
+    }
+
+    /** Sets {@link #canQueryPlayerHasJoinedBefore} */
+    public SupportedFeatures setCanQueryPlayerHasJoinedBefore(boolean v) {
+        if (!v)
+            RRDiscordBridge.logger.warn(
+                    "Getting the first join status of a player is not supported in this environment.");
+        canQueryPlayerHasJoinedBefore = v;
         return this;
     }
 
@@ -58,5 +66,12 @@ public class SupportedFeatures {
      */
     public boolean canQueryServerOperators() {
         return this.canQueryServerOperators;
+    }
+
+    /**
+     * @return {@link #canQueryPlayerHasJoinedBefore}
+     */
+    public boolean canQueryPlayerHasJoinedBefore() {
+        return canQueryPlayerHasJoinedBefore;
     }
 }

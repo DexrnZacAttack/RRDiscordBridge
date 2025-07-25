@@ -8,6 +8,7 @@ import io.github.dexrnzacattack.rrdiscordbridge.command.commands.DiscordLinkComm
 import io.github.dexrnzacattack.rrdiscordbridge.command.commands.ReloadCommand;
 import io.github.dexrnzacattack.rrdiscordbridge.config.Settings;
 import io.github.dexrnzacattack.rrdiscordbridge.discord.DiscordBot;
+import io.github.dexrnzacattack.rrdiscordbridge.impls.JavaLogger;
 import io.github.dexrnzacattack.rrdiscordbridge.interfaces.ILogger;
 import io.github.dexrnzacattack.rrdiscordbridge.interfaces.IServer;
 
@@ -21,7 +22,11 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.EnumSet;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Handler;
+import java.util.logging.Logger;
 
 /** RRDiscordBridge's main common class */
 public class RRDiscordBridge {
@@ -46,7 +51,7 @@ public class RRDiscordBridge {
     private final IServer server;
 
     /** The server's logger */
-    private final ILogger logger;
+    public static ILogger logger = new JavaLogger(Logger.getLogger("RRDiscordBridge"));
 
     /** JDA's console logger */
     public ChannelLoggingHandler logHandler;
@@ -63,6 +68,9 @@ public class RRDiscordBridge {
     /** The server's supported features */
     private SupportedFeatures features;
 
+    /** Updates the player count every second */
+    private final ScheduledExecutorService playerCountUpdater = Executors.newScheduledThreadPool(1);
+
     /**
      * Sets up part of the plugin
      *
@@ -75,7 +83,7 @@ public class RRDiscordBridge {
      */
     public RRDiscordBridge(IServer server, ILogger logger, String configPath) {
         this.server = server;
-        this.logger = logger;
+        RRDiscordBridge.logger = logger;
 
         this.commandRegistry =
                 new CommandRegistry()
@@ -107,12 +115,12 @@ public class RRDiscordBridge {
     public RRDiscordBridge initialize() {
         try {
             // start the discord bot
-            this.logger.info("Starting Discord relay bot");
+            logger.info("Starting Discord relay bot");
             DiscordBot.start();
             // register console channel handler thing (logs all console messages to discord if set
             // up)
             if (!this.settings.consoleChannelId.isEmpty()) {
-                this.logger.info("Registering console channel handler");
+                logger.info("Registering console channel handler");
                 this.logHandler =
                         new ChannelLoggingHandler(
                                         () ->
@@ -140,12 +148,13 @@ public class RRDiscordBridge {
         // setup chat extensions
         this.extensions = new ChatExtensions();
 
-        RRDiscordBridge.instance
-                .getLogger()
-                .info(
-                        String.format(
-                                "RRDiscordBridge v%s has started.",
-                                RRDiscordBridge.instance.getVersion()));
+        // update player count (every minute)
+        // https://stackoverflow.com/a/33073742
+        this.playerCountUpdater.scheduleAtFixedRate(
+                DiscordBot.updatePlayerCountRunnable, 0, 1, TimeUnit.MINUTES);
+
+        RRDiscordBridge.logger.info(
+                String.format("RRDiscordBridge v%s has started.", getVersion()));
         DiscordBot.sendEvent(
                 Settings.Events.SERVER_START,
                 new MessageEmbed.AuthorInfo(null, null, null, null),
@@ -158,6 +167,7 @@ public class RRDiscordBridge {
 
     /** Sends a shutdown message and stops the Discord bot. */
     public void shutdown() {
+        this.playerCountUpdater.shutdown();
         CompletableFuture<Void> eventFuture =
                 CompletableFuture.runAsync(
                         () -> {
@@ -172,10 +182,10 @@ public class RRDiscordBridge {
         if (this.logHandler != null) {
             // Because of the hack above we have to manually remove the handler before shutting down
             // the log manager.
-            Handler[] handlers = RRDiscordBridge.instance.getLogger().getHandlers();
+            Handler[] handlers = RRDiscordBridge.logger.getHandlers();
             for (Handler handler : handlers) {
                 if (handler.getClass() == JavaLoggingAdapter.class) {
-                    RRDiscordBridge.instance.getLogger().removeHandler(handler);
+                    RRDiscordBridge.logger.removeHandler(handler);
                 }
             }
 
@@ -191,13 +201,6 @@ public class RRDiscordBridge {
      */
     public static String getVersion() {
         return BuildParameters.VERSION;
-    }
-
-    /**
-     * @return The instance of {@link #logger the logger}
-     */
-    public ILogger getLogger() {
-        return logger;
     }
 
     /**

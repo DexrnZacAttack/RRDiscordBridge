@@ -42,9 +42,8 @@ public class OpChatChatExtension implements IChatExtension {
     @Override
     public void onEnable() {
         if (RRDiscordBridge.instance.getSettings().opchatChannelId.isEmpty()) {
-            RRDiscordBridge.instance
-                    .getLogger()
-                    .warn("OPChat channel ID was not specified. Disabling extension.");
+            RRDiscordBridge.logger.warn(
+                    "OPChat channel ID was not specified. Disabling extension.");
             RRDiscordBridge.instance.getChatExtensions().enabledExtensions.remove(this);
             onDisable();
             return;
@@ -53,11 +52,9 @@ public class OpChatChatExtension implements IChatExtension {
         TextChannel opcChannel =
                 jda.getTextChannelById(RRDiscordBridge.instance.getSettings().opchatChannelId);
         if (opcChannel == null) {
-            RRDiscordBridge.instance
-                    .getLogger()
-                    .warn(
-                            "Failed to find OPChat channel with ID "
-                                    + RRDiscordBridge.instance.getSettings().opchatChannelId);
+            RRDiscordBridge.logger.warn(
+                    "Failed to find OPChat channel with ID "
+                            + RRDiscordBridge.instance.getSettings().opchatChannelId);
             RRDiscordBridge.instance.getChatExtensions().enabledExtensions.remove(this);
             onDisable();
             return;
@@ -111,7 +108,7 @@ public class OpChatChatExtension implements IChatExtension {
         String opcMsg = String.format("§b[§r%s §b-> §6OPs§b] §r%s", player, message);
 
         // so that Console can display the messages
-        RRDiscordBridge.instance.getLogger().info(String.format("[%s -> OPs] %s", player, message));
+        RRDiscordBridge.logger.info(String.format("[%s -> OPs] %s", player, message));
 
         RRDiscordBridge.instance.getServer().getPlayer(player).sendMessage(opcMsg);
         for (IPlayer p : RRDiscordBridge.instance.getServer().getOnlinePlayers()) {
@@ -146,7 +143,7 @@ public class OpChatChatExtension implements IChatExtension {
                             "§b[§6OPChat§b - §e%s§b]§r %s",
                             DiscordBot.getName(message.getAuthor()), message.getContentRaw());
 
-            RRDiscordBridge.instance.getLogger().info(msg);
+            RRDiscordBridge.logger.info(msg);
 
             for (IPlayer p : RRDiscordBridge.instance.getServer().getOnlinePlayers()) {
                 // send the message to all ops

@@ -5,7 +5,6 @@ import static io.github.dexrnzacattack.rrdiscordbridge.RRDiscordBridge.REAL_ORAN
 import io.github.dexrnzacattack.rrdiscordbridge.config.Settings;
 import io.github.dexrnzacattack.rrdiscordbridge.discord.DiscordBot;
 import io.github.dexrnzacattack.rrdiscordbridge.game.Advancement;
-import io.github.dexrnzacattack.rrdiscordbridge.helpers.ReflectionHelper;
 import io.github.dexrnzacattack.rrdiscordbridge.interfaces.ICancellable;
 import io.github.dexrnzacattack.rrdiscordbridge.interfaces.IPlayer;
 
@@ -16,13 +15,27 @@ import java.awt.*;
 /** In-game event handlers */
 public class Events {
     public static void onPlayerAchievement(
-            Advancement.Type type, IPlayer player, String achievement) {
+            Advancement.Type type, IPlayer player, String achievement, String description) {
         String str =
                 achievement.startsWith("[") && achievement.endsWith("]")
                         ? achievement.substring(1, achievement.length() - 1)
                         : achievement;
 
-        String wiki = str.replaceAll(" ", "_");
+        onPlayerAchievement(type, player, achievement, description, str);
+    }
+
+    public static void onPlayerAchievement(
+            Advancement.Type type,
+            IPlayer player,
+            String achievement,
+            String description,
+            String wikiName) {
+        String str =
+                achievement.startsWith("[") && achievement.endsWith("]")
+                        ? achievement.substring(1, achievement.length() - 1)
+                        : achievement;
+
+        String wiki = wikiName.replaceAll(" ", "_");
 
         switch (type) {
             case ACHIEVEMENT:
@@ -57,12 +70,13 @@ public class Events {
                 type == Advancement.Type.ACHIEVEMENT ? "Achievement Get!" : "Advancement Get!",
                 str,
                 type == Advancement.Type.CHALLENGE ? Color.MAGENTA : Color.CYAN,
-                null);
+                null,
+                description);
     }
 
     public static void onPlayerJoin(IPlayer player) {
-        DiscordBot.setPlayerCount();
-        if (ReflectionHelper.doesMethodExist("org.bukkit.entity.Player", "hasPlayedBefore")
+        // TODO: we can fallback
+        if (RRDiscordBridge.instance.getSupportedFeatures().canQueryPlayerHasJoinedBefore()
                 && !player.hasPlayedBefore()) {
             DiscordBot.sendPlayerEvent(
                     Settings.Events.PLAYER_JOIN,
@@ -70,6 +84,7 @@ public class Events {
                     String.format("%s joined the game for the first time.", player.getName()),
                     null,
                     Color.GREEN,
+                    null,
                     null);
         } else {
             DiscordBot.sendPlayerEvent(
@@ -78,20 +93,23 @@ public class Events {
                     String.format("%s joined the game.", player.getName()),
                     null,
                     Color.GREEN,
+                    null,
                     null);
         }
+        DiscordBot.setPlayerCount(RRDiscordBridge.instance.getServer().getOnlinePlayers().length);
     }
 
     public static void onPlayerLeave(IPlayer player) {
-        DiscordBot.setPlayerCount(
-                RRDiscordBridge.instance.getServer().getOnlinePlayers().length - 1);
         DiscordBot.sendPlayerEvent(
                 Settings.Events.PLAYER_LEAVE,
                 player.getName(),
                 String.format("%s left the game.", player.getName()),
                 null,
                 REAL_ORANGE,
+                null,
                 null);
+        DiscordBot.setPlayerCount(
+                RRDiscordBridge.instance.getServer().getOnlinePlayers().length - 1);
     }
 
     public static void onPlayerKick(IPlayer player, String reason) {
@@ -103,6 +121,7 @@ public class Events {
                 String.format("%s was kicked.", player.getName()),
                 reason,
                 REAL_ORANGE,
+                null,
                 null);
     }
 
@@ -176,6 +195,7 @@ public class Events {
                         message,
                         null,
                         Color.RED,
+                        null,
                         null);
             }
         } else {
@@ -186,6 +206,7 @@ public class Events {
                         String.format("%s died", player.getName()),
                         null,
                         Color.RED,
+                        null,
                         null);
             }
         }

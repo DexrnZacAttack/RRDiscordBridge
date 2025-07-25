@@ -64,11 +64,13 @@ public class NeoForgeEventHandler {
         Advancement adv = event.getAdvancement().value();
         DisplayInfo info = adv.display().orElse(null);
 
-        if (info == null) return;
+        String description = null;
+        if (info != null) description = info.getDescription().getString();
 
         Events.onPlayerAchievement(
                 AdvancementType.getType(info.getType()),
                 new NeoForgePlayer((ServerPlayer) event.getEntity()),
-                adv.name().orElse(Component.literal("")).getString());
+                adv.name().orElse(Component.literal("")).getString(),
+                description);
     }
 }

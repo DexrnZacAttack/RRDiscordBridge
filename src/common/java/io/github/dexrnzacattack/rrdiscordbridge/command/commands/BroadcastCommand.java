@@ -30,7 +30,8 @@ public class BroadcastCommand implements ICommand {
                 "Server Broadcast",
                 null,
                 null,
-                params[0]);
+                params[0],
+                null);
         return true;
     }
 }

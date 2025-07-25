@@ -135,9 +135,7 @@ public class Settings {
     }
 
     public void writeConfig() {
-        // TODO: fix on nf
         File file = new File(configPath);
-        System.out.println(file.getAbsolutePath());
 
         try (FileWriter writer = new FileWriter(file)) {
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -147,19 +145,20 @@ public class Settings {
         }
     }
 
-    // might have to figure out a better way to do this as this will likely get messy
+    // TODO: figure out a better way to do this as this will likely get messy
     public void updateConfig() {
         String version = this.version == null ? "2.1.0" : this.version;
 
         Semver ver = new Semver(version);
 
         if (ver.isLowerThan(RRDiscordBridge.getVersion()))
-            System.out.printf(
-                    "Config version is older than mod/plugin version (%s < %s), attempting to upgrade%n",
-                    version, RRDiscordBridge.getVersion());
+            RRDiscordBridge.logger.info(
+                    String.format(
+                            "Config version is older than mod/plugin version (%s < %s), attempting to upgrade%n",
+                            version, RRDiscordBridge.getVersion()));
         else return;
 
-        if (ver.isLowerThan("2.2.0")) {
+        if (ver.isLowerThan("2.2.0") && !this.enabledEvents.contains(Events.PLAYER_ACHIEVEMENT)) {
             this.enabledEvents.add(Events.PLAYER_ACHIEVEMENT);
         }
 
