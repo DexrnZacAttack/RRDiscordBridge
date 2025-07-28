@@ -15,6 +15,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Checkout website repo
+        uses: actions/checkout@v4
+        with:
+          repository: Nostalgica-Reverie/Website
+          ref: rrdb-javadoc
+          token: ${{ secrets.NR_WEBSITE_TOKEN }}
+          path: Nostalgica-Reverie/Website
+
       - uses: actions/setup-java@v4
         name: Setup Java 8
         with:
