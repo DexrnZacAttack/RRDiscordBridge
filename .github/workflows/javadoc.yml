@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: Nostalgica-Reverie/Website
-          ref: rrdb-javadoc
+          ref: rrdc-javadocs
           token: ${{ secrets.NR_WEBSITE_TOKEN }}
           path: Nostalgica-Reverie/Website
 
