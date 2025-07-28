@@ -51,7 +51,7 @@ jobs:
       
           # Optional. Options used by `git-push`.
           # See https://git-scm.com/docs/git-push#_options
-          push_options: '--force'
+          # push_options: '--force'
           
           # Optional. Disable dirty check and always try to create a commit and push
           skip_dirty_check: true    
