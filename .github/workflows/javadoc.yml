@@ -35,6 +35,9 @@ jobs:
       - name: List files
         run: ls -la
 
+      - name: Copy to repo
+        run: rm -rf Nostalgica-Reverie/Website/* && cp -r "${{ github.workspace }}/build/docs/javadoc" Nostalgica-Reverie/Website/
+
       - uses: stefanzweifel/git-auto-commit-action@v6
         with:
           # Optional. Commit message for the created commit.
@@ -48,7 +51,6 @@ jobs:
           commit_options: '--no-verify --signoff'
       
           repository: Nostalgica-Reverie/Website
-          file_pattern: '${{ github.workspace }}/build/docs/javadoc'
       
           commit_user_name: RRDiscordBridge JavaDoc Action # defaults to "github-actions[bot]"
       
