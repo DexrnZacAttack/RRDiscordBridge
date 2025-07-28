@@ -19,7 +19,7 @@ jobs:
         name: Setup Java 8
         with:
           distribution: 'temurin' # See 'Supported distributions' for available options
-          java-version: '8'
+          java-version: '21'
 
       - name: Generate JavaDoc
         run: ./gradlew javadoc
