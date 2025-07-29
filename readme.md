@@ -24,6 +24,7 @@ Download: https://modrinth.com/plugin/rrdiscordbridge
   - Server Stop
   - /say
   - /me
+  - Server Console (if configured)
 - Relays the following information from Discord (configurable)
   - Channel message
   - User join (if the relay channel is also the system messages channel)
