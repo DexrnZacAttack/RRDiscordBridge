@@ -6,6 +6,7 @@ import io.github.dexrnzacattack.rrdiscordbridge.command.commands.BroadcastComman
 import io.github.dexrnzacattack.rrdiscordbridge.command.commands.ChatExtensionsCommand;
 import io.github.dexrnzacattack.rrdiscordbridge.command.commands.DiscordLinkCommand;
 import io.github.dexrnzacattack.rrdiscordbridge.command.commands.ReloadCommand;
+import io.github.dexrnzacattack.rrdiscordbridge.config.ConfigDirectory;
 import io.github.dexrnzacattack.rrdiscordbridge.config.Settings;
 import io.github.dexrnzacattack.rrdiscordbridge.discord.DiscordBot;
 import io.github.dexrnzacattack.rrdiscordbridge.impls.JavaLogger;
@@ -20,6 +21,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 
 import java.awt.*;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.EnumSet;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
@@ -30,13 +32,6 @@ import java.util.logging.Logger;
 
 /** RRDiscordBridge's main common class */
 public class RRDiscordBridge {
-    /**
-     * I don't know why this still exists
-     *
-     * <p>It's literally just a color used for some Discord messages
-     */
-    public static final Color REAL_ORANGE = new Color(255, 100, 0);
-
     /** The static instance of RRDiscordBridge */
     public static RRDiscordBridge instance;
 
@@ -69,7 +64,13 @@ public class RRDiscordBridge {
     private SupportedFeatures features;
 
     /** Updates the player count every second */
-    private final ScheduledExecutorService playerCountUpdater = Executors.newScheduledThreadPool(1);
+    private ScheduledExecutorService playerCountUpdater;
+
+    /** The config directory for the server software */
+    public static ConfigDirectory configDir;
+
+    /** The Discord bot */
+    private DiscordBot bot;
 
     /**
      * Sets up part of the plugin
@@ -81,7 +82,8 @@ public class RRDiscordBridge {
      * @param logger The logger to use
      * @param server The server impl to use
      */
-    public RRDiscordBridge(IServer server, ILogger logger, String configPath) {
+    public RRDiscordBridge(IServer server, ILogger logger, ConfigDirectory dir) {
+        configDir = dir;
         this.server = server;
         RRDiscordBridge.logger = logger;
 
@@ -94,7 +96,7 @@ public class RRDiscordBridge {
 
         try {
             // load settings
-            this.settings = new Settings(configPath).loadConfig();
+            this.settings = new Settings(Paths.get(configDir.getPath(), "config.json")).load();
         } catch (IOException e) {
             // just throw if caught some weird error
             throw new RuntimeException(e);
@@ -116,7 +118,8 @@ public class RRDiscordBridge {
         try {
             // start the discord bot
             logger.info("Starting Discord relay bot");
-            DiscordBot.start();
+            this.bot = new DiscordBot();
+            this.bot.start();
             // register console channel handler thing (logs all console messages to discord if set
             // up)
             if (!this.settings.consoleChannelId.isEmpty()) {
@@ -124,11 +127,13 @@ public class RRDiscordBridge {
                 this.logHandler =
                         new ChannelLoggingHandler(
                                         () ->
-                                                DiscordBot.jda.getTextChannelById(
+                                                bot.jda.getTextChannelById(
                                                         this.settings.consoleChannelId),
                                         config -> {
                                             config.setLogLevels(EnumSet.allOf(LogLevel.class));
                                             config.setColored(true);
+                                            config.setSplitCodeBlockForLinks(false);
+                                            config.setAllowLinkEmbeds(true);
                                             config.mapLoggerName("net.dv8tion.jda", "JDA");
                                             config.mapLoggerName(
                                                     "net.minecraft.server.MinecraftServer",
@@ -150,32 +155,34 @@ public class RRDiscordBridge {
 
         // update player count (every minute)
         // https://stackoverflow.com/a/33073742
+        this.playerCountUpdater = Executors.newScheduledThreadPool(1);
         this.playerCountUpdater.scheduleAtFixedRate(
-                DiscordBot.updatePlayerCountRunnable, 0, 1, TimeUnit.MINUTES);
+                bot.updatePlayerCountRunnable, 0, 1, TimeUnit.MINUTES);
 
         RRDiscordBridge.logger.info(
                 String.format("RRDiscordBridge v%s has started.", getVersion()));
-        DiscordBot.sendEvent(
+        bot.sendEvent(
                 Settings.Events.SERVER_START,
                 new MessageEmbed.AuthorInfo(null, null, null, null),
                 null,
-                Color.GREEN,
+                this.settings.colorPalette.serverStarted,
                 "Server started!");
 
         return this;
     }
 
     /** Sends a shutdown message and stops the Discord bot. */
-    public void shutdown() {
-        this.playerCountUpdater.shutdown();
+    public void shutdown(boolean reloading) {
+        if (this.playerCountUpdater != null) this.playerCountUpdater.shutdown();
+
         CompletableFuture<Void> eventFuture =
                 CompletableFuture.runAsync(
                         () -> {
-                            DiscordBot.sendEvent(
+                            bot.sendEvent(
                                     Settings.Events.SERVER_STOP,
                                     new MessageEmbed.AuthorInfo(null, null, null, null),
                                     null,
-                                    Color.RED,
+                                    this.settings.colorPalette.serverStopped,
                                     "Server stopped!");
                         });
 
@@ -193,7 +200,8 @@ public class RRDiscordBridge {
         }
 
         // java has some weird ass syntax, why is it C++ method syntax?
-        eventFuture.thenRun(DiscordBot::stop);
+        eventFuture.thenRun(bot::stop);
+        if (!reloading) instance = null;
     }
 
     /**
@@ -211,9 +219,9 @@ public class RRDiscordBridge {
     }
 
     public void reload() throws IOException {
-        this.settings =
-                new Settings(RRDiscordBridge.instance.getSettings().configPath).loadConfig();
-        this.extensions = new ChatExtensions();
+        this.shutdown(true);
+        this.settings = new Settings(this.settings.configPath).load();
+        this.initialize();
     }
 
     /**
@@ -237,13 +245,23 @@ public class RRDiscordBridge {
     }
 
     /**
-     * @return The instance of {@code Settings}
+     * @return The instance of {@link #settings}
      */
     public Settings getSettings() {
         return settings;
     }
 
+    /**
+     * @return the instance of {@link #commandRegistry}
+     */
     public CommandRegistry getCommandRegistry() {
         return commandRegistry;
+    }
+
+    /**
+     * @return the instance of {@link #bot}
+     */
+    public DiscordBot getBot() {
+        return bot;
     }
 }

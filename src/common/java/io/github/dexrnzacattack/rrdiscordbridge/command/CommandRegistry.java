@@ -11,6 +11,7 @@ public class CommandRegistry {
      * Registers a command
      *
      * @param command The command instance to register
+     * @return The command registry
      */
     public CommandRegistry register(ICommand command) {
         commands.put(command.getCommandName(), command);
@@ -21,6 +22,7 @@ public class CommandRegistry {
      * Unregisters a command
      *
      * @param name The enum key (name) of the command to unregister
+     * @return The command registry
      */
     public CommandRegistry unregister(CommandName name) {
         commands.remove(name);
@@ -30,6 +32,7 @@ public class CommandRegistry {
     /**
      * Gets a command by its enum key
      *
+     * @param name The name of the command
      * @return The command (if found)
      */
     public ICommand getCommand(CommandName name) {

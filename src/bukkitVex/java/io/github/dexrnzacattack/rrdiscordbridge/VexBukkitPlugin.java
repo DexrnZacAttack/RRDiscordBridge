@@ -1,5 +1,6 @@
 package io.github.dexrnzacattack.rrdiscordbridge;
 
+import io.github.dexrnzacattack.rrdiscordbridge.config.ConfigDirectory;
 import io.github.dexrnzacattack.rrdiscordbridge.events.PlayerAdvancement;
 import io.github.dexrnzacattack.rrdiscordbridge.events.PlayerChat;
 import io.github.dexrnzacattack.rrdiscordbridge.events.PlayerDeath;
@@ -14,7 +15,7 @@ public class VexBukkitPlugin extends EmeraldBukkitPlugin {
                 new RRDiscordBridge(
                         new RealmsBukkitServer(),
                         new JavaLogger(getServer().getLogger()),
-                        ConfigDirectory.PLUGIN.getPath());
+                        ConfigDirectory.PLUGIN);
 
         // then we init
         RRDiscordBridge.instance.initialize();

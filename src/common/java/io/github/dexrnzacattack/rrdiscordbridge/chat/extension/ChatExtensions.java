@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.entities.Message;
 import java.util.ArrayList;
 import java.util.List;
 
+/** Extensions that get ran when a chat message is sent */
 public class ChatExtensions {
     // TODO:
     // settings for each extension

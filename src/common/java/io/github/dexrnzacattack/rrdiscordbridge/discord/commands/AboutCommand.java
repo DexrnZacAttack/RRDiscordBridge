@@ -105,7 +105,7 @@ public class AboutCommand extends ListenerAdapter {
         builder.setFooter(
                 String.format(
                         "RRDiscordBridge v%s running on %s",
-                        RRDiscordBridge.instance.getVersion(),
+                        RRDiscordBridge.getVersion(),
                         RRDiscordBridge.instance.getServer().getSoftwareName()));
 
         MessageEmbed embed = builder.build();

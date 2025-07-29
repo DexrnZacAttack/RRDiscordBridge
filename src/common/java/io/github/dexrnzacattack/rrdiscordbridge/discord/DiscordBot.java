@@ -10,7 +10,6 @@ import club.minnced.discord.webhook.send.WebhookMessage;
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 
 import io.github.dexrnzacattack.rrdiscordbridge.chat.extension.result.ChatExtensionResult;
-import io.github.dexrnzacattack.rrdiscordbridge.chat.extension.result.DiscordChatExtensionResult;
 import io.github.dexrnzacattack.rrdiscordbridge.config.Settings;
 import io.github.dexrnzacattack.rrdiscordbridge.discord.commands.AboutCommand;
 import io.github.dexrnzacattack.rrdiscordbridge.discord.commands.PlayersCommand;
@@ -21,37 +20,51 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import net.dv8tion.jda.api.entities.emoji.Emoji;
-import net.dv8tion.jda.api.entities.messages.MessagePoll;
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.events.session.ReadyEvent;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import net.dv8tion.jda.internal.utils.JDALogger;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.awt.*;
-import java.util.Collections;
 import java.util.List;
 
 /** The Discord bot */
-public class DiscordBot extends ListenerAdapter {
-    public static WebhookClient webhookClient;
-    public static Webhook webhook;
-    public static User self;
-    public static JDA jda;
-    private static TextChannel channel;
+public class DiscordBot {
+    /** The webhook client */
+    public WebhookClient webhookClient;
 
-    public static final Runnable updatePlayerCountRunnable =
+    /** The webhook */
+    public Webhook webhook;
+
+    /** The bot's user */
+    public User self;
+
+    /** The JDA instance */
+    public JDA jda;
+
+    /** The bot's relay channel */
+    TextChannel channel;
+
+    /** Updates the player count */
+    public final Runnable updatePlayerCountRunnable =
             () -> {
                 if (instance != null && instance.getServer() != null)
-                    DiscordBot.setPlayerCount(instance.getServer().getOnlinePlayers().length);
+                    this.setPlayerCount(instance.getServer().getOnlinePlayers().length);
             };
 
-    /** Starts the bot */
-    public static void start() throws InterruptedException {
+    /** Creates the bot */
+    public DiscordBot() {
+        JDALogger.setFallbackLoggerEnabled(false);
+    }
+
+    /**
+     * Starts the bot
+     *
+     * @throws InterruptedException If the bot is interrupted while starting
+     */
+    public void start() throws InterruptedException {
         if (instance.getSettings().botToken.isEmpty()) {
             instance.getServer()
                     .broadcastMessage(
@@ -73,12 +86,10 @@ public class DiscordBot extends ListenerAdapter {
                             instance.getSettings().configPath));
         }
 
-        JDALogger.setFallbackLoggerEnabled(false);
-
         jda =
                 JDABuilder.createDefault(instance.getSettings().botToken)
                         .addEventListeners(
-                                new DiscordBot(), new PlayersCommand(), new AboutCommand())
+                                new DiscordEventHandler(), new PlayersCommand(), new AboutCommand())
                         .enableIntents(GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT)
                         .build()
                         .awaitReady();
@@ -121,7 +132,7 @@ public class DiscordBot extends ListenerAdapter {
     }
 
     /** Stops the bot */
-    public static void stop() {
+    public void stop() {
         if (channel != null) {
             channel.getJDA().shutdown();
         }
@@ -133,7 +144,7 @@ public class DiscordBot extends ListenerAdapter {
     }
 
     /** Sets the RPC status */
-    public static void setPlayerCount() {
+    public void setPlayerCount() {
         Activity activity =
                 Activity.playing(
                         String.format(
@@ -150,7 +161,7 @@ public class DiscordBot extends ListenerAdapter {
      *
      * @param i The new player count
      */
-    public static void setPlayerCount(int i) {
+    public void setPlayerCount(int i) {
         Activity activity =
                 Activity.playing(String.format("with %s %s", i, i != 1 ? "players" : "player"));
         jda.getPresence().setActivity(activity);
@@ -175,6 +186,12 @@ public class DiscordBot extends ListenerAdapter {
                         : member.getUser().getName();
     }
 
+    /**
+     * Gets the name of a user based on the config settings
+     *
+     * @param user The user
+     * @return The name of the user
+     */
     public static String getName(User user) {
         if (user.isBot()) {
             return user.getName();
@@ -185,8 +202,14 @@ public class DiscordBot extends ListenerAdapter {
         return instance.getSettings().useDisplayNames ? user.getGlobalName() : user.getName();
     }
 
-    /** Sends a message using a webhook that uses the player's name and skin. */
-    public static void sendPlayerMessage(String playerName, String message, ICancellable event) {
+    /**
+     * Sends a message using a webhook that uses the player's name and skin.
+     *
+     * @param playerName The name of the player to use
+     * @param message The message content
+     * @param event The cancellable event
+     */
+    public void sendPlayerMessage(String playerName, String message, ICancellable event) {
         if (!instance.getSettings().enabledEvents.contains(Settings.Events.PLAYER_CHAT)) return;
 
         ChatExtensionResult chatExt = instance.getChatExtensions().tryParseMC(message, playerName);
@@ -210,7 +233,6 @@ public class DiscordBot extends ListenerAdapter {
                         .build();
         webhookClient.send(messageSend);
     }
-    ;
 
     /**
      * Sends a message using a webhook that uses the player's name and skin.
@@ -218,7 +240,7 @@ public class DiscordBot extends ListenerAdapter {
      * @param playerName The player name
      * @param message The message
      */
-    public static void sendPlayerMessage(String playerName, String message) {
+    public void sendPlayerMessage(String playerName, String message) {
         if (!instance.getSettings().enabledEvents.contains(Settings.Events.PLAYER_CHAT)) return;
 
         AllowedMentions allowedMentions =
@@ -234,7 +256,6 @@ public class DiscordBot extends ListenerAdapter {
                         .build();
         webhookClient.send(wMessage);
     }
-    ;
 
     /**
      * Sends a message using a provided webhook that uses the player's name and skin.
@@ -267,8 +288,7 @@ public class DiscordBot extends ListenerAdapter {
      * @param playerName The player name
      * @param message The message
      */
-    public static void sendPlayerMessage(
-            Settings.Events eventType, String playerName, String message) {
+    public void sendPlayerMessage(Settings.Events eventType, String playerName, String message) {
         if (!instance.getSettings().enabledEvents.contains(eventType)) return;
 
         ChatExtensionResult chatExt = instance.getChatExtensions().tryParseMC(message, playerName);
@@ -297,7 +317,7 @@ public class DiscordBot extends ListenerAdapter {
      * @param playerSkinName The name of the player that you want to use as the skin
      * @param message The message
      */
-    public static void sendPlayerMessage(String playerName, String playerSkinName, String message) {
+    public void sendPlayerMessage(String playerName, String playerSkinName, String message) {
         if (!instance.getSettings().enabledEvents.contains(Settings.Events.PLAYER_CHAT)) return;
 
         AllowedMentions allowedMentions =
@@ -322,7 +342,7 @@ public class DiscordBot extends ListenerAdapter {
      * @param playerSkinName The name of the player that you want to use as the skin
      * @param message The message
      */
-    public static void sendPlayerMessage(
+    public void sendPlayerMessage(
             Settings.Events eventType, String playerName, String playerSkinName, String message) {
         if (!instance.getSettings().enabledEvents.contains(eventType)) return;
 
@@ -354,7 +374,7 @@ public class DiscordBot extends ListenerAdapter {
      * @param color Color of the side of the embed.
      * @param title Message in the title part of the embed.
      */
-    public static void sendPlayerEvent(
+    public void sendPlayerEvent(
             Settings.Events eventType,
             String playerName,
             String description,
@@ -385,8 +405,9 @@ public class DiscordBot extends ListenerAdapter {
      * @param description Message in the description part of the embed.
      * @param color Color of the side of the embed.
      * @param title Message in the title part of the embed.
+     * @param footer Message in the footer part of the embed
      */
-    public static void sendPlayerEvent(
+    public void sendPlayerEvent(
             Settings.Events eventType,
             String playerName,
             String authorName,
@@ -420,7 +441,7 @@ public class DiscordBot extends ListenerAdapter {
      * @param color Color of the side of the embed.
      * @param title Message in the title part of the embed.
      */
-    public static void sendEvent(
+    public void sendEvent(
             Settings.Events eventType,
             MessageEmbed.AuthorInfo author,
             String description,
@@ -444,7 +465,7 @@ public class DiscordBot extends ListenerAdapter {
      *
      * @param message The message
      */
-    public static void sendMessage(String message) {
+    public void sendMessage(String message) {
         if (channel != null) {
             channel.sendMessage(message).queue();
         } else {
@@ -457,6 +478,7 @@ public class DiscordBot extends ListenerAdapter {
      *
      * @param message The message
      * @param channel The channel to send the message in
+     * @return The sent message
      */
     public static Message sendMessage(String message, TextChannel channel) {
         if (channel != null) {
@@ -474,7 +496,7 @@ public class DiscordBot extends ListenerAdapter {
      * @param message The message
      * @param channel The channel to send the message in
      */
-    public static Message sendMessage(String message, String channel) {
+    public Message sendMessage(String message, String channel) {
         TextChannel txtChannel = jda.getTextChannelById(channel);
         if (txtChannel != null) {
             MessageCreateAction action = txtChannel.sendMessage(message);
@@ -495,260 +517,24 @@ public class DiscordBot extends ListenerAdapter {
         if (msg != null) {
             msg.editMessage(newMessage).queue();
         } else {
-            logger.warn("Cannot edit because provided messages is null.");
+            logger.warn("Cannot edit because provided message is null.");
         }
     }
 
-    /** Runs when the bot is ready for use */
-    @Override
-    public void onReady(ReadyEvent event) {
-        channel = event.getJDA().getTextChannelById(instance.getSettings().relayChannelId);
-    }
+    static @NotNull String trimDiscordMessage(Message message) {
+        String messageTrimmed = "§7Empty message";
 
-    /** Runs when someone runs a command in the channel the bot is watching */
-    public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
-        if (event.getInteraction().getMember() == null) return;
+        if (!message.getAttachments().isEmpty()) messageTrimmed = "";
 
-        String channel = event.getChannel().getId();
-        String sender = event.getInteraction().getMember().getId();
-
-        if (channel.equals(instance.getSettings().relayChannelId)
-                && !sender.equals(self.getId())
-                && !sender.equals(webhook.getId())) {
-
-            String author =
-                    instance.getSettings().useDisplayNames
-                            ? event.getUser().getGlobalName()
-                            : event.getUser().getName();
-            instance.getServer()
-                    .broadcastMessage(
-                            String.format(
-                                    "§d[Discord] §e%s ran Discord command \"/%s\".",
-                                    author, event.getFullCommandName()));
+        if (!message.getContentDisplay().isEmpty()) {
+            messageTrimmed =
+                    message.getContentDisplay()
+                            .substring(
+                                    0,
+                                    Math.min(
+                                            instance.getSettings().maxMessageSize,
+                                            message.getContentDisplay().length()));
         }
-    }
-
-    /** Runs when a message is received in the channel the bot is watching */
-    @Override
-    public void onMessageReceived(MessageReceivedEvent event) {
-        // this method kinda sucks
-        String channel = event.getChannel().getId();
-        String author2 = event.getAuthor().getId();
-
-        // so basically traits are things about the message, for example, if a message got trimmed
-        // for being too long, it will have (T) added to the message inside MC.
-        // if a message is both trimmed and has attachments as well as is replying to something, it
-        // will look like (2, T, R)
-        List<String> traits = new java.util.ArrayList<>(Collections.emptyList());
-        Message message = event.getMessage();
-        DiscordChatExtensionResult ext = instance.getChatExtensions().tryParseDiscord(message);
-        message = ext.message;
-
-        if (!ext.sendMc) return;
-
-        if (channel.equals(instance.getSettings().relayChannelId)
-                && !author2.equals(self.getId())
-                && !author2.equals(webhook.getId())) {
-            String author;
-            if (message.getMember() != null) author = getName(message.getMember());
-            else author = getName(message.getAuthor());
-
-            Message replyingTo = null;
-            if (message.getMessageReference() != null) replyingTo = message.getReferencedMessage();
-
-            String messageTrimmed = "§cMessage is empty or null";
-
-            if (!message.getAttachments().isEmpty()) messageTrimmed = "";
-
-            if (!message.getContentDisplay().isEmpty()) {
-                messageTrimmed =
-                        message.getContentDisplay()
-                                .substring(
-                                        0,
-                                        Math.min(
-                                                instance.getSettings().maxMessageSize,
-                                                message.getContentDisplay().length()));
-            }
-
-            String replyAuthor = "";
-            if (replyingTo != null) {
-                if (replyingTo.getMember() != null) {
-                    replyAuthor = getName(replyingTo.getMember());
-                } else {
-                    replyAuthor = getName(replyingTo.getAuthor());
-                }
-            }
-            ;
-
-            boolean hasAttachment = false;
-            int attachmentCount = 0;
-
-            // if the message is some system message we should send the correct thing and return cuz
-            // I doubt the message will have more than that
-            switch (message.getType()) {
-                case GUILD_MEMBER_JOIN:
-                    if (instance.getSettings()
-                            .enabledDiscordEvents
-                            .contains(Settings.DiscordEvents.USER_JOIN))
-                        instance.getServer()
-                                .broadcastMessage(
-                                        String.format(
-                                                "§d[Discord] §e%s has joined the Discord server.",
-                                                author));
-                    return;
-                case GUILD_MEMBER_BOOST:
-                    if (instance.getSettings()
-                            .enabledDiscordEvents
-                            .contains(Settings.DiscordEvents.USER_BOOST))
-                        instance.getServer()
-                                .broadcastMessage(
-                                        String.format(
-                                                "§d[Discord] §e%s has boosted the Discord server.",
-                                                author));
-                    return;
-                case THREAD_CREATED:
-                    if (instance.getSettings()
-                            .enabledDiscordEvents
-                            .contains(Settings.DiscordEvents.THREAD_CREATION))
-                        instance.getServer()
-                                .broadcastMessage(
-                                        String.format(
-                                                "§d[Discord] §e%s has created the thread \"%s\".",
-                                                author, messageTrimmed));
-                    return;
-                case CHANNEL_PINNED_ADD:
-                    if (instance.getSettings()
-                            .enabledDiscordEvents
-                            .contains(Settings.DiscordEvents.MESSAGE_PIN))
-                        instance.getServer()
-                                .broadcastMessage(
-                                        String.format(
-                                                "§d[Discord] §e%s has pinned a message to the channel.",
-                                                author));
-                    return;
-                case POLL_RESULT:
-                    if (!instance.getSettings()
-                            .enabledDiscordEvents
-                            .contains(Settings.DiscordEvents.POLL_ENDED)) return;
-
-                    // for some reason we can't get the reference directly but it does give us the
-                    // ids so we have to use that... bruh
-                    String channelId = message.getMessageReference().getChannelId();
-                    TextChannel pollChannel = message.getGuild().getTextChannelById(channelId);
-
-                    if (pollChannel == null) return;
-
-                    // the actual poll message
-                    Message poll =
-                            pollChannel
-                                    .retrieveMessageById(
-                                            message.getMessageReference().getMessageId())
-                                    .complete();
-
-                    MessagePoll mPoll = poll.getPoll();
-
-                    if (mPoll == null) return;
-
-                    instance.getServer()
-                            .broadcastMessage(
-                                    String.format(
-                                            "§d[Discord] §e%s's poll \"%s\" has ended.\nResults:",
-                                            author, mPoll.getQuestion().getText()));
-                    poll.getPoll()
-                            .getAnswers()
-                            .forEach(
-                                    answer -> {
-                                        instance.getServer()
-                                                .broadcastMessage(
-                                                        String.format(
-                                                                "§3%s: §b%s",
-                                                                answer.getText(),
-                                                                answer.getVotes()));
-                                    });
-                    return;
-                case CONTEXT_COMMAND:
-                    if (!instance.getSettings()
-                            .enabledDiscordEvents
-                            .contains(Settings.DiscordEvents.USER_APP)) return;
-
-                    if (message.getInteractionMetadata() == null) return;
-
-                    // those weird activity messages and user crapps
-                    instance.getServer()
-                            .broadcastMessage(
-                                    String.format(
-                                            "§d[Discord] §e%s used app \"%s\".",
-                                            message.getInteractionMetadata()
-                                                    .getUser()
-                                                    .getGlobalName(),
-                                            message.getAuthor().getName()));
-                    return;
-            }
-
-            // message forwarding
-            if (message.getMessageReference() != null
-                    && message.getMessageReference().getType()
-                            == MessageReference.MessageReferenceType.FORWARD) {
-                if (!instance.getSettings()
-                        .enabledDiscordEvents
-                        .contains(Settings.DiscordEvents.FORWARDED_MESSAGE)) return;
-
-                instance.getServer()
-                        .broadcastMessage(
-                                String.format("§d[Discord] §e%s forwarded a message.", author));
-                return;
-            }
-
-            // polls
-            if (message.getPoll() != null) {
-                if (!instance.getSettings()
-                        .enabledDiscordEvents
-                        .contains(Settings.DiscordEvents.POLL_CREATION)) return;
-
-                instance.getServer()
-                        .broadcastMessage(
-                                String.format(
-                                        "§d[Discord] §e%s has created a poll \"%s\".",
-                                        author, message.getPoll().getQuestion().getText()));
-                return;
-            }
-
-            if (!instance.getSettings()
-                    .enabledDiscordEvents
-                    .contains(Settings.DiscordEvents.USER_MESSAGE)) return;
-
-            // check for attachments
-            if (!event.getMessage().getAttachments().isEmpty()
-                    || !event.getMessage().getStickers().isEmpty()) {
-                hasAttachment = true;
-                attachmentCount =
-                        event.getMessage().getAttachments().size()
-                                + event.getMessage().getStickers().size();
-                traits.add(Integer.toString(attachmentCount));
-            }
-
-            // add trait if message is too long
-            if (event.getMessage().getContentDisplay().length()
-                    > instance.getSettings().maxMessageSize) {
-                traits.add("T");
-                event.getMessage().addReaction(Emoji.fromUnicode("\uD83D\uDCCF")).queue();
-            }
-
-            instance.getServer()
-                    .broadcastMessage(
-                            String.format(
-                                    "§d[Discord]%s%s §e%s§f: %s%s",
-                                    ((replyingTo != null && !replyAuthor.isEmpty())
-                                            ? String.format(" §b(RE: §e%s§b)", replyAuthor)
-                                            : ""),
-                                    (!traits.isEmpty()
-                                            ? String.format(" §6(%s)", String.join(", ", traits))
-                                            : ""),
-                                    author,
-                                    messageTrimmed,
-                                    (messageTrimmed.isEmpty() && hasAttachment
-                                            ? String.format("§6%s attachment(s)", attachmentCount)
-                                            : "")));
-        }
+        return messageTrimmed;
     }
 }

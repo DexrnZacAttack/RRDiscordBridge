@@ -55,4 +55,7 @@ public interface IServer {
      * @return The server software's name
      */
     String getSoftwareName();
+
+    /** Runs a console command */
+    void runCommand(String command);
 }

@@ -4,6 +4,7 @@ import io.github.dexrnzacattack.rrdiscordbridge.RRDiscordBridge;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 /** Provides basic utils when working with chat messages */
 public class ChatHelper {
@@ -11,6 +12,8 @@ public class ChatHelper {
     public static String allowedCharacters = readFontTxt();
 
     /**
+     * Reads the font.txt file and returns the contents
+     *
      * @return The contents of font.txt
      */
     public static String readFontTxt() {
@@ -20,7 +23,7 @@ public class ChatHelper {
                 new BufferedReader(
                         new InputStreamReader(
                                 RRDiscordBridge.instance.getServer().getResource("/font.txt"),
-                                "UTF-8"))) {
+                                StandardCharsets.UTF_8))) {
             String line = "";
 
             while (line != null) {
@@ -38,6 +41,8 @@ public class ChatHelper {
     }
 
     /**
+     * Checks if a character is allowed to be used in Minecraft
+     *
      * @return {@code true} if the character is present in font.txt
      */
     public static boolean isAllowedCharacter(char character) {

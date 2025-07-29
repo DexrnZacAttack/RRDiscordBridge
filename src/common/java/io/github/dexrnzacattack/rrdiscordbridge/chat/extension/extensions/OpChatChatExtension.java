@@ -1,6 +1,6 @@
 package io.github.dexrnzacattack.rrdiscordbridge.chat.extension.extensions;
 
-import static io.github.dexrnzacattack.rrdiscordbridge.discord.DiscordBot.*;
+import static io.github.dexrnzacattack.rrdiscordbridge.RRDiscordBridge.instance;
 
 import club.minnced.discord.webhook.WebhookClient;
 import club.minnced.discord.webhook.WebhookClientBuilder;
@@ -9,7 +9,6 @@ import io.github.dexrnzacattack.rrdiscordbridge.RRDiscordBridge;
 import io.github.dexrnzacattack.rrdiscordbridge.chat.extension.IChatExtension;
 import io.github.dexrnzacattack.rrdiscordbridge.chat.extension.result.ChatExtensionResult;
 import io.github.dexrnzacattack.rrdiscordbridge.chat.extension.result.DiscordChatExtensionResult;
-import io.github.dexrnzacattack.rrdiscordbridge.discord.DiscordBot;
 import io.github.dexrnzacattack.rrdiscordbridge.interfaces.IPlayer;
 
 import net.dv8tion.jda.api.entities.Message;
@@ -41,21 +40,21 @@ public class OpChatChatExtension implements IChatExtension {
 
     @Override
     public void onEnable() {
-        if (RRDiscordBridge.instance.getSettings().opchatChannelId.isEmpty()) {
+        if (instance.getSettings().opchatChannelId.isEmpty()) {
             RRDiscordBridge.logger.warn(
                     "OPChat channel ID was not specified. Disabling extension.");
-            RRDiscordBridge.instance.getChatExtensions().enabledExtensions.remove(this);
+            instance.getChatExtensions().enabledExtensions.remove(this);
             onDisable();
             return;
         }
 
         TextChannel opcChannel =
-                jda.getTextChannelById(RRDiscordBridge.instance.getSettings().opchatChannelId);
+                instance.getBot().jda.getTextChannelById(instance.getSettings().opchatChannelId);
         if (opcChannel == null) {
             RRDiscordBridge.logger.warn(
                     "Failed to find OPChat channel with ID "
-                            + RRDiscordBridge.instance.getSettings().opchatChannelId);
-            RRDiscordBridge.instance.getChatExtensions().enabledExtensions.remove(this);
+                            + instance.getSettings().opchatChannelId);
+            instance.getChatExtensions().enabledExtensions.remove(this);
             onDisable();
             return;
         }
@@ -69,7 +68,8 @@ public class OpChatChatExtension implements IChatExtension {
                                     User owner = hook.getOwnerAsUser();
                                     if (owner == null) return false;
 
-                                    return owner.getId().equals(jda.getSelfUser().getId());
+                                    return owner.getId()
+                                            .equals(instance.getBot().jda.getSelfUser().getId());
                                 })
                         .findFirst()
                         .orElseGet(() -> opcChannel.createWebhook("RRMCBridgeOpChat").complete());
@@ -110,22 +110,18 @@ public class OpChatChatExtension implements IChatExtension {
         // so that Console can display the messages
         RRDiscordBridge.logger.info(String.format("[%s -> OPs] %s", player, message));
 
-        RRDiscordBridge.instance.getServer().getPlayer(player).sendMessage(opcMsg);
-        for (IPlayer p : RRDiscordBridge.instance.getServer().getOnlinePlayers()) {
+        instance.getServer().getPlayer(player).sendMessage(opcMsg);
+        for (IPlayer p : instance.getServer().getOnlinePlayers()) {
             // send the message to all ops (except for the player that sent the message, only if
             // they're op.)
             // note since we don't have a common .equals method, we check by name instead
             if (p.isOperator()
-                    && !p.getName()
-                            .equals(
-                                    RRDiscordBridge.instance
-                                            .getServer()
-                                            .getPlayer(player)
-                                            .getName())) p.sendMessage(opcMsg);
+                    && !p.getName().equals(instance.getServer().getPlayer(player).getName()))
+                p.sendMessage(opcMsg);
         }
 
-        if (!RRDiscordBridge.instance.getSettings().opchatChannelId.isEmpty()) {
-            DiscordBot.sendPlayerMessage(player, message, opcWebhookClient);
+        if (!instance.getSettings().opchatChannelId.isEmpty()) {
+            instance.getBot().sendPlayerMessage(player, message, opcWebhookClient);
         }
 
         return new ChatExtensionResult(message, false, false);
@@ -134,18 +130,19 @@ public class OpChatChatExtension implements IChatExtension {
     @Override
     public DiscordChatExtensionResult onDCMessage(Message message) {
         String author = message.getAuthor().getId();
-        if (message.getChannelId().equals(RRDiscordBridge.instance.getSettings().opchatChannelId)
-                && !author.equals(self.getId())
+        if (message.getChannelId().equals(instance.getSettings().opchatChannelId)
+                && !author.equals(instance.getBot().self.getId())
                 && !author.equals(opcWebhook.getId())
-                && !author.equals(webhook.getId())) {
+                && !author.equals(instance.getBot().webhook.getId())) {
             String msg =
                     String.format(
                             "§b[§6OPChat§b - §e%s§b]§r %s",
-                            DiscordBot.getName(message.getAuthor()), message.getContentRaw());
+                            instance.getBot().getName(message.getAuthor()),
+                            message.getContentRaw());
 
             RRDiscordBridge.logger.info(msg);
 
-            for (IPlayer p : RRDiscordBridge.instance.getServer().getOnlinePlayers()) {
+            for (IPlayer p : instance.getServer().getOnlinePlayers()) {
                 // send the message to all ops
                 if (p.isOperator()) p.sendMessage(msg);
             }

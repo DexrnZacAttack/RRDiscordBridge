@@ -501,12 +501,17 @@ tasks.shadowJar {
 
         zipTree(tasks.getByName<Jar>("relocateFabricNetherJar").archiveFile.get().asFile),
             neoforge.output,
-            )
-        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        )
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
     relocate(
         "org.slf4j",
         "relocated.org.slf4j"
+    )
+
+    relocate(
+        "com.fasterxml.jackson",
+        "relocated.com.fasterxml.jackson"
     )
 
     exclude(ex)
@@ -524,3 +529,20 @@ tasks.shadowJar {
 
 
 tasks.build.get().dependsOn("spotlessApply")
+
+tasks.register<Javadoc>("genJavadoc") {
+    group = JavaBasePlugin.DOCUMENTATION_GROUP
+
+    source = common.allJava
+    classpath = files(common.output, common.compileClasspath)
+
+    setDestinationDir(file("javadoc/generated"))
+
+    val css = file("javadoc/javadoc.css")
+
+    if (css.exists())
+        options {
+            this as StandardJavadocDocletOptions
+            stylesheetFile = css;
+        }
+}

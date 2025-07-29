@@ -7,6 +7,7 @@ import io.github.dexrnzacattack.rrdiscordbridge.commands.ChatExtensionsCommand;
 import io.github.dexrnzacattack.rrdiscordbridge.commands.DiscordCommand;
 import io.github.dexrnzacattack.rrdiscordbridge.commands.FancyBroadcastCommand;
 import io.github.dexrnzacattack.rrdiscordbridge.commands.ReloadConfigCommand;
+import io.github.dexrnzacattack.rrdiscordbridge.config.ConfigDirectory;
 import io.github.dexrnzacattack.rrdiscordbridge.events.PlayerChat;
 import io.github.dexrnzacattack.rrdiscordbridge.events.PlayerDeath;
 import io.github.dexrnzacattack.rrdiscordbridge.impls.BukkitServer;
@@ -25,7 +26,7 @@ public class EmeraldBukkitPlugin extends JavaPlugin {
                 new RRDiscordBridge(
                         new BukkitServer(),
                         new JavaLogger(getServer().getLogger()),
-                        ConfigDirectory.PLUGIN.getPath());
+                        ConfigDirectory.PLUGIN);
 
         // then we init
         RRDiscordBridge.instance.initialize();
@@ -40,7 +41,9 @@ public class EmeraldBukkitPlugin extends JavaPlugin {
                         .setCanQueryServerOperators(
                                 doesMethodExist("org.bukkit.Server", "getOperators"))
                         .setCanQueryPlayerHasJoinedBefore(
-                                doesMethodExist("org.bukkit.entity.Player", "hasPlayedBefore")));
+                                doesMethodExist("org.bukkit.entity.Player", "hasPlayedBefore"))
+                        .setCanSendConsoleCommands(
+                                doesMethodExist("org.bukkit.server", "getConsoleSender")));
     }
 
     public void registerEvents() {
@@ -71,6 +74,6 @@ public class EmeraldBukkitPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        if (RRDiscordBridge.instance != null) RRDiscordBridge.instance.shutdown();
+        if (RRDiscordBridge.instance != null) RRDiscordBridge.instance.shutdown(false);
     }
 }

@@ -1,5 +1,6 @@
 package io.github.dexrnzacattack.rrdiscordbridge.impls;
 
+import io.github.dexrnzacattack.rrdiscordbridge.Events;
 import io.github.dexrnzacattack.rrdiscordbridge.interfaces.IPlayer;
 import io.github.dexrnzacattack.rrdiscordbridge.interfaces.IServer;
 
@@ -69,5 +70,11 @@ public class BukkitServer implements IServer {
     @Override
     public String getSoftwareName() {
         return Bukkit.getName();
+    }
+
+    @Override
+    public void runCommand(String command) {
+        Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), command);
+        Events.onServerCommand(command);
     }
 }

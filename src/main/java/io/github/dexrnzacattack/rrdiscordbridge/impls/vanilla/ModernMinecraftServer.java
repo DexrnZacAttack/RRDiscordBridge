@@ -5,6 +5,7 @@ import io.github.dexrnzacattack.rrdiscordbridge.interfaces.IServer;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.dedicated.DedicatedServer;
 
 import java.io.InputStream;
 import java.util.Objects;
@@ -75,5 +76,12 @@ public class ModernMinecraftServer implements IServer {
     @Override
     public String getSoftwareName() {
         return "Minecraft";
+    }
+
+    @Override
+    public void runCommand(String command) {
+        if (server.isDedicatedServer())
+            ((DedicatedServer) server)
+                    .handleConsoleInput(command, server.createCommandSourceStack());
     }
 }

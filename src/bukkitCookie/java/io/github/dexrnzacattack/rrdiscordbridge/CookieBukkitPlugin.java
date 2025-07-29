@@ -1,5 +1,6 @@
 package io.github.dexrnzacattack.rrdiscordbridge;
 
+import io.github.dexrnzacattack.rrdiscordbridge.config.ConfigDirectory;
 import io.github.dexrnzacattack.rrdiscordbridge.events.*;
 import io.github.dexrnzacattack.rrdiscordbridge.impls.CookieBukkitServer;
 import io.github.dexrnzacattack.rrdiscordbridge.impls.JavaLogger;
@@ -14,7 +15,7 @@ public class CookieBukkitPlugin extends EmeraldBukkitPlugin {
                 new RRDiscordBridge(
                         new CookieBukkitServer(),
                         new JavaLogger(getServer().getLogger()),
-                        ConfigDirectory.PLUGIN.getPath());
+                        ConfigDirectory.PLUGIN);
 
         // then we init
         RRDiscordBridge.instance.initialize();

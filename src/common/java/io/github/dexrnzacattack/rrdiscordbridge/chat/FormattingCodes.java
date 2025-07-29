@@ -53,6 +53,11 @@ public enum FormattingCodes {
         return color;
     }
 
+    @Override
+    public String toString() {
+        return "§" + this.code;
+    }
+
     /**
      * @return {@code true} if the formatting code does not change text color
      */

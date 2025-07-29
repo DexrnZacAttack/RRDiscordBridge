@@ -3,9 +3,9 @@
 
 Discord bridge/relay plugin that [supports old Minecraft versions and server software](#tested-versions) (Beta 1.4-Release 1.21.1)
 
-For config info, check out [this](https://github.com/DexrnZacAttack/RRDiscordBridge/wiki/Config).
+For config info, check out [this page](https://rrdiscordbridge.nostalgica.net/javadoc/io/github/dexrnzacattack/rrdiscordbridge/config/Settings.html#field-summary).
 
-Download: https://modrinth.com/plugin/rrdiscordbridge   
+Download: https://modrinth.com/plugin/rrdiscordbridge
 
 ## Features
 - Message Relay
@@ -42,39 +42,19 @@ Download: https://modrinth.com/plugin/rrdiscordbridge
     - Allows for communicating between ops and optionally a (likely private) discord channel.
     - Inspired by MCGalaxy's OPChat feature.
     - Syntax: ## \<msg\>
+- Customizable [color palette](https://rrdiscordbridge.nostalgica.net/javadoc/io/github/dexrnzacattack/rrdiscordbridge/config/ColorPalette.html#field-summary) for messages sent to Discord
 
 ## Supported versions
 ### CraftBukkit (and forks)
   - [X] [UberBukkit](https://github.com/Moresteck/uberbukkit)
-  - [ ] b1.2-b1.2_02
-  - [ ] b1.3-b1.3_01
-  - [X] b1.4-b1.4_01
-  - [X] b1.5-b1.5_01
-  - [X] b1.6-b1.6.6
-  - [X] b1.7
-  - [X] b1.7.2
+  - [ ] b1.3_01-
+  - [X] b1.4-r1.0
   - [X] [Project Poseidon](https://github.com/retromcorg/Project-Poseidon)
-  - [X] b1.7.3 
-  - [X] b1.8.1
-  - [X] 1.0   
-  - [X] 1.1
-  - [X] 1.2.5
-  - [X] 1.3.2
-  - [X] 1.4.7
-  - [X] 1.5.2
-  - [X] 1.6.4
-  - [X] 1.7.2
-  - [X] 1.8.8
-  - [X] 1.9.4
-  - [X] 1.10.2
-  - [X] 1.14.4
-  - [X] 1.15.2
-  - [X] 1.16.5
-  - [X] 1.17.1
-  - [X] 1.18.2
-  - [X] 1.21.1
-  - [X] 1.21.4
-  - [X] 1.21.7
+  - [X] 1.1-1.2.5
+  - [X] 1.3.1-1.7.8
+  - [X] 1.7.9-1.11.2
+  - [X] 1.12-1.19.1
+  - [X] 1.19.2+
 ### Fabric
   - [ ] 1.14.4
   - [ ] 1.15.2

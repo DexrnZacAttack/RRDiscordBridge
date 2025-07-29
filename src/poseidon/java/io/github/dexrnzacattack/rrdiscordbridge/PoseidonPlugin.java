@@ -1,5 +1,6 @@
 package io.github.dexrnzacattack.rrdiscordbridge;
 
+import io.github.dexrnzacattack.rrdiscordbridge.config.ConfigDirectory;
 import io.github.dexrnzacattack.rrdiscordbridge.events.LegacyPlayerChat;
 import io.github.dexrnzacattack.rrdiscordbridge.events.PoseidonPlayerDeath;
 import io.github.dexrnzacattack.rrdiscordbridge.impls.JavaLogger;
@@ -13,7 +14,7 @@ public class PoseidonPlugin extends EmeraldBukkitPlugin {
                 new RRDiscordBridge(
                         new PoseidonServer(),
                         new JavaLogger(getServer().getLogger()),
-                        ConfigDirectory.PLUGIN.getPath());
+                        ConfigDirectory.PLUGIN);
 
         // then we init
         RRDiscordBridge.instance.initialize();

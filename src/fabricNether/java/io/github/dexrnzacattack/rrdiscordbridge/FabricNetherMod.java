@@ -2,6 +2,7 @@ package io.github.dexrnzacattack.rrdiscordbridge;
 
 import com.vdurmont.semver4j.Semver;
 
+import io.github.dexrnzacattack.rrdiscordbridge.config.ConfigDirectory;
 import io.github.dexrnzacattack.rrdiscordbridge.events.AdvancementAwardEventNether;
 import io.github.dexrnzacattack.rrdiscordbridge.events.PlayerChatEvent;
 import io.github.dexrnzacattack.rrdiscordbridge.events.PlayerCommandEventNether;
@@ -24,7 +25,7 @@ public class FabricNetherMod implements IFabricMod {
                 new RRDiscordBridge(
                         new FabricNetherServer(server),
                         new Log4JLogger(LogManager.getLogger("RRDiscordBridge")),
-                        ConfigDirectory.MOD.getPath());
+                        ConfigDirectory.MOD);
 
         // then we init
         RRDiscordBridge.instance.initialize();
@@ -33,7 +34,8 @@ public class FabricNetherMod implements IFabricMod {
                         .setCanGetServerMotd(true)
                         .setCanGetServerName(false)
                         .setCanQueryServerOperators(true)
-                        .setCanQueryPlayerHasJoinedBefore(false));
+                        .setCanQueryPlayerHasJoinedBefore(false)
+                        .setCanSendConsoleCommands(true));
     }
 
     // UNFINISHED

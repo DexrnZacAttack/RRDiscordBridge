@@ -30,13 +30,13 @@ jobs:
           java-version: '21'
 
       - name: Generate JavaDoc
-        run: ./gradlew javadoc
+        run: ./gradlew genJavadoc
 
       - name: List files
         run: ls -la
 
       - name: Copy to repo
-        run: rm -rf Nostalgica-Reverie/Website/* && cp -r "${{ github.workspace }}/build/docs/javadoc/." Nostalgica-Reverie/Website/
+        run: rm -rf Nostalgica-Reverie/Website/* && cp -r "${{ github.workspace }}/javadoc/generated/." Nostalgica-Reverie/Website/
 
       - uses: stefanzweifel/git-auto-commit-action@v6
         with:

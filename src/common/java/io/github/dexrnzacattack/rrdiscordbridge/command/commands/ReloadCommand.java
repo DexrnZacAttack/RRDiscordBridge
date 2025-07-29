@@ -3,7 +3,6 @@ package io.github.dexrnzacattack.rrdiscordbridge.command.commands;
 import io.github.dexrnzacattack.rrdiscordbridge.RRDiscordBridge;
 import io.github.dexrnzacattack.rrdiscordbridge.command.CommandRegistry;
 import io.github.dexrnzacattack.rrdiscordbridge.command.ICommand;
-import io.github.dexrnzacattack.rrdiscordbridge.discord.DiscordBot;
 import io.github.dexrnzacattack.rrdiscordbridge.interfaces.ICommandCaller;
 
 /** Reloads the plugin's config */
@@ -22,11 +21,13 @@ public class ReloadCommand implements ICommand {
     @Override
     public boolean invoke(ICommandCaller caller, String[] params) {
         try {
-            DiscordBot.stop();
             RRDiscordBridge.instance.reload();
-            DiscordBot.start();
         } catch (Exception e) {
-            caller.respond(String.format("Failed to reload the config: %s", e.getMessage()));
+            RRDiscordBridge.logger.error("Failed to reload the config", e);
+            caller.respond(
+                    String.format(
+                            "Failed to reload the config: %s\nSee the server console for more info.",
+                            e.getMessage()));
             return false;
         }
         caller.respond("§aRRDiscordBridge config reloaded.");

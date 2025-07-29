@@ -55,7 +55,8 @@ public class FabricMod implements ModInitializer {
         ServerPlayConnectionEvents.DISCONNECT.register(
                 (i, s) -> Events.onPlayerLeave(new FabricVexPlayer(i.player)));
 
-        ServerLifecycleEvents.SERVER_STOPPED.register(t -> RRDiscordBridge.instance.shutdown());
+        ServerLifecycleEvents.SERVER_STOPPED.register(
+                t -> RRDiscordBridge.instance.shutdown(false));
 
         ConsoleCommandEvent.EVENT.register(
                 (m, c) -> {

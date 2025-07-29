@@ -2,6 +2,7 @@ package io.github.dexrnzacattack.rrdiscordbridge;
 
 import com.vdurmont.semver4j.Semver;
 
+import io.github.dexrnzacattack.rrdiscordbridge.config.ConfigDirectory;
 import io.github.dexrnzacattack.rrdiscordbridge.events.AdvancementAwardEventTrails;
 import io.github.dexrnzacattack.rrdiscordbridge.events.PlayerCommandEventTrails;
 import io.github.dexrnzacattack.rrdiscordbridge.fabric.IFabricMod;
@@ -26,7 +27,7 @@ public class FabricTrailsMod implements IFabricMod {
                 new RRDiscordBridge(
                         new FabricTrailsServer(server),
                         new SLF4JLogger(LoggerFactory.getLogger("RRDiscordBridge")),
-                        ConfigDirectory.MOD.getPath());
+                        ConfigDirectory.MOD);
 
         // then we init
         RRDiscordBridge.instance.initialize();
@@ -35,7 +36,8 @@ public class FabricTrailsMod implements IFabricMod {
                         .setCanGetServerMotd(true)
                         .setCanGetServerName(false)
                         .setCanQueryServerOperators(true)
-                        .setCanQueryPlayerHasJoinedBefore(false));
+                        .setCanQueryPlayerHasJoinedBefore(false)
+                        .setCanSendConsoleCommands(true));
     }
 
     @Override

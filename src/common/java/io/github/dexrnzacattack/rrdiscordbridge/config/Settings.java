@@ -6,147 +6,152 @@ import com.google.gson.InstanceCreator;
 import com.vdurmont.semver4j.Semver;
 
 import io.github.dexrnzacattack.rrdiscordbridge.RRDiscordBridge;
+import io.github.dexrnzacattack.rrdiscordbridge.config.adapter.PathTypeAdapter;
 
-import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /** The plugin's config */
-public class Settings {
+public class Settings implements IConfig {
     /** For the JSON file */
     public String version;
 
     /** The config path */
-    public final transient String configPath;
+    public final transient Path configPath;
+
+    /** The current color palette */
+    public transient ColorPalette colorPalette = new ColorPalette(this.colorPalettePath);
+
+    /** The path of the color palette we want to use */
+    public Path colorPalettePath = ColorPalette.DEFAULT_PATH;
 
     /** The bot token */
-    public String botToken;
+    public String botToken = "";
 
     /** The channel ID for the bot to listen and send messages in for the relay */
-    public String relayChannelId;
+    public String relayChannelId = "";
 
     /** The channel ID for the bot to send console logs to. Also accepts operator commands */
-    public String consoleChannelId;
+    public String consoleChannelId = "";
 
     /**
      * The channel ID for the bot to send and receive opchat messages in. Must have the extension
      * enabled for it to work.
      */
-    public String opchatChannelId;
+    public String opchatChannelId = "";
 
     /** The invite link to the relay's discord server (must be filled manually) */
-    public String discordInvite;
+    public String discordInvite = "";
 
     /** Use display names instead of discord usernames when relaying Discord messages to MC */
-    public boolean useDisplayNames;
+    public boolean useDisplayNames = true;
 
     /**
      * Use nicknames instead of discord usernames/display names when relaying Discord messages to MC
      */
-    public boolean useNicknames;
+    public boolean useNicknames = false;
 
     /** Maximum message size that will be relayed to the MC chat */
-    public int maxMessageSize;
+    public int maxMessageSize = 300;
 
     /** Allow players names to be sent when the /players command is used in Discord */
-    public boolean publicPlayerNames;
+    public boolean publicPlayerNames = true;
 
     /**
      * Allow operators to be highlighted when the /players command is used in Discord
      *
      * <p>Also shown when /about is ran.
      */
-    public boolean publicOperatorNames;
+    public boolean publicOperatorNames = true;
 
     /** Changes what URL the skin images are grabbed from */
-    public String skinProvider;
+    public String skinProvider = "https://mc-heads.net/avatar/%s.png";
 
     /** Show the server icon when /about is used in Discord */
-    public boolean showServerIcon;
+    public boolean showServerIcon = true;
 
     /** Skin to use when /say or /dcbroadcast is used. */
-    public String broadcastSkinName;
+    public String broadcastSkinName = "CONSOLE";
 
     /** Optional extensions for things like embeds for waypoints */
-    public List<String> enabledChatExtensions;
+    public List<String> enabledChatExtensions =
+            Stream.of("Waypoints", "OpChat").collect(Collectors.toList());
 
     /** Events that the bot will send to the relay channel */
-    public List<Events> enabledEvents;
+    public List<Events> enabledEvents = Arrays.asList(Events.values());
 
     /** Events that the bot will relay from the relay channel */
-    public List<DiscordEvents> enabledDiscordEvents;
+    public List<DiscordEvents> enabledDiscordEvents = Arrays.asList(DiscordEvents.values());
 
     /** Prefer string timestamp over discord's relative timestamp when /about is run */
-    public boolean useDiscordRelativeTimestamp;
+    public boolean useDiscordRelativeTimestamp = true;
 
-    /** Settings constructor, uses default values until Settings.loadConfig() is called. */
-    public Settings(String configPath) {
+    /**
+     * List of user IDs to treat as "operators", which lets them run console commands from Discord
+     */
+    public List<String> discordOperators = new ArrayList<>();
+
+    /** Settings constructor */
+    public Settings(Path configPath) {
         this.configPath = configPath;
-
-        useDisplayNames = true;
-        useNicknames = false;
-        enabledEvents = Arrays.asList(Events.values());
-        enabledDiscordEvents = Arrays.asList(DiscordEvents.values());
-        maxMessageSize = 300;
-        relayChannelId = "";
-        consoleChannelId = "";
-        opchatChannelId = "";
-        botToken = "";
-        publicPlayerNames = true;
-        publicOperatorNames = true;
-        discordInvite = "";
-        skinProvider = "https://mc-heads.net/avatar/%s.png";
-        broadcastSkinName = "CONSOLE";
-        enabledChatExtensions = new ArrayList<String>();
-        enabledChatExtensions.add("Waypoints");
-        enabledChatExtensions.add("OpChat");
-        showServerIcon = true;
-        useDiscordRelativeTimestamp = true;
     }
 
-    public Settings loadConfig() throws IOException {
+    @Override
+    public Settings load() throws IOException {
         Gson gson =
                 new GsonBuilder()
+                        .registerTypeHierarchyAdapter(Path.class, new PathTypeAdapter())
                         .registerTypeAdapter(
                                 Settings.class, new GsonInstanceCreator(this.configPath))
                         .create();
 
         Settings settings;
 
-        File configFile = new File(configPath);
+        if (!Files.exists(configPath)) create();
 
-        if (!configFile.exists()) createConfig();
-
-        try (FileReader reader = new FileReader(configPath)) {
+        try (FileReader reader = new FileReader(configPath.toFile())) {
             settings = gson.fromJson(reader, Settings.class);
         } catch (IOException e) {
             System.err.println("Exception while reading the config file: " + e.getMessage());
             throw e;
         }
 
-        settings.updateConfig();
-        settings.writeConfig();
+        settings.upgrade();
+        settings.colorPalette = colorPalette.load();
+
+        settings.save();
         return settings;
     }
 
-    public void writeConfig() {
-        File file = new File(configPath);
+    @Override
+    public void save() {
+        try (FileWriter writer = new FileWriter(configPath.toFile())) {
+            Gson gson =
+                    new GsonBuilder()
+                            .registerTypeHierarchyAdapter(Path.class, new PathTypeAdapter())
+                            .setPrettyPrinting()
+                            .create();
 
-        try (FileWriter writer = new FileWriter(file)) {
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
             writer.write(gson.toJson(this));
         } catch (IOException e) {
             System.err.println("Exception while writing the config: " + e.getMessage());
         }
+
+        colorPalette.save();
     }
 
     // TODO: figure out a better way to do this as this will likely get messy
-    public void updateConfig() {
+    @Override
+    public Settings upgrade() {
         String version = this.version == null ? "2.1.0" : this.version;
 
         Semver ver = new Semver(version);
@@ -156,29 +161,33 @@ public class Settings {
                     String.format(
                             "Config version is older than mod/plugin version (%s < %s), attempting to upgrade%n",
                             version, RRDiscordBridge.getVersion()));
-        else return;
+        else return this;
 
         if (ver.isLowerThan("2.2.0") && !this.enabledEvents.contains(Events.PLAYER_ACHIEVEMENT)) {
             this.enabledEvents.add(Events.PLAYER_ACHIEVEMENT);
         }
 
         this.version = RRDiscordBridge.getVersion();
+        return this;
     }
 
-    public void createConfig() {
-        File configFile = new File(configPath);
-        File parent = configFile.getParentFile();
+    @Override
+    public void create() {
+        Path parent = configPath.getParent();
 
-        if (parent != null && !parent.exists()) parent.mkdirs();
+        try {
+            if (!Files.exists(parent)) Files.createDirectories(parent);
 
-        if (!configFile.exists()) {
-            try {
-                if (configFile.createNewFile()) {
-                    writeConfig();
+            if (!Files.exists(configPath)) {
+                try {
+                    Files.createFile(configPath);
+                    save();
+                } catch (IOException e) {
+                    RRDiscordBridge.logger.error("Exception while creating the config file: ", e);
                 }
-            } catch (IOException e) {
-                System.err.println("Exception while creating the config file: " + e.getMessage());
             }
+        } catch (IOException e) {
+            RRDiscordBridge.logger.error("Exception while creating config dir: ", e);
         }
     }
 
@@ -258,9 +267,9 @@ public class Settings {
 
     // wonder if I can just make Settings implement the InstanceCreator
     private static class GsonInstanceCreator implements InstanceCreator<Settings> {
-        private final String configPath;
+        private final Path configPath;
 
-        public GsonInstanceCreator(String configPath) {
+        public GsonInstanceCreator(Path configPath) {
             this.configPath = configPath;
         }
 

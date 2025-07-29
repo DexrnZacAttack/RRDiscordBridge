@@ -47,3 +47,4 @@ dependency-reduced-pom.xml
 #/gradle
 /buildSrc/.gradle
 /tests
+/javadoc/generated

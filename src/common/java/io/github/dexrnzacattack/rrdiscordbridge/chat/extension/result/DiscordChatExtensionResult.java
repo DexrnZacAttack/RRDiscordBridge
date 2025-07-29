@@ -3,7 +3,10 @@ package io.github.dexrnzacattack.rrdiscordbridge.chat.extension.result;
 import net.dv8tion.jda.api.entities.Message;
 
 public class DiscordChatExtensionResult {
+    /** The resulting message content */
     public Message message;
+
+    /** Whether to send to Minecraft chat */
     public boolean sendMc;
 
     public DiscordChatExtensionResult(Message message, boolean sendMc) {

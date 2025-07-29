@@ -1,7 +1,5 @@
 package io.github.dexrnzacattack.rrdiscordbridge.chat.extension.extensions;
 
-import static io.github.dexrnzacattack.rrdiscordbridge.discord.DiscordBot.webhookClient;
-
 import club.minnced.discord.webhook.send.*;
 
 import io.github.dexrnzacattack.rrdiscordbridge.RRDiscordBridge;
@@ -98,7 +96,7 @@ public class WaypointChatExtension implements IChatExtension {
                             .setAllowedMentions(allowedMentions)
                             .build();
 
-            webhookClient.send(wMessage);
+            RRDiscordBridge.instance.getBot().webhookClient.send(wMessage);
             return new ChatExtensionResult(message, true, false);
         } catch (Exception ignored) {
             // failed so we just send like nothing happened.

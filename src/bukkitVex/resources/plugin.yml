@@ -3,6 +3,7 @@ version: ${version}
 author: ${author}
 description: ${description}
 website: ${homepage_url}
+api-version: 1.19.2
 main: io.github.dexrnzacattack.rrdiscordbridge.VexBukkitPlugin
 commands:
   discord:

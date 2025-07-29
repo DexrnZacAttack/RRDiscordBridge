@@ -1,5 +1,6 @@
 package io.github.dexrnzacattack.rrdiscordbridge;
 
+import io.github.dexrnzacattack.rrdiscordbridge.config.ConfigDirectory;
 import io.github.dexrnzacattack.rrdiscordbridge.impls.NeoForgeServer;
 import io.github.dexrnzacattack.rrdiscordbridge.impls.SLF4JLogger;
 import io.github.dexrnzacattack.rrdiscordbridge.impls.vanilla.ModernMinecraftCommands;
@@ -30,7 +31,7 @@ public class NeoForgeMod {
                 new RRDiscordBridge(
                         new NeoForgeServer(event.getServer()),
                         new SLF4JLogger(LoggerFactory.getLogger("RRDiscordBridge")),
-                        ConfigDirectory.MOD.getPath());
+                        ConfigDirectory.MOD);
 
         // then we init
         RRDiscordBridge.instance.initialize();
@@ -39,14 +40,15 @@ public class NeoForgeMod {
                         .setCanGetServerMotd(true)
                         .setCanGetServerName(false)
                         .setCanQueryServerOperators(true)
-                        .setCanQueryPlayerHasJoinedBefore(false));
+                        .setCanQueryPlayerHasJoinedBefore(false)
+                        .setCanSendConsoleCommands(true));
 
         NeoForge.EVENT_BUS.register(new NeoForgeEventHandler());
     }
 
     @SubscribeEvent
     public void onServerStopping(ServerStoppingEvent event) {
-        RRDiscordBridge.instance.shutdown();
+        RRDiscordBridge.instance.shutdown(false);
     }
 
     @SubscribeEvent
