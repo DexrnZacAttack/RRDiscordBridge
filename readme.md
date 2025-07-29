@@ -3,7 +3,7 @@
 
 Discord bridge/relay plugin that [supports old Minecraft versions and server software](#tested-versions) (Beta 1.4-Release 1.21.1)
 
-For config info, check out [this page](https://rrdiscordbridge.nostalgica.net/javadoc/io/github/dexrnzacattack/rrdiscordbridge/config/Settings.html#field-summary).
+For config info, check out [this page](https://rrdiscordbridge.nostalgica.net/javadocs/io/github/dexrnzacattack/rrdiscordbridge/config/Settings.html#field-summary).
 
 Download: https://modrinth.com/plugin/rrdiscordbridge
 
@@ -42,7 +42,7 @@ Download: https://modrinth.com/plugin/rrdiscordbridge
     - Allows for communicating between ops and optionally a (likely private) discord channel.
     - Inspired by MCGalaxy's OPChat feature.
     - Syntax: ## \<msg\>
-- Customizable [color palette](https://rrdiscordbridge.nostalgica.net/javadoc/io/github/dexrnzacattack/rrdiscordbridge/config/ColorPalette.html#field-summary) for messages sent to Discord
+- Customizable [color palette](https://rrdiscordbridge.nostalgica.net/javadocs/io/github/dexrnzacattack/rrdiscordbridge/config/ColorPalette.html#field-summary) for messages sent to Discord
 
 ## Supported versions
 ### CraftBukkit (and forks)
