@@ -42,11 +42,11 @@ public class ModifiableExtensionChatResult<T> {
     }
 
     public boolean getShouldSendToDiscord() {
-        return this.discordCancellable.isCancelled();
+        return !this.discordCancellable.isCancelled();
     }
 
     public boolean getShouldSendToMinecraft() {
-        return this.minecraftCancellable.isCancelled();
+        return !this.minecraftCancellable.isCancelled();
     }
 
     @Override
