@@ -3,6 +3,7 @@ package io.github.dexrnzacattack.rrdiscordbridge.neoforge;
 import com.vdurmont.semver4j.Semver;
 
 import io.github.dexrnzacattack.rrdiscordbridge.RRDiscordBridge;
+import io.github.dexrnzacattack.rrdiscordbridge.impls.vanilla.ModernMinecraftCommands;
 import io.github.dexrnzacattack.rrdiscordbridge.neoforge.multiversion.INeoForgeMod;
 import io.github.dexrnzacattack.rrdiscordbridge.neoforge.multiversion.NeoForgeModsFactory;
 
@@ -10,6 +11,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 
@@ -54,5 +56,10 @@ public class NeoForgeMod {
     @SubscribeEvent
     public void onServerStopping(ServerStoppingEvent event) {
         RRDiscordBridge.instance.shutdown(false);
+    }
+
+    @SubscribeEvent
+    public void onRegisterCommands(RegisterCommandsEvent event) {
+        ModernMinecraftCommands.register(event.getDispatcher());
     }
 }

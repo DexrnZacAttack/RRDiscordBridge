@@ -56,9 +56,4 @@ public class ForgeEventHandler {
             Events.onPlayerCommand(new ForgePlayer(player), "/" + cmd);
         }
     }
-
-    @SubscribeEvent
-    public void onRegisterCommands(RegisterCommandsEvent event) {
-        ModernMinecraftCommands.register(event.getDispatcher());
-    }
 }

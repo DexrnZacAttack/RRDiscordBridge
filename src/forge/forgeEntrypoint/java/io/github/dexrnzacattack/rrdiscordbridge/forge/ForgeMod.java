@@ -8,6 +8,8 @@ import io.github.dexrnzacattack.rrdiscordbridge.RRDiscordBridge;
 import io.github.dexrnzacattack.rrdiscordbridge.forge.multiversion.ForgeModsFactory;
 import io.github.dexrnzacattack.rrdiscordbridge.forge.multiversion.IForgeMod;
 
+import io.github.dexrnzacattack.rrdiscordbridge.impls.vanilla.ModernMinecraftCommands;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -56,5 +58,10 @@ public class ForgeMod {
     @SubscribeEvent
     public void onServerStopping(ServerStoppingEvent event) {
         RRDiscordBridge.instance.shutdown(false);
+    }
+
+    @SubscribeEvent
+    public void onRegisterCommands(RegisterCommandsEvent event) {
+        ModernMinecraftCommands.register(event.getDispatcher());
     }
 }

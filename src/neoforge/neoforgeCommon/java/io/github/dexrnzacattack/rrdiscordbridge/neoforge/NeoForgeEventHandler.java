@@ -56,9 +56,4 @@ public class NeoForgeEventHandler {
             Events.onPlayerCommand(new NeoForgePlayer(player), "/" + cmd);
         }
     }
-
-    @SubscribeEvent
-    public void onRegisterCommands(RegisterCommandsEvent event) {
-        ModernMinecraftCommands.register(event.getDispatcher());
-    }
 }
