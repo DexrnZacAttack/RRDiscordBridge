@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "${mod_id}",
+  "version": "${version}",
+  "name": "${mod_name}",
+  "icon": "${logo}",
+  "description": "${description}",
+  "environment": "server",
+  "authors": [
+    "${author}"
+  ],
+  "contact": {
+    "issues": "${issue_url}",
+    "sources": "${homepage_url}",
+    "homepage": "${modrinth_url}",
+    "discord": "${discord_url}"
+  },
+  "entrypoints": {
+    "main": [
+      "io.github.dexrnzacattack.rrdiscordbridge.fabric.FabricMod"
+    ]
+  },
+  "mixins": [
+    "${mod_id}.mixins.json"
+  ],
+  "depends": {
+    "fabric": ">=0.29.0+1.16",
+    "minecraft": ">=1.16.4"
+  }
+}

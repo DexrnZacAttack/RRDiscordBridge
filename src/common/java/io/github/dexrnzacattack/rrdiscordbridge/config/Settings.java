@@ -1,5 +1,7 @@
 package io.github.dexrnzacattack.rrdiscordbridge.config;
 
+import static io.github.dexrnzacattack.rrdiscordbridge.RRDiscordBridge.logger;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.InstanceCreator;
@@ -17,8 +19,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /** The plugin's config */
 public class Settings implements IConfig {
@@ -82,9 +82,8 @@ public class Settings implements IConfig {
     /** Skin to use when /say or /dcbroadcast is used. */
     public String broadcastSkinName = "CONSOLE";
 
-    /** Optional extensions for things like embeds for waypoints */
-    public List<String> enabledChatExtensions =
-            Stream.of("Waypoints", "OpChat").collect(Collectors.toList());
+    /** Disabled extensions */
+    public List<String> disabledExtensions = new ArrayList<>();
 
     /** Events that the bot will send to the relay channel */
     public List<Events> enabledEvents = Arrays.asList(Events.values());
@@ -99,6 +98,9 @@ public class Settings implements IConfig {
      * List of user IDs to treat as "operators", which lets them run console commands from Discord
      */
     public List<String> discordOperators = new ArrayList<>();
+
+    /** Strip formatting codes from messages going to Discord */
+    public boolean stripMc2DcFormatting = true;
 
     /** Settings constructor */
     public Settings(Path configPath) {
@@ -121,7 +123,7 @@ public class Settings implements IConfig {
         try (FileReader reader = new FileReader(configPath.toFile())) {
             settings = gson.fromJson(reader, Settings.class);
         } catch (IOException e) {
-            System.err.println("Exception while reading the config file: " + e.getMessage());
+            logger.error("Exception while reading the config file: " + e.getMessage());
             throw e;
         }
 
@@ -143,7 +145,7 @@ public class Settings implements IConfig {
 
             writer.write(gson.toJson(this));
         } catch (IOException e) {
-            System.err.println("Exception while writing the config: " + e.getMessage());
+            logger.error("Exception while writing the config: " + e.getMessage());
         }
 
         colorPalette.save();
@@ -157,7 +159,7 @@ public class Settings implements IConfig {
         Semver ver = new Semver(version);
 
         if (ver.isLowerThan(RRDiscordBridge.getVersion()))
-            RRDiscordBridge.logger.info(
+            logger.info(
                     String.format(
                             "Config version is older than mod/plugin version (%s < %s), attempting to upgrade%n",
                             version, RRDiscordBridge.getVersion()));
@@ -165,6 +167,10 @@ public class Settings implements IConfig {
 
         if (ver.isLowerThan("2.2.0") && !this.enabledEvents.contains(Events.PLAYER_ACHIEVEMENT)) {
             this.enabledEvents.add(Events.PLAYER_ACHIEVEMENT);
+        }
+
+        if (ver.isLowerThan("2.4.0") && !this.enabledEvents.contains(Events.PLUGIN_RELOAD)) {
+            this.enabledEvents.add(Events.PLUGIN_RELOAD);
         }
 
         this.version = RRDiscordBridge.getVersion();
@@ -183,11 +189,11 @@ public class Settings implements IConfig {
                     Files.createFile(configPath);
                     save();
                 } catch (IOException e) {
-                    RRDiscordBridge.logger.error("Exception while creating the config file: ", e);
+                    logger.error("Exception while creating the config file: ", e);
                 }
             }
         } catch (IOException e) {
-            RRDiscordBridge.logger.error("Exception while creating config dir: ", e);
+            logger.error("Exception while creating config dir: ", e);
         }
     }
 
@@ -213,6 +219,8 @@ public class Settings implements IConfig {
         PLAYER_ACHIEVEMENT,
         /** Sends an event message on server start */
         SERVER_START,
+        /** Sends an event message on plugin reload */
+        PLUGIN_RELOAD,
         /** Sends an event message on server stop */
         SERVER_STOP,
         /** When /say is used */

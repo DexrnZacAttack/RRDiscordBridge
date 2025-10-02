@@ -41,10 +41,10 @@ public class CommandRegistry {
 
     /** Enum containing the names of all in-game commands */
     public enum CommandName {
-        CEXT("cext"),
+        RDBEXT("rdbext"),
         DCBROADCAST("dcbroadcast"),
         DISCORD("discord"),
-        RELOADCONFIG("reloadrdbconfig");
+        RELOADCONFIG("reloadrdb");
 
         private final String name;
 

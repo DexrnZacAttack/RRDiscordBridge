@@ -9,11 +9,13 @@ import club.minnced.discord.webhook.send.AllowedMentions;
 import club.minnced.discord.webhook.send.WebhookMessage;
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 
-import io.github.dexrnzacattack.rrdiscordbridge.chat.extension.result.ChatExtensionResult;
 import io.github.dexrnzacattack.rrdiscordbridge.config.Settings;
 import io.github.dexrnzacattack.rrdiscordbridge.discord.commands.AboutCommand;
 import io.github.dexrnzacattack.rrdiscordbridge.discord.commands.PlayersCommand;
+import io.github.dexrnzacattack.rrdiscordbridge.extension.result.ModifiableExtensionChatResult;
+import io.github.dexrnzacattack.rrdiscordbridge.game.FormattingCodes;
 import io.github.dexrnzacattack.rrdiscordbridge.interfaces.ICancellable;
+import io.github.dexrnzacattack.rrdiscordbridge.interfaces.IPlayer;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -176,13 +178,14 @@ public class DiscordBot {
                     : member.getUser().getName();
         }
 
-        // explanation:
-        // if useNicknames is enabled, and there is a nickname, use the nickname, otherwise, if
-        // useDisplayNames is enabled, use their displayname, otherwise use their username.
+        String displayName = member.getUser().getGlobalName();
+
         return instance.getSettings().useNicknames && nickname != null && !nickname.isEmpty()
                 ? nickname
                 : instance.getSettings().useDisplayNames
-                        ? member.getUser().getGlobalName()
+                                && displayName != null
+                                && !displayName.isEmpty()
+                        ? displayName
                         : member.getUser().getName();
     }
 
@@ -197,27 +200,38 @@ public class DiscordBot {
             return user.getName();
         }
 
+        String displayName = user.getGlobalName();
+
         // explanation:
         // if useDisplayNames is enabled, use their displayname, otherwise use their username.
-        return instance.getSettings().useDisplayNames ? user.getGlobalName() : user.getName();
+        return instance.getSettings().useDisplayNames
+                        && displayName != null
+                        && !displayName.isEmpty()
+                ? user.getGlobalName()
+                : user.getName();
     }
 
     /**
      * Sends a message using a webhook that uses the player's name and skin.
      *
-     * @param playerName The name of the player to use
+     * @param player The player to use
      * @param message The message content
      * @param event The cancellable event
      */
-    public void sendPlayerMessage(String playerName, String message, ICancellable event) {
+    public void sendPlayerMessage(IPlayer player, String message, ICancellable event) {
         if (!instance.getSettings().enabledEvents.contains(Settings.Events.PLAYER_CHAT)) return;
 
-        ChatExtensionResult chatExt = instance.getChatExtensions().tryParseMC(message, playerName);
-        String msg = chatExt.string;
+        String msg = message;
 
-        if (!chatExt.sendMc) event.cancel();
+        if (instance.getBridgeExtensions() != null) {
+            ModifiableExtensionChatResult<String> chatExt =
+                    instance.getBridgeExtensions().tryParseMC(player, message);
+            msg = chatExt.message;
 
-        if (!chatExt.sendDiscord) return;
+            if (!chatExt.getShouldSendToMinecraft()) event.cancel();
+
+            if (!chatExt.getShouldSendToDiscord()) return;
+        }
 
         // disallows @everyone lol
         AllowedMentions allowedMentions =
@@ -225,10 +239,11 @@ public class DiscordBot {
 
         WebhookMessage messageSend =
                 new WebhookMessageBuilder()
-                        .setUsername(playerName)
+                        .setUsername(player.getName())
                         .setAvatarUrl(
-                                String.format(instance.getSettings().skinProvider, playerName))
-                        .setContent(msg)
+                                String.format(
+                                        instance.getSettings().skinProvider, player.getName()))
+                        .setContent(FormattingCodes.removeDcFormatting(msg))
                         .setAllowedMentions(allowedMentions)
                         .build();
         webhookClient.send(messageSend);
@@ -251,7 +266,7 @@ public class DiscordBot {
                         .setUsername(playerName)
                         .setAvatarUrl(
                                 String.format(instance.getSettings().skinProvider, playerName))
-                        .setContent(message)
+                        .setContent(FormattingCodes.removeDcFormatting(message))
                         .setAllowedMentions(allowedMentions)
                         .build();
         webhookClient.send(wMessage);
@@ -275,7 +290,7 @@ public class DiscordBot {
                         .setUsername(playerName)
                         .setAvatarUrl(
                                 String.format(instance.getSettings().skinProvider, playerName))
-                        .setContent(message)
+                        .setContent(FormattingCodes.removeDcFormatting(message))
                         .setAllowedMentions(allowedMentions)
                         .build();
         wc.send(wMessage);
@@ -285,26 +300,32 @@ public class DiscordBot {
      * Sends a message using a webhook that uses the player's name and skin.
      *
      * @param eventType The event type (used for Settings.enabledEvents).
-     * @param playerName The player name
+     * @param player The player
      * @param message The message
      */
-    public void sendPlayerMessage(Settings.Events eventType, String playerName, String message) {
+    public void sendPlayerMessage(Settings.Events eventType, IPlayer player, String message) {
         if (!instance.getSettings().enabledEvents.contains(eventType)) return;
 
-        ChatExtensionResult chatExt = instance.getChatExtensions().tryParseMC(message, playerName);
-        String msg = chatExt.string;
+        String msg = message;
 
-        if (!(boolean) chatExt.sendDiscord) return;
+        if (instance.getBridgeExtensions() != null) {
+            ModifiableExtensionChatResult<String> chatExt =
+                    instance.getBridgeExtensions().tryParseMC(player, message);
+            msg = chatExt.message;
+
+            if (!(boolean) chatExt.getShouldSendToDiscord()) return;
+        }
 
         AllowedMentions allowedMentions =
                 new AllowedMentions().withParseUsers(true).withParseEveryone(false);
 
         WebhookMessage wMessage =
                 new WebhookMessageBuilder()
-                        .setUsername(playerName)
+                        .setUsername(player.getName())
                         .setAvatarUrl(
-                                String.format(instance.getSettings().skinProvider, playerName))
-                        .setContent(msg)
+                                String.format(
+                                        instance.getSettings().skinProvider, player.getName()))
+                        .setContent(FormattingCodes.removeDcFormatting(msg))
                         .setAllowedMentions(allowedMentions)
                         .build();
         webhookClient.send(wMessage);
@@ -328,7 +349,7 @@ public class DiscordBot {
                         .setUsername(playerName)
                         .setAvatarUrl(
                                 String.format(instance.getSettings().skinProvider, playerSkinName))
-                        .setContent(message)
+                        .setContent(FormattingCodes.removeDcFormatting(message))
                         .setAllowedMentions(allowedMentions)
                         .build();
         webhookClient.send(wMessage);
@@ -338,28 +359,33 @@ public class DiscordBot {
      * Sends a message using a webhook that uses the player's name and skin.
      *
      * @param eventType The event type (used for Settings.enabledEvents).
-     * @param playerName The player name
+     * @param player The player
      * @param playerSkinName The name of the player that you want to use as the skin
      * @param message The message
      */
     public void sendPlayerMessage(
-            Settings.Events eventType, String playerName, String playerSkinName, String message) {
+            Settings.Events eventType, IPlayer player, String playerSkinName, String message) {
         if (!instance.getSettings().enabledEvents.contains(eventType)) return;
 
-        ChatExtensionResult chatExt = instance.getChatExtensions().tryParseMC(message, playerName);
-        String msg = chatExt.string;
+        String msg = message;
 
-        if (!(boolean) chatExt.sendDiscord) return;
+        if (instance.getBridgeExtensions() != null) {
+            ModifiableExtensionChatResult<String> chatExt =
+                    instance.getBridgeExtensions().tryParseMC(player, message);
+            msg = chatExt.message;
+
+            if (!(boolean) chatExt.getShouldSendToDiscord()) return;
+        }
 
         AllowedMentions allowedMentions =
                 new AllowedMentions().withParseUsers(true).withParseEveryone(false);
 
         WebhookMessage wMessage =
                 new WebhookMessageBuilder()
-                        .setUsername(playerName)
+                        .setUsername(player.getName())
                         .setAvatarUrl(
                                 String.format(instance.getSettings().skinProvider, playerSkinName))
-                        .setContent(msg)
+                        .setContent(FormattingCodes.removeDcFormatting(msg))
                         .setAllowedMentions(allowedMentions)
                         .build();
         webhookClient.send(wMessage);
@@ -385,8 +411,8 @@ public class DiscordBot {
         EmbedBuilder embed =
                 new EmbedBuilder()
                         .setColor(color)
-                        .setDescription(description)
-                        .setTitle(title)
+                        .setDescription(FormattingCodes.removeDcFormatting(description))
+                        .setTitle(FormattingCodes.removeDcFormatting(title))
                         .setTimestamp(java.time.Instant.now())
                         .setAuthor(
                                 playerName,
@@ -420,10 +446,10 @@ public class DiscordBot {
         EmbedBuilder embed =
                 new EmbedBuilder()
                         .setColor(color)
-                        .setDescription(description)
-                        .setTitle(title)
+                        .setDescription(FormattingCodes.removeDcFormatting(description))
+                        .setTitle(FormattingCodes.removeDcFormatting(title))
                         .setTimestamp(java.time.Instant.now())
-                        .setFooter(footer)
+                        .setFooter(FormattingCodes.removeDcFormatting(footer))
                         .setAuthor(
                                 authorName,
                                 null,
@@ -452,8 +478,8 @@ public class DiscordBot {
         EmbedBuilder embed =
                 new EmbedBuilder()
                         .setColor(color)
-                        .setDescription(description)
-                        .setTitle(title)
+                        .setDescription(FormattingCodes.removeDcFormatting(description))
+                        .setTitle(FormattingCodes.removeDcFormatting(title))
                         .setTimestamp(java.time.Instant.now())
                         .setAuthor(author.getName(), null, author.getIconUrl());
 

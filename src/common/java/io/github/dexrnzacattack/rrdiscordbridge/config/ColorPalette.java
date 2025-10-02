@@ -1,5 +1,7 @@
 package io.github.dexrnzacattack.rrdiscordbridge.config;
 
+import static io.github.dexrnzacattack.rrdiscordbridge.RRDiscordBridge.logger;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.InstanceCreator;
@@ -43,6 +45,9 @@ public class ColorPalette implements IConfig {
     /** The color used for the {@code Player died} event message */
     public Color playerDeath = Color.RED;
 
+    /** The color used for the {@code Reloading RRDiscordBridge} event message */
+    public Color pluginReload = Color.PINK;
+
     /**
      * The color used for the {@code Player has made the advancement {advancement}} event message
      */
@@ -83,7 +88,7 @@ public class ColorPalette implements IConfig {
         try (FileReader reader = new FileReader(this.path.toFile())) {
             palette = gson.fromJson(reader, ColorPalette.class);
         } catch (IOException e) {
-            System.err.println("Exception while reading the palette file: " + e.getMessage());
+            logger.error("Exception while reading the palette file: " + e.getMessage());
             throw e;
         }
 
@@ -109,7 +114,7 @@ public class ColorPalette implements IConfig {
 
             writer.write(gson.toJson(this));
         } catch (IOException e) {
-            System.err.println("Exception while writing the palette: " + e.getMessage());
+            logger.error("Exception while writing the palette: " + e.getMessage());
         }
     }
 
@@ -125,11 +130,11 @@ public class ColorPalette implements IConfig {
                     Files.createFile(path);
                     save();
                 } catch (IOException e) {
-                    RRDiscordBridge.logger.error("Exception while creating the palette file: ", e);
+                    logger.error("Exception while creating the palette file: ", e);
                 }
             }
         } catch (IOException e) {
-            RRDiscordBridge.logger.error("Exception while creating palette dir: ", e);
+            logger.error("Exception while creating palette dir: ", e);
         }
     }
 

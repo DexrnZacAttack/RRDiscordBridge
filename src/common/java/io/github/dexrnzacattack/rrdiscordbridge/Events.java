@@ -4,6 +4,7 @@ import static io.github.dexrnzacattack.rrdiscordbridge.RRDiscordBridge.instance;
 
 import io.github.dexrnzacattack.rrdiscordbridge.config.Settings;
 import io.github.dexrnzacattack.rrdiscordbridge.game.Advancement;
+import io.github.dexrnzacattack.rrdiscordbridge.impls.BroadcastPlayer;
 import io.github.dexrnzacattack.rrdiscordbridge.interfaces.ICancellable;
 import io.github.dexrnzacattack.rrdiscordbridge.interfaces.IPlayer;
 
@@ -138,6 +139,8 @@ public class Events {
      * @param player The player
      */
     public static void onPlayerLeave(IPlayer player) {
+        if (instance == null) return;
+
         instance.getBot()
                 .sendPlayerEvent(
                         Settings.Events.PLAYER_LEAVE,
@@ -157,6 +160,8 @@ public class Events {
      * @param reason The kick reason
      */
     public static void onPlayerKick(IPlayer player, String reason) {
+        if (instance == null) return;
+
         instance.getBot().setPlayerCount(instance.getServer().getOnlinePlayers().length - 1);
         instance.getBot()
                 .sendPlayerEvent(
@@ -183,7 +188,7 @@ public class Events {
             instance.getBot()
                     .sendPlayerMessage(
                             Settings.Events.ME_COMMAND,
-                            player.getName(),
+                            player,
                             String.format("_%s %s_", player.getName(), command.substring(4)));
 
         // /say
@@ -197,7 +202,7 @@ public class Events {
             instance.getBot()
                     .sendPlayerMessage(
                             Settings.Events.SAY_BROADCAST,
-                            "Server (Broadcast)",
+                            new BroadcastPlayer(),
                             instance.getSettings().broadcastSkinName,
                             command.substring(5));
     }
@@ -214,7 +219,7 @@ public class Events {
             instance.getBot()
                     .sendPlayerMessage(
                             Settings.Events.SAY_BROADCAST,
-                            "Server (Broadcast)",
+                            new BroadcastPlayer(),
                             instance.getSettings().broadcastSkinName,
                             command.substring(4));
     }
@@ -228,7 +233,7 @@ public class Events {
      */
     public static void onChatMessage(IPlayer sender, String message, ICancellable event) {
         if (instance.getSettings().enabledEvents.contains(Settings.Events.PLAYER_CHAT))
-            instance.getBot().sendPlayerMessage(sender.getName(), message, event);
+            instance.getBot().sendPlayerMessage(sender, message, event);
     }
 
     /**

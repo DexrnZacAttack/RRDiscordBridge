@@ -36,12 +36,19 @@ val Project.fabricVexParchmentVersion: String get() = properties["fabric_vex_par
 val Project.fabricVexMinecraftVersion: String get() = properties["fabric_vex_minecraft_version"].toString()
 val Project.fabricVexVersion: String get() = properties["fabric_vex_version"].toString()
 
-val Project.bungeecordVersion: String get() = properties["bungeecord_version"].toString()
 val Project.fabricVersion: String get() = properties["fabric_version"].toString()
 val Project.fabricLoaderVersion: String get() = properties["fabric_loader_version"].toString()
-val Project.forgeVersion: String get() = properties["forge_version"].toString()
+val Project.forgePotMinecraftVersion: String get() = properties["forge_pot_minecraft_version"].toString()
+val Project.forgePotVersion: String get() = properties["forge_pot_version"].toString()
+val Project.forgeTradeMinecraftVersion: String get() = properties["forge_trade_minecraft_version"].toString()
+val Project.forgeTradeVersion: String get() = properties["forge_trade_version"].toString()
+val Project.forgeTrailsMinecraftVersion: String get() = properties["forge_trails_minecraft_version"].toString()
+val Project.forgeTrailsVersion: String get() = properties["forge_trails_version"].toString()
+val Project.neoforgePotMinecraftVersion: String get() = properties["neoforge_pot_minecraft_version"].toString()
+val Project.neoforgePotVersion: String get() = properties["neoforge_pot_version"].toString()
+val Project.neoforgeTradeMinecraftVersion: String get() = properties["neoforge_trade_minecraft_version"].toString()
+val Project.neoforgeTradeVersion: String get() = properties["neoforge_trade_version"].toString()
 val Project.neoForgeVersion: String get() = properties["neoforge_version"].toString()
-val Project.paperVersion: String get() = properties["paper_version"].toString()
 
 val Project.poseidonVersion: String get() = properties["poseidon_version"].toString()
 
@@ -62,8 +69,5 @@ val Project.bukkitColorMcVersion: String get() = properties["bukkit_color_mc_ver
 
 val Project.bukkitVexVersion: String get() = properties["bukkit_vex_version"].toString()
 val Project.bukkitVexMcVersion: String get() = properties["bukkit_vex_mc_version"].toString()
-
-val Project.spongeVersion: String get() = properties["sponge_version"].toString()
-val Project.velocityVersion: String get() = properties["velocity_version"].toString()
 
 val Project.javaVersion: String get() = properties["java_version"].toString()

@@ -5,8 +5,8 @@ import static io.github.dexrnzacattack.rrdiscordbridge.RRDiscordBridge.logger;
 import static io.github.dexrnzacattack.rrdiscordbridge.discord.DiscordBot.getName;
 import static io.github.dexrnzacattack.rrdiscordbridge.discord.DiscordBot.trimDiscordMessage;
 
-import io.github.dexrnzacattack.rrdiscordbridge.chat.extension.result.DiscordChatExtensionResult;
 import io.github.dexrnzacattack.rrdiscordbridge.config.Settings;
+import io.github.dexrnzacattack.rrdiscordbridge.extension.result.ModifiableExtensionChatResult;
 
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -84,9 +84,9 @@ public class DiscordEventHandler extends ListenerAdapter {
                 && !sender.equals(instance.getBot().webhook.getId())) {
 
             String author =
-                    instance.getSettings().useDisplayNames
-                            ? event.getUser().getGlobalName()
-                            : event.getUser().getName();
+                    event.getMember() != null
+                            ? getName(event.getMember())
+                            : getName(event.getUser());
             instance.getServer()
                     .broadcastMessage(
                             String.format(
@@ -379,8 +379,15 @@ public class DiscordEventHandler extends ListenerAdapter {
         String authorId = event.getAuthor().getId();
 
         Message message = event.getMessage();
-        DiscordChatExtensionResult ext = instance.getChatExtensions().tryParseDiscord(message);
-        message = ext.message;
+
+        boolean sendMc = true;
+
+        if (instance.getBridgeExtensions() != null) {
+            ModifiableExtensionChatResult<Message> ext =
+                    instance.getBridgeExtensions().tryParseDiscord(message);
+            message = ext.message;
+            sendMc = ext.getShouldSendToMinecraft();
+        }
 
         if (message.getMember() != null) author = getName(message.getMember());
         else author = getName(message.getAuthor());
@@ -392,7 +399,7 @@ public class DiscordEventHandler extends ListenerAdapter {
             return;
         }
 
-        if (!ext.sendMc) return;
+        if (!sendMc) return;
 
         if (channel.equals(instance.getSettings().relayChannelId)
                 && !authorId.equals(instance.getBot().self.getId())

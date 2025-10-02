@@ -1,0 +1,27 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "io.github.dexrnzacattack.rrdiscordbridge.fabric.mixins",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [],
+  "client": [],
+  "server": [
+    "OnTradeAdvancementAwardMixin",
+    "OnVexAdvancementAwardMixin",
+    "OnAllayAdvancementAwardMixin",
+    "OnWildAdvancementAwardMixin",
+    "OnNetherAdvancementAwardMixin",
+    "OnChatMessageMixin",
+    "OnNetherPlayerCommandMixin",
+    "OnVexPlayerCommandMixin",
+    "OnAllayPlayerCommandMixin",
+    "OnWildPlayerCommandMixin",
+    "OnTradePlayerCommandMixin",
+    "OnDeathMixin",
+    "OnConsoleCommandMixin"
+  ],
+  "plugin": "io.github.dexrnzacattack.rrdiscordbridge.fabric.plugins.VersionMixinPlugin",
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

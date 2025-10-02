@@ -1,6 +1,7 @@
 package io.github.dexrnzacattack.rrdiscordbridge;
 
-import io.github.dexrnzacattack.rrdiscordbridge.chat.extension.ChatExtensions;
+import com.vdurmont.semver4j.Semver;
+
 import io.github.dexrnzacattack.rrdiscordbridge.command.CommandRegistry;
 import io.github.dexrnzacattack.rrdiscordbridge.command.commands.BroadcastCommand;
 import io.github.dexrnzacattack.rrdiscordbridge.command.commands.ChatExtensionsCommand;
@@ -9,7 +10,8 @@ import io.github.dexrnzacattack.rrdiscordbridge.command.commands.ReloadCommand;
 import io.github.dexrnzacattack.rrdiscordbridge.config.ConfigDirectory;
 import io.github.dexrnzacattack.rrdiscordbridge.config.Settings;
 import io.github.dexrnzacattack.rrdiscordbridge.discord.DiscordBot;
-import io.github.dexrnzacattack.rrdiscordbridge.impls.JavaLogger;
+import io.github.dexrnzacattack.rrdiscordbridge.extension.BridgeExtensions;
+import io.github.dexrnzacattack.rrdiscordbridge.impls.logging.JavaLogger;
 import io.github.dexrnzacattack.rrdiscordbridge.interfaces.ILogger;
 import io.github.dexrnzacattack.rrdiscordbridge.interfaces.IServer;
 
@@ -19,7 +21,6 @@ import me.scarsz.jdaappender.adapter.JavaLoggingAdapter;
 
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
-import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.EnumSet;
@@ -57,8 +58,8 @@ public class RRDiscordBridge {
     /** The plugin's settings */
     private Settings settings;
 
-    /** Registered chat extensions */
-    private ChatExtensions extensions;
+    /** Registered extensions */
+    private BridgeExtensions extensions;
 
     /** The server's supported features */
     private SupportedFeatures features;
@@ -150,8 +151,15 @@ public class RRDiscordBridge {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        // setup chat extensions
-        this.extensions = new ChatExtensions();
+
+        //        BridgeExtensionsRegisterEvent.register(OpChatExtension.class);
+        //        BridgeExtensionsRegisterEvent.register(WaypointExtension.class);
+
+        // setup extensions
+        this.extensions = new BridgeExtensions();
+
+        this.extensions.registerExtensions();
+        this.extensions.sort();
 
         // update player count (every minute)
         // https://stackoverflow.com/a/33073742
@@ -173,11 +181,20 @@ public class RRDiscordBridge {
 
     /** Sends a shutdown message and stops the Discord bot. */
     public void shutdown(boolean reloading) {
+        this.getBridgeExtensions().shutdown(this, reloading);
         if (this.playerCountUpdater != null) this.playerCountUpdater.shutdown();
 
         CompletableFuture<Void> eventFuture =
                 CompletableFuture.runAsync(
                         () -> {
+                            if (reloading)
+                                bot.sendEvent(
+                                        Settings.Events.PLUGIN_RELOAD,
+                                        new MessageEmbed.AuthorInfo(null, null, null, null),
+                                        null,
+                                        this.settings.colorPalette.pluginReload,
+                                        "Reloading RRDiscordBridge");
+
                             bot.sendEvent(
                                     Settings.Events.SERVER_STOP,
                                     new MessageEmbed.AuthorInfo(null, null, null, null),
@@ -212,9 +229,16 @@ public class RRDiscordBridge {
     }
 
     /**
-     * @return The instance of {@link ChatExtensions}
+     * @return The plugin's version
      */
-    public ChatExtensions getChatExtensions() {
+    public static Semver getSemver() {
+        return new Semver(BuildParameters.VERSION, Semver.SemverType.LOOSE);
+    }
+
+    /**
+     * @return The instance of {@link BridgeExtensions}
+     */
+    public BridgeExtensions getBridgeExtensions() {
         return extensions;
     }
 

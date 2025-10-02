@@ -4,20 +4,20 @@ import io.github.dexrnzacattack.rrdiscordbridge.game.Advancement;
 
 public class AdvancementType {
     public static Advancement.Type getType(net.minecraft.advancements.AdvancementType type) {
-        return switch (type) {
-            case TASK -> Advancement.Type.ADVANCEMENT;
-            case GOAL -> Advancement.Type.GOAL;
-            case CHALLENGE -> Advancement.Type.CHALLENGE;
-        };
+        switch (type) {
+            case GOAL: return Advancement.Type.GOAL;
+            case CHALLENGE: return Advancement.Type.CHALLENGE;
+            default: return Advancement.Type.ADVANCEMENT;
+        }
     }
 
     // had to name it differently otherwise I would get exception because it tries to call the upper
     // one for whatever reason
     public static Advancement.Type getTypeFromName(String name) {
-        return switch (name) {
-            case "goal" -> Advancement.Type.GOAL;
-            case "challenge" -> Advancement.Type.CHALLENGE;
-            default -> Advancement.Type.ADVANCEMENT;
-        };
+        switch (name) {
+            case "goal": return Advancement.Type.GOAL;
+            case "challenge": return Advancement.Type.CHALLENGE;
+            default: return Advancement.Type.ADVANCEMENT;
+        }
     }
 }

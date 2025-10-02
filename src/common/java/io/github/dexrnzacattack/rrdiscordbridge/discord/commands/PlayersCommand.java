@@ -30,16 +30,15 @@ public class PlayersCommand extends ListenerAdapter {
             IPlayer[] players = RRDiscordBridge.instance.getServer().getOnlinePlayers();
             StringBuilder playerList = new StringBuilder();
 
-            EmbedBuilder builder =
-                    new EmbedBuilder()
-                            .setTitle(
-                                    String.format(
-                                            "%s/%s player(s) online",
-                                            RRDiscordBridge.instance
-                                                    .getServer()
-                                                    .getOnlinePlayers()
-                                                    .length,
-                                            RRDiscordBridge.instance.getServer().getMaxPlayers()));
+            int limit = RRDiscordBridge.instance.getServer().getMaxPlayers();
+
+            String t =
+                    String.format(
+                            "%s%s player(s) online",
+                            RRDiscordBridge.instance.getServer().getOnlinePlayers().length,
+                            limit != -1 ? "/" + limit : "");
+
+            EmbedBuilder builder = new EmbedBuilder().setTitle(t);
 
             if (RRDiscordBridge.instance.getSettings().publicPlayerNames) {
                 Stream<IPlayer> p = Arrays.stream(players);

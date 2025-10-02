@@ -19,7 +19,7 @@ public class ModernMinecraftCommands {
     // I know you can register subcommands, but I would like to refactor the ChatExt command
     // before doing so.
     // I do intend on doing that as I would like Brigadier's command arg stuff to be usable.
-    // Plus, /cext list would be available to all.
+    // Plus, /rdbext list would be available to all.
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         // DISCORD
         dispatcher.register(
@@ -50,9 +50,9 @@ public class ModernMinecraftCommands {
                                                 ? 1
                                                 : 0));
 
-        // CEXT
+        // RDBEXT
         dispatcher.register(
-                literal(CEXT.getName())
+                literal(RDBEXT.getName())
                         .requires(source -> source.hasPermission(2))
                         .then(
                                 argument("args", greedyString())
@@ -60,7 +60,7 @@ public class ModernMinecraftCommands {
                                                 context ->
                                                         RRDiscordBridge.instance
                                                                         .getCommandRegistry()
-                                                                        .getCommand(CEXT)
+                                                                        .getCommand(RDBEXT)
                                                                         .invoke(
                                                                                 new CommandCaller(
                                                                                         context

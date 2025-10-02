@@ -1,2 +1,2 @@
-/** In-Game related classes */
+/** In-game related classes */
 package io.github.dexrnzacattack.rrdiscordbridge.game;

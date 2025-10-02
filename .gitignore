@@ -48,3 +48,4 @@ dependency-reduced-pom.xml
 /buildSrc/.gradle
 /tests
 /javadoc/generated
+/run

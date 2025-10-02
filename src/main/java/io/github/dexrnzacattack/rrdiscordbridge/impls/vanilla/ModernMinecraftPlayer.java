@@ -1,6 +1,7 @@
 package io.github.dexrnzacattack.rrdiscordbridge.impls.vanilla;
 
 import io.github.dexrnzacattack.rrdiscordbridge.interfaces.IPlayer;
+import io.github.dexrnzacattack.rrdiscordbridge.interfaces.IServer;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -30,5 +31,10 @@ public class ModernMinecraftPlayer implements IPlayer {
     @Override
     public boolean hasPlayedBefore() {
         return true;
+    }
+
+    @Override
+    public IServer getServer() {
+        return new ModernMinecraftServer(player.getServer());
     }
 }

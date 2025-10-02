@@ -1,29 +1,29 @@
 package io.github.dexrnzacattack.rrdiscordbridge.command.commands;
 
 import io.github.dexrnzacattack.rrdiscordbridge.RRDiscordBridge;
-import io.github.dexrnzacattack.rrdiscordbridge.chat.extension.IChatExtension;
 import io.github.dexrnzacattack.rrdiscordbridge.command.CommandRegistry;
 import io.github.dexrnzacattack.rrdiscordbridge.command.ICommand;
+import io.github.dexrnzacattack.rrdiscordbridge.extension.IBridgeExtension;
 import io.github.dexrnzacattack.rrdiscordbridge.interfaces.ICommandCaller;
 
-/** Handles chat extensions */
+/** Handles extensions */
 public class ChatExtensionsCommand implements ICommand {
     @Override
     public CommandRegistry.CommandName getCommandName() {
-        return CommandRegistry.CommandName.CEXT;
+        return CommandRegistry.CommandName.RDBEXT;
     }
 
     @Override
     public final String getDescription() {
-        return "Handles chat extensions";
+        return "Handles extensions";
     }
 
     public boolean invoke(ICommandCaller caller, String[] params) {
         if (params == null || params.length < 1) {
             caller.respond("§cNo subcommand given, valid options are:");
-            caller.respond("§eList§b - §fLists all chat extensions");
-            caller.respond("§eEnable <ext>§b - §fEnables a chat extension");
-            caller.respond("§eDisable <ext>§b - §fDisables a chat extension");
+            caller.respond("§eList§b - §fLists all extensions");
+            caller.respond("§eEnable <ext>§b - §fEnables a extension");
+            caller.respond("§eDisable <ext>§b - §fDisables a extension");
             caller.respond("§eInfo <ext>§b - §fDisplays info about a given extension");
             caller.respond("§eHelp§b - §fShows all subcommands");
             return true;
@@ -33,9 +33,9 @@ public class ChatExtensionsCommand implements ICommand {
 
         switch (commandName.toLowerCase()) {
             case "help":
-                caller.respond("§eList§b - §fLists all chat extensions");
-                caller.respond("§eEnable <ext>§b - §fEnables a chat extension");
-                caller.respond("§eDisable <ext>§b - §fDisables a chat extension");
+                caller.respond("§eList§b - §fLists all extensions");
+                caller.respond("§eEnable <ext>§b - §fEnables a extension");
+                caller.respond("§eDisable <ext>§b - §fDisables a extension");
                 caller.respond("§eHelp§b - §fShows this message");
                 break;
             case "info":
@@ -48,8 +48,8 @@ public class ChatExtensionsCommand implements ICommand {
                     return true;
                 }
 
-                IChatExtension iExt =
-                        RRDiscordBridge.instance.getChatExtensions().getExtension(iExtName);
+                IBridgeExtension iExt =
+                        RRDiscordBridge.instance.getBridgeExtensions().getExtension(iExtName);
 
                 if (iExt == null) {
                     caller.respond(String.format("§cUnknown extension '%s'", iExtName));
@@ -58,33 +58,40 @@ public class ChatExtensionsCommand implements ICommand {
 
                 caller.respond(
                         String.format(
-                                "%s%s§b - §r%s",
-                                RRDiscordBridge.instance.getChatExtensions().isEnabled(iExt)
+                                "%s%s §7(v%s)§b - §r%s",
+                                RRDiscordBridge.instance.getBridgeExtensions().isEnabled(iExt)
                                         ? "§a"
                                         : "§c",
                                 iExt.getName(),
-                                iExt.getDescription()));
+                                iExt.getVersion(),
+                                iExt.getAuthor()));
+
+                caller.respond(iExt.getDescription());
                 break;
             case "list":
                 caller.respond(
                         String.format(
-                                "§bChat Extensions (%s enabled, %s total)",
+                                "§bExtensions (%s enabled, %s total)",
                                 RRDiscordBridge.instance
-                                        .getChatExtensions()
+                                        .getBridgeExtensions()
                                         .enabledExtensions
                                         .size(),
-                                RRDiscordBridge.instance.getChatExtensions().extensions.size()));
+                                RRDiscordBridge.instance.getBridgeExtensions().extensions.size()));
                 // print enabled first
-                for (IChatExtension ext :
-                        RRDiscordBridge.instance.getChatExtensions().enabledExtensions) {
-                    caller.respond("§a" + ext.getName());
+                for (IBridgeExtension ext :
+                        RRDiscordBridge.instance.getBridgeExtensions().enabledExtensions) {
+                    caller.respond(String.format("§a%s §b(v%s)", ext.getName(), ext.getVersion()));
                 }
 
-                for (IChatExtension ext : RRDiscordBridge.instance.getChatExtensions().extensions) {
+                for (IBridgeExtension ext :
+                        RRDiscordBridge.instance.getBridgeExtensions().extensions) {
                     if (!RRDiscordBridge.instance
-                            .getChatExtensions()
+                            .getBridgeExtensions()
                             .enabledExtensions
-                            .contains(ext)) caller.respond("§c" + ext.getName());
+                            .contains(ext))
+                        caller.respond(
+                                String.format("§c%s §b(v%s)", ext.getName(), ext.getVersion()));
+                    ;
                 }
                 break;
             case "disable":
@@ -97,25 +104,25 @@ public class ChatExtensionsCommand implements ICommand {
                     return true;
                 }
 
-                IChatExtension dExt =
-                        RRDiscordBridge.instance.getChatExtensions().getExtension(dExtName);
+                IBridgeExtension dExt =
+                        RRDiscordBridge.instance.getBridgeExtensions().getExtension(dExtName);
 
                 if (dExt == null) {
                     caller.respond(String.format("§cUnknown extension '%s'", dExtName));
                     return true;
                 }
 
-                if (!RRDiscordBridge.instance.getChatExtensions().isEnabled(dExt)) {
+                if (!RRDiscordBridge.instance.getBridgeExtensions().isEnabled(dExt)) {
                     caller.respond(
                             String.format("§cExtension '%s' is already disabled", dExt.getName()));
                     return true;
                 }
 
                 RRDiscordBridge.instance
-                        .getChatExtensions()
+                        .getBridgeExtensions()
                         .disable(
                                 RRDiscordBridge.instance
-                                        .getChatExtensions()
+                                        .getBridgeExtensions()
                                         .getExtension(dExtName));
                 caller.respond(String.format("§bDisabled extension '%s'", dExt.getName()));
                 break;
@@ -129,23 +136,26 @@ public class ChatExtensionsCommand implements ICommand {
                     return true;
                 }
 
-                IChatExtension ext =
-                        RRDiscordBridge.instance.getChatExtensions().getExtension(extName);
+                IBridgeExtension ext =
+                        RRDiscordBridge.instance.getBridgeExtensions().getExtension(extName);
 
                 if (ext == null) {
                     caller.respond(String.format("§cUnknown extension '%s'", extName));
                     return true;
                 }
 
-                if (RRDiscordBridge.instance.getChatExtensions().isEnabled(ext)) {
+                if (RRDiscordBridge.instance.getBridgeExtensions().isEnabled(ext)) {
                     caller.respond(
                             String.format("§cExtension '%s' is already enabled", ext.getName()));
                     return true;
                 }
 
                 RRDiscordBridge.instance
-                        .getChatExtensions()
-                        .enable(RRDiscordBridge.instance.getChatExtensions().getExtension(extName));
+                        .getBridgeExtensions()
+                        .enable(
+                                RRDiscordBridge.instance
+                                        .getBridgeExtensions()
+                                        .getExtension(extName));
                 caller.respond(String.format("§bEnabled extension '%s'", ext.getName()));
                 break;
             default:

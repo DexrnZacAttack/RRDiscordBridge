@@ -24,7 +24,7 @@ jobs:
           path: Nostalgica-Reverie/Website
 
       - uses: actions/setup-java@v4
-        name: Setup Java 8
+        name: Setup Java 21
         with:
           distribution: 'temurin' # See 'Supported distributions' for available options
           java-version: '21'

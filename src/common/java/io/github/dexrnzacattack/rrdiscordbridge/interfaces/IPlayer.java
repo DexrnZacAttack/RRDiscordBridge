@@ -23,4 +23,7 @@ public interface IPlayer {
      * @return {@code true} if the player has joined the server before
      */
     boolean hasPlayedBefore();
+
+    /** Gets the player's Server instance */
+    IServer getServer();
 }

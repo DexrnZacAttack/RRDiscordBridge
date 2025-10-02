@@ -1,6 +1,7 @@
 package io.github.dexrnzacattack.rrdiscordbridge.discord.commands;
 
 import io.github.dexrnzacattack.rrdiscordbridge.RRDiscordBridge;
+import io.github.dexrnzacattack.rrdiscordbridge.game.FormattingCodes;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -54,11 +55,19 @@ public class AboutCommand extends ListenerAdapter {
         }
 
         if (RRDiscordBridge.instance.getSupportedFeatures().canGetServerName())
-            builder.addField("Name", RRDiscordBridge.instance.getServer().getName(), true);
+            builder.addField(
+                    "Name",
+                    FormattingCodes.removeDcFormatting(
+                            RRDiscordBridge.instance.getServer().getName()),
+                    true);
 
         // doesn't work in 1.1-
         if (RRDiscordBridge.instance.getSupportedFeatures().canGetServerMotd())
-            builder.addField("MOTD", RRDiscordBridge.instance.getServer().getMotd(), true);
+            builder.addField(
+                    "MOTD",
+                    FormattingCodes.removeDcFormatting(
+                            RRDiscordBridge.instance.getServer().getMotd()),
+                    true);
 
         builder.addField("Version", RRDiscordBridge.instance.getServer().getVersion(), true);
 
