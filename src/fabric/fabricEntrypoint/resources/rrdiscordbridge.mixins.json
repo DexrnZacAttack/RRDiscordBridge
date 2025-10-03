@@ -8,13 +8,10 @@
   "server": [
     "OnTradeAdvancementAwardMixin",
     "OnVexAdvancementAwardMixin",
-    "OnAllayAdvancementAwardMixin",
-    "OnWildAdvancementAwardMixin",
     "OnNetherAdvancementAwardMixin",
     "OnChatMessageMixin",
     "OnNetherPlayerCommandMixin",
     "OnVexPlayerCommandMixin",
-    "OnAllayPlayerCommandMixin",
     "OnWildPlayerCommandMixin",
     "OnTradePlayerCommandMixin",
     "OnDeathMixin",

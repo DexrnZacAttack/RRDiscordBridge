@@ -26,6 +26,7 @@ public class OnChatMessageMixin {
             cancellable = true)
     public void onChatMessage(ServerboundChatPacket packet, CallbackInfo ci) {
         if (packet.getMessage().startsWith("/")) return;
+
         PlayerChatEvent.EVENT.invoker().onPlayerChat(this.player, packet.getMessage(), ci);
     }
 }

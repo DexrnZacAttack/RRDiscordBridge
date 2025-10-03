@@ -6,9 +6,9 @@ import io.github.dexrnzacattack.rrdiscordbridge.Events;
 import io.github.dexrnzacattack.rrdiscordbridge.RRDiscordBridge;
 import io.github.dexrnzacattack.rrdiscordbridge.SupportedFeatures;
 import io.github.dexrnzacattack.rrdiscordbridge.config.ConfigDirectory;
-import io.github.dexrnzacattack.rrdiscordbridge.fabric.events.AdvancementAwardEventNether;
+import io.github.dexrnzacattack.rrdiscordbridge.fabric.events.AdvancementAwardEvent;
 import io.github.dexrnzacattack.rrdiscordbridge.fabric.events.PlayerChatEvent;
-import io.github.dexrnzacattack.rrdiscordbridge.fabric.events.PlayerCommandEventNether;
+import io.github.dexrnzacattack.rrdiscordbridge.fabric.events.PlayerCommandEvent;
 import io.github.dexrnzacattack.rrdiscordbridge.fabric.impls.CancellableCallbackInfo;
 import io.github.dexrnzacattack.rrdiscordbridge.fabric.impls.FabricNetherPlayer;
 import io.github.dexrnzacattack.rrdiscordbridge.fabric.impls.FabricNetherServer;
@@ -18,7 +18,6 @@ import io.github.dexrnzacattack.rrdiscordbridge.impls.vanilla.ModernMinecraftCom
 import io.github.dexrnzacattack.rrdiscordbridge.impls.vanilla.advancement.AdvancementType;
 
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
-import net.minecraft.advancements.DisplayInfo;
 import net.minecraft.server.MinecraftServer;
 
 import org.apache.logging.log4j.LogManager;
@@ -53,22 +52,20 @@ public class FabricNetherMod implements IFabricMod {
                             new FabricNetherPlayer(p), m, new CancellableCallbackInfo(c));
                 });
 
-        PlayerCommandEventNether.EVENT.register(
+        PlayerCommandEvent.EVENT.register(
                 (p, s, c) -> {
                     Events.onPlayerCommand(new FabricNetherPlayer(p), "/" + s);
                 });
 
-        AdvancementAwardEventNether.EVENT.register(
-                (p, a) -> {
-                    DisplayInfo info = a.getDisplay();
-
-                    if (info == null) return;
+        AdvancementAwardEvent.EVENT.register(
+                (p, a, d) -> {
+                    if (d == null) return;
 
                     Events.onPlayerAchievement(
-                            AdvancementType.getTypeFromName(info.getFrame().getName()),
+                            AdvancementType.getTypeFromName(d.getFrame().getName()),
                             new FabricNetherPlayer(p),
-                            info.getTitle().getString(),
-                            info.getDescription().getString());
+                            d.getTitle().getString(),
+                            d.getDescription().getString());
                 });
     }
 

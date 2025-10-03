@@ -1,6 +1,6 @@
 package io.github.dexrnzacattack.rrdiscordbridge.fabric.mixins;
 
-import io.github.dexrnzacattack.rrdiscordbridge.fabric.events.PlayerCommandEventTrade;
+import io.github.dexrnzacattack.rrdiscordbridge.fabric.events.PlayerCommandEvent;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
@@ -23,6 +23,6 @@ public class OnTradePlayerCommandMixin {
                             target =
                                     "Lnet/minecraft/server/MinecraftServer;getCommands()Lnet/minecraft/commands/Commands;"))
     public void onPlayerCommand(String command, CallbackInfo ci) {
-        PlayerCommandEventTrade.EVENT.invoker().onPlayerCommand(this.player, command, ci);
+        PlayerCommandEvent.EVENT.invoker().onPlayerCommand(this.player, command, ci);
     }
 }

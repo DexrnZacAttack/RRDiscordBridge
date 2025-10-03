@@ -1,6 +1,6 @@
 package io.github.dexrnzacattack.rrdiscordbridge.fabric.mixins;
 
-import io.github.dexrnzacattack.rrdiscordbridge.fabric.events.PlayerCommandEventVex;
+import io.github.dexrnzacattack.rrdiscordbridge.fabric.events.PlayerCommandEvent;
 
 import net.minecraft.network.chat.LastSeenMessages;
 import net.minecraft.network.protocol.game.ServerboundChatCommandPacket;
@@ -30,7 +30,7 @@ public class OnVexPlayerCommandMixin {
             ServerboundChatCommandPacket serverboundChatCommandPacket,
             Optional<LastSeenMessages> lastSeenMessages,
             CallbackInfo ci) {
-        PlayerCommandEventVex.EVENT
+        PlayerCommandEvent.EVENT
                 .invoker()
                 .onPlayerCommand(this.player, serverboundChatCommandPacket.command(), ci);
     }

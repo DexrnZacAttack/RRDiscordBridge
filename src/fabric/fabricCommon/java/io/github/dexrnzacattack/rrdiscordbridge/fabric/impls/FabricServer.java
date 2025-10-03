@@ -10,10 +10,11 @@ import net.minecraft.server.MinecraftServer;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
-public class FabricAllayServer extends ModernMinecraftServer {
+public class FabricServer extends ModernMinecraftServer {
 
-    public FabricAllayServer(MinecraftServer server) {
+    public FabricServer(MinecraftServer server) {
         super(server);
     }
 
@@ -21,8 +22,18 @@ public class FabricAllayServer extends ModernMinecraftServer {
     public IPlayer[] getOnlinePlayers() {
         return PlayerLookup.all(server).stream()
                 .filter(Objects::nonNull)
-                .map(FabricAllayPlayer::new)
+                .map(FabricPlayer::new)
                 .toArray(IPlayer[]::new);
+    }
+
+    @Override
+    public IPlayer getPlayer(String name) {
+        return new FabricPlayer(server.getPlayerList().getPlayerByName(name));
+    }
+
+    @Override
+    public IPlayer getPlayer(UUID id) {
+        return new FabricPlayer(server.getPlayerList().getPlayer(id));
     }
 
     @Override

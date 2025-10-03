@@ -3,14 +3,12 @@ package io.github.dexrnzacattack.rrdiscordbridge.forge;
 import io.github.dexrnzacattack.rrdiscordbridge.Events;
 import io.github.dexrnzacattack.rrdiscordbridge.forge.impls.ForgeCancellable;
 import io.github.dexrnzacattack.rrdiscordbridge.forge.impls.ForgePlayer;
-import io.github.dexrnzacattack.rrdiscordbridge.impls.vanilla.ModernMinecraftCommands;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.CommandEvent;
-import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;

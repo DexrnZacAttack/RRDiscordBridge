@@ -1,11 +1,11 @@
 package io.github.dexrnzacattack.rrdiscordbridge.fabric.impls;
 
-import io.github.dexrnzacattack.rrdiscordbridge.impls.vanilla.ModernMinecraftPlayer;
+import io.github.dexrnzacattack.rrdiscordbridge.interfaces.IServer;
 
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
 
-public class FabricNetherPlayer extends ModernMinecraftPlayer {
+public class FabricNetherPlayer extends FabricPlayer {
     public FabricNetherPlayer(ServerPlayer player) {
         super(player);
     }
@@ -13,5 +13,10 @@ public class FabricNetherPlayer extends ModernMinecraftPlayer {
     @Override
     public void sendMessage(String message) {
         player.displayClientMessage(new TextComponent(message), false);
+    }
+
+    @Override
+    public IServer getServer() {
+        return new FabricNetherServer(player.getServer());
     }
 }

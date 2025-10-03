@@ -1,6 +1,6 @@
 package io.github.dexrnzacattack.rrdiscordbridge.fabric.mixins;
 
-import io.github.dexrnzacattack.rrdiscordbridge.fabric.events.PlayerCommandEventNether;
+import io.github.dexrnzacattack.rrdiscordbridge.fabric.events.PlayerCommandEvent;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
@@ -17,6 +17,6 @@ public class OnNetherPlayerCommandMixin {
 
     @Inject(method = "handleCommand", at = @At("TAIL"), cancellable = true)
     public void onPlayerCommand(String command, CallbackInfo ci) {
-        PlayerCommandEventNether.EVENT.invoker().onPlayerCommand(this.player, command, ci);
+        PlayerCommandEvent.EVENT.invoker().onPlayerCommand(this.player, command, ci);
     }
 }

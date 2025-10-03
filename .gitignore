@@ -49,3 +49,4 @@ dependency-reduced-pom.xml
 /tests
 /javadoc/generated
 /run
+/libs

@@ -21,7 +21,7 @@ public enum FabricMods {
     WILD(
             FabricWildMod::new,
             new String[] {
-                "OnWildAdvancementAwardMixin",
+                "OnVexAdvancementAwardMixin",
                 "OnWildPlayerCommandMixin",
                 "OnDeathMixin",
                 "OnConsoleCommandMixin"
@@ -30,7 +30,7 @@ public enum FabricMods {
     ALLAY(
             FabricAllayMod::new,
             new String[] {
-                "OnAllayAdvancementAwardMixin",
+                "OnVexAdvancementAwardMixin",
                 "OnAllayPlayerCommandMixin",
                 "OnDeathMixin",
                 "OnConsoleCommandMixin"

@@ -7,8 +7,8 @@ import com.vdurmont.semver4j.Semver;
 import io.github.dexrnzacattack.rrdiscordbridge.RRDiscordBridge;
 import io.github.dexrnzacattack.rrdiscordbridge.forge.multiversion.ForgeModsFactory;
 import io.github.dexrnzacattack.rrdiscordbridge.forge.multiversion.IForgeMod;
-
 import io.github.dexrnzacattack.rrdiscordbridge.impls.vanilla.ModernMinecraftCommands;
+
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.event.server.ServerStoppingEvent;

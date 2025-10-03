@@ -6,10 +6,10 @@ import io.github.dexrnzacattack.rrdiscordbridge.Events;
 import io.github.dexrnzacattack.rrdiscordbridge.RRDiscordBridge;
 import io.github.dexrnzacattack.rrdiscordbridge.SupportedFeatures;
 import io.github.dexrnzacattack.rrdiscordbridge.config.ConfigDirectory;
-import io.github.dexrnzacattack.rrdiscordbridge.fabric.events.AdvancementAwardEventTrade;
-import io.github.dexrnzacattack.rrdiscordbridge.fabric.events.PlayerCommandEventTrade;
-import io.github.dexrnzacattack.rrdiscordbridge.fabric.impls.FabricTradePlayer;
-import io.github.dexrnzacattack.rrdiscordbridge.fabric.impls.FabricTradeServer;
+import io.github.dexrnzacattack.rrdiscordbridge.fabric.events.AdvancementAwardEvent;
+import io.github.dexrnzacattack.rrdiscordbridge.fabric.events.PlayerCommandEvent;
+import io.github.dexrnzacattack.rrdiscordbridge.fabric.impls.FabricPlayer;
+import io.github.dexrnzacattack.rrdiscordbridge.fabric.impls.FabricServer;
 import io.github.dexrnzacattack.rrdiscordbridge.fabric.multiversion.IFabricMod;
 import io.github.dexrnzacattack.rrdiscordbridge.impls.Cancellable;
 import io.github.dexrnzacattack.rrdiscordbridge.impls.logging.SLF4JLogger;
@@ -18,9 +18,6 @@ import io.github.dexrnzacattack.rrdiscordbridge.impls.vanilla.advancement.Advanc
 
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
-import net.minecraft.advancements.Advancement;
-import net.minecraft.advancements.DisplayInfo;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 
 import org.slf4j.LoggerFactory;
@@ -31,7 +28,7 @@ public class FabricTradeMod implements IFabricMod {
         // ctor
         RRDiscordBridge.instance =
                 new RRDiscordBridge(
-                        new FabricTradeServer(server),
+                        new FabricServer(server),
                         new SLF4JLogger(LoggerFactory.getLogger("RRDiscordBridge")),
                         ConfigDirectory.MOD);
 
@@ -59,30 +56,26 @@ public class FabricTradeMod implements IFabricMod {
                     Cancellable c = new Cancellable();
 
                     if (t.signedContent().startsWith("/"))
-                        Events.onPlayerCommand(new FabricTradePlayer(p), t.signedContent());
-                    else Events.onChatMessage(new FabricTradePlayer(p), t.signedContent(), c);
+                        Events.onPlayerCommand(new FabricPlayer(p), t.signedContent());
+                    else Events.onChatMessage(new FabricPlayer(p), t.signedContent(), c);
 
                     return !c.isCancelled();
                 });
 
-        PlayerCommandEventTrade.EVENT.register(
+        PlayerCommandEvent.EVENT.register(
                 (p, s, c) -> {
-                    Events.onPlayerCommand(new FabricTradePlayer(p), "/" + s);
+                    Events.onPlayerCommand(new FabricPlayer(p), "/" + s);
                 });
 
-        AdvancementAwardEventTrade.EVENT.register(
-                (p, a, i) -> {
-                    Advancement adv = a.value();
-                    DisplayInfo info = adv.display().orElse(null);
-
-                    String description = null;
-                    if (info != null) description = info.getDescription().getString();
+        AdvancementAwardEvent.EVENT.register(
+                (p, a, d) -> {
+                    if (d == null) return;
 
                     Events.onPlayerAchievement(
-                            AdvancementType.getType(i.getType()),
-                            new FabricTradePlayer(p),
-                            adv.name().orElse(Component.literal("")).getString(),
-                            description);
+                            AdvancementType.getType(d.getType()),
+                            new FabricPlayer(p),
+                            d.getTitle().getString(),
+                            d.getDescription().getString());
                 });
     }
 }

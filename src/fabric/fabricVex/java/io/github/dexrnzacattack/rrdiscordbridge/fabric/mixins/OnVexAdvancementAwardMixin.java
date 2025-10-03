@@ -1,6 +1,6 @@
 package io.github.dexrnzacattack.rrdiscordbridge.fabric.mixins;
 
-import io.github.dexrnzacattack.rrdiscordbridge.fabric.events.AdvancementAwardEventVex;
+import io.github.dexrnzacattack.rrdiscordbridge.fabric.events.AdvancementAwardEvent;
 
 import net.minecraft.advancements.Advancement;
 import net.minecraft.server.PlayerAdvancements;
@@ -25,6 +25,8 @@ public class OnVexAdvancementAwardMixin {
                                     "Lnet/minecraft/server/players/PlayerList;broadcastSystemMessage(Lnet/minecraft/network/chat/Component;Z)V"))
     private void onAdvancementAward(
             Advancement advancement, String criterionKey, CallbackInfoReturnable<Boolean> cir) {
-        AdvancementAwardEventVex.EVENT.invoker().onAdvancementAward(this.player, advancement);
+        AdvancementAwardEvent.EVENT
+                .invoker()
+                .onAdvancementAward(this.player, advancement, advancement.getDisplay());
     }
 }

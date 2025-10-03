@@ -1,6 +1,6 @@
 package io.github.dexrnzacattack.rrdiscordbridge.fabric.mixins;
 
-import io.github.dexrnzacattack.rrdiscordbridge.fabric.events.PlayerCommandEventWild;
+import io.github.dexrnzacattack.rrdiscordbridge.fabric.events.PlayerCommandEvent;
 
 import net.minecraft.network.protocol.game.ServerboundChatCommandPacket;
 import net.minecraft.server.level.ServerPlayer;
@@ -25,7 +25,7 @@ public class OnWildPlayerCommandMixin {
                                     "Lnet/minecraft/server/MinecraftServer;getCommands()Lnet/minecraft/commands/Commands;"))
     public void onPlayerCommand(
             ServerboundChatCommandPacket serverboundChatCommandPacket, CallbackInfo ci) {
-        PlayerCommandEventWild.EVENT
+        PlayerCommandEvent.EVENT
                 .invoker()
                 .onPlayerCommand(this.player, serverboundChatCommandPacket.command(), ci);
     }

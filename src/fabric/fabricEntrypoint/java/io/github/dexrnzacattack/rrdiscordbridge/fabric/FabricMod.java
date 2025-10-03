@@ -6,7 +6,7 @@ import io.github.dexrnzacattack.rrdiscordbridge.Events;
 import io.github.dexrnzacattack.rrdiscordbridge.RRDiscordBridge;
 import io.github.dexrnzacattack.rrdiscordbridge.fabric.events.ConsoleCommandEvent;
 import io.github.dexrnzacattack.rrdiscordbridge.fabric.events.PlayerDeathEvent;
-import io.github.dexrnzacattack.rrdiscordbridge.fabric.impls.FabricVexPlayer;
+import io.github.dexrnzacattack.rrdiscordbridge.fabric.impls.FabricPlayer;
 import io.github.dexrnzacattack.rrdiscordbridge.fabric.multiversion.FabricModsFactory;
 import io.github.dexrnzacattack.rrdiscordbridge.fabric.multiversion.IFabricMod;
 
@@ -52,10 +52,10 @@ public class FabricMod implements ModInitializer {
 
     public void initCommonEvents() {
         ServerPlayConnectionEvents.JOIN.register(
-                (i, s, mcs) -> Events.onPlayerJoin(new FabricVexPlayer(i.player)));
+                (i, s, mcs) -> Events.onPlayerJoin(new FabricPlayer(i.player)));
 
         ServerPlayConnectionEvents.DISCONNECT.register(
-                (i, s) -> Events.onPlayerLeave(new FabricVexPlayer(i.player)));
+                (i, s) -> Events.onPlayerLeave(new FabricPlayer(i.player)));
 
         ServerLifecycleEvents.SERVER_STOPPED.register(
                 t -> RRDiscordBridge.instance.shutdown(false));
@@ -66,6 +66,6 @@ public class FabricMod implements ModInitializer {
                 });
 
         PlayerDeathEvent.EVENT.register(
-                (p, c) -> Events.onPlayerDeath(new FabricVexPlayer(p), c.getString()));
+                (p, c) -> Events.onPlayerDeath(new FabricPlayer(p), c.getString()));
     }
 }

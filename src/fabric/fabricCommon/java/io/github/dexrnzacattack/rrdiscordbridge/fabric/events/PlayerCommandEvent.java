@@ -6,13 +6,13 @@ import net.minecraft.server.level.ServerPlayer;
 
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-public interface PlayerCommandEventTrade {
-    Event<PlayerCommandEventTrade> EVENT =
+public interface PlayerCommandEvent {
+    Event<PlayerCommandEvent> EVENT =
             EventFactory.createArrayBacked(
-                    PlayerCommandEventTrade.class,
+                    PlayerCommandEvent.class,
                     (listeners) ->
                             (player, message, ci) -> {
-                                for (PlayerCommandEventTrade listener : listeners) {
+                                for (PlayerCommandEvent listener : listeners) {
                                     listener.onPlayerCommand(player, message, ci);
                                 }
                             });

@@ -66,6 +66,13 @@ val common: SourceSet by sourceSets.creating {
 // it's FUN!!!!
 fun getCompileOnly(n: String) = configurations.findByName(n) ?: configurations.create(n)
 
+/** Creates a SourceSet
+ *
+ * @param n SourceSet name
+ * @param f Subfolder (under src) where the SourceSet code is stored
+ *
+ * @return The source set
+ */
 fun createSourceSet(n: String, f: String): SourceSet {
     val s = sourceSets.create(n)
     s.java.srcDir("src/${f}/${n}/java")
@@ -76,6 +83,7 @@ fun createSourceSet(n: String, f: String): SourceSet {
 /* Fabric */
 data class FabricProj(
     val name: String,
+    val deps: List<String>,
     val apiVersion: String,
     val minecraftVersion: String,
     val parchmentMinecraft: String,
@@ -84,13 +92,14 @@ data class FabricProj(
 )
 
 val fabricProjects = listOf(
-    FabricProj("fabricEntrypoint", fabricVersion, minecraftVersion, parchmentMinecraft, parchmentVersion, listOf("api-base", "lifecycle-events-v1", "message-api-v1", "networking-api-v1", "entity-events-v1", "command-api-v2")),
+    FabricProj("fabricCommon", listOf(), fabricVersion, minecraftVersion, parchmentMinecraft, parchmentVersion, listOf("api-base", "lifecycle-events-v1", "message-api-v1", "networking-api-v1", "entity-events-v1", "command-api-v2")),
+    FabricProj("fabricEntrypoint", listOf(), fabricVersion, minecraftVersion, parchmentMinecraft, parchmentVersion, listOf("api-base", "lifecycle-events-v1", "message-api-v1", "networking-api-v1", "entity-events-v1", "command-api-v2")),
 
-    FabricProj("fabricTrade", fabricVersion, minecraftVersion, parchmentMinecraft, parchmentVersion, listOf("api-base", "lifecycle-events-v1", "message-api-v1", "networking-api-v1", "entity-events-v1", "command-api-v2")), // Fabric 1.20.2+
-    FabricProj("fabricNether", fabricNetherVersion, fabricNetherMinecraftVersion, fabricNetherParchmentMinecraft, fabricNetherParchmentVersion, listOf("api-base", "lifecycle-events-v1", "networking-api-v1", "entity-events-v1", "command-api-v1")), // Fabric 1.16-1.18.2
-    FabricProj("fabricWild", fabricWildVersion, fabricWildMinecraftVersion, fabricWildParchmentMinecraft, fabricWildParchmentVersion, listOf("api-base", "lifecycle-events-v1", "message-api-v1", "networking-api-v1", "entity-events-v1", "command-api-v2")), // Fabric 1.19
-    FabricProj("fabricAllay", fabricAllayVersion, fabricAllayMinecraftVersion, fabricAllayParchmentMinecraft, fabricAllayParchmentVersion, listOf("api-base", "lifecycle-events-v1", "message-api-v1", "networking-api-v1", "entity-events-v1", "command-api-v2")), // Fabric 1.19.1-1.19.2
-    FabricProj("fabricVex", fabricVexVersion, fabricVexMinecraftVersion, fabricVexParchmentMinecraft, fabricVexParchmentVersion, listOf("api-base", "lifecycle-events-v1", "message-api-v1", "networking-api-v1", "entity-events-v1", "command-api-v2")), // Fabric 1.19.3-1.20.1
+    FabricProj("fabricNether", listOf(), fabricNetherVersion, fabricNetherMinecraftVersion, fabricNetherParchmentMinecraft, fabricNetherParchmentVersion, listOf("api-base", "lifecycle-events-v1", "networking-api-v1", "entity-events-v1", "command-api-v1")), // Fabric 1.16-1.18.2
+    FabricProj("fabricWild", listOf("fabricVex"), fabricWildVersion, fabricWildMinecraftVersion, fabricWildParchmentMinecraft, fabricWildParchmentVersion, listOf("api-base", "lifecycle-events-v1", "message-api-v1", "networking-api-v1", "entity-events-v1", "command-api-v2")), // Fabric 1.19
+    FabricProj("fabricAllay", listOf("fabricVex"), fabricAllayVersion, fabricAllayMinecraftVersion, fabricAllayParchmentMinecraft, fabricAllayParchmentVersion, listOf("api-base", "lifecycle-events-v1", "message-api-v1", "networking-api-v1", "entity-events-v1", "command-api-v2")), // Fabric 1.19.1-1.19.2
+    FabricProj("fabricVex", listOf(), fabricVexVersion, fabricVexMinecraftVersion, fabricVexParchmentMinecraft, fabricVexParchmentVersion, listOf("api-base", "lifecycle-events-v1", "message-api-v1", "networking-api-v1", "entity-events-v1", "command-api-v2")), // Fabric 1.19.3-1.20.1
+    FabricProj("fabricTrade", listOf(), fabricVersion, minecraftVersion, parchmentMinecraft, parchmentVersion, listOf("api-base", "lifecycle-events-v1", "message-api-v1", "networking-api-v1", "entity-events-v1", "command-api-v2")), // Fabric 1.20.2+
 )
 
 val fabricSourceSets: Map<String, SourceSet> = fabricProjects.associate { p ->
@@ -102,7 +111,7 @@ val fabricCompileOnly: Map<String, Configuration> = fabricProjects.associate { p
 }
 
 val fabricVersions: Map<SourceSet, FabricProj> = fabricProjects.associate { p ->
-    fabricSourceSets.getValue(p.name) to FabricProj(p.name, p.apiVersion, p.minecraftVersion, p.parchmentMinecraft, p.parchmentVersion, p.fabricApiDeps)
+    fabricSourceSets.getValue(p.name) to FabricProj(p.name, p.deps, p.apiVersion, p.minecraftVersion, p.parchmentMinecraft, p.parchmentVersion, p.fabricApiDeps)
 }
 
 /* Bukkit */
@@ -270,6 +279,19 @@ dependencies {
         if (n != "fabricEntrypoint") {
             // entrypoint can access all
             add(fabricCompileOnly.getValue("fabricEntrypoint").name, s.output)
+        }
+        if (n != "fabricCommon") {
+            // all can access common
+            add(fabricCompileOnly.getValue(n).name, fabricSourceSets.getValue("fabricCommon").output)
+        }
+    }
+
+    // deps
+    fabricProjects.forEach { p ->
+        p.deps.map { depName -> fabricSourceSets.getValue(depName) }.forEach { d ->
+            if (d.name != p.name) {
+                add(fabricCompileOnly.getValue(p.name).name, d.output)
+            }
         }
     }
 

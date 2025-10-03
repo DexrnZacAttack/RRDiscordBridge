@@ -6,10 +6,10 @@ import io.github.dexrnzacattack.rrdiscordbridge.Events;
 import io.github.dexrnzacattack.rrdiscordbridge.RRDiscordBridge;
 import io.github.dexrnzacattack.rrdiscordbridge.SupportedFeatures;
 import io.github.dexrnzacattack.rrdiscordbridge.config.ConfigDirectory;
-import io.github.dexrnzacattack.rrdiscordbridge.fabric.events.AdvancementAwardEventAllay;
-import io.github.dexrnzacattack.rrdiscordbridge.fabric.events.PlayerCommandEventAllay;
-import io.github.dexrnzacattack.rrdiscordbridge.fabric.impls.FabricAllayPlayer;
-import io.github.dexrnzacattack.rrdiscordbridge.fabric.impls.FabricAllayServer;
+import io.github.dexrnzacattack.rrdiscordbridge.fabric.events.AdvancementAwardEvent;
+import io.github.dexrnzacattack.rrdiscordbridge.fabric.events.PlayerCommandEvent;
+import io.github.dexrnzacattack.rrdiscordbridge.fabric.impls.FabricPlayer;
+import io.github.dexrnzacattack.rrdiscordbridge.fabric.impls.FabricServer;
 import io.github.dexrnzacattack.rrdiscordbridge.fabric.multiversion.IFabricMod;
 import io.github.dexrnzacattack.rrdiscordbridge.impls.Cancellable;
 import io.github.dexrnzacattack.rrdiscordbridge.impls.logging.SLF4JLogger;
@@ -18,7 +18,6 @@ import io.github.dexrnzacattack.rrdiscordbridge.impls.vanilla.advancement.Advanc
 
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
-import net.minecraft.advancements.DisplayInfo;
 import net.minecraft.server.MinecraftServer;
 
 import org.slf4j.LoggerFactory;
@@ -32,28 +31,26 @@ public class FabricAllayMod implements IFabricMod {
                     String message = t.signedContent().decorated().getString();
 
                     if (message.startsWith("/"))
-                        Events.onPlayerCommand(new FabricAllayPlayer(p), message);
-                    else Events.onChatMessage(new FabricAllayPlayer(p), message, c);
+                        Events.onPlayerCommand(new FabricPlayer(p), message);
+                    else Events.onChatMessage(new FabricPlayer(p), message, c);
 
                     return !c.isCancelled();
                 });
 
-        PlayerCommandEventAllay.EVENT.register(
+        PlayerCommandEvent.EVENT.register(
                 (p, s, c) -> {
-                    Events.onPlayerCommand(new FabricAllayPlayer(p), "/" + s);
+                    Events.onPlayerCommand(new FabricPlayer(p), "/" + s);
                 });
 
-        AdvancementAwardEventAllay.EVENT.register(
-                (p, a) -> {
-                    DisplayInfo info = a.getDisplay();
-
-                    if (info == null) return;
+        AdvancementAwardEvent.EVENT.register(
+                (p, a, d) -> {
+                    if (d == null) return;
 
                     Events.onPlayerAchievement(
-                            AdvancementType.getTypeFromName(info.getFrame().getName()),
-                            new FabricAllayPlayer(p),
-                            info.getTitle().getString(),
-                            info.getDescription().getString());
+                            AdvancementType.getTypeFromName(d.getFrame().getName()),
+                            new FabricPlayer(p),
+                            d.getTitle().getString(),
+                            d.getDescription().getString());
                 });
     }
 
@@ -68,7 +65,7 @@ public class FabricAllayMod implements IFabricMod {
         // ctor
         RRDiscordBridge.instance =
                 new RRDiscordBridge(
-                        new FabricAllayServer(server),
+                        new FabricServer(server),
                         new SLF4JLogger(LoggerFactory.getLogger("RRDiscordBridge")),
                         ConfigDirectory.MOD);
 

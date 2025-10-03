@@ -1,6 +1,6 @@
 package io.github.dexrnzacattack.rrdiscordbridge.fabric.mixins;
 
-import io.github.dexrnzacattack.rrdiscordbridge.fabric.events.AdvancementAwardEventNether;
+import io.github.dexrnzacattack.rrdiscordbridge.fabric.events.AdvancementAwardEvent;
 
 import net.minecraft.advancements.Advancement;
 import net.minecraft.server.PlayerAdvancements;
@@ -25,6 +25,8 @@ public class OnNetherAdvancementAwardMixin {
                                     "Lnet/minecraft/server/players/PlayerList;broadcastMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/ChatType;Ljava/util/UUID;)V"))
     private void onAdvancementAward(
             Advancement advancement, String criterionKey, CallbackInfoReturnable<Boolean> cir) {
-        AdvancementAwardEventNether.EVENT.invoker().onAdvancementAward(this.player, advancement);
+        AdvancementAwardEvent.EVENT
+                .invoker()
+                .onAdvancementAward(this.player, advancement, advancement.getDisplay());
     }
 }

@@ -6,8 +6,8 @@ import io.github.dexrnzacattack.rrdiscordbridge.Events;
 import io.github.dexrnzacattack.rrdiscordbridge.RRDiscordBridge;
 import io.github.dexrnzacattack.rrdiscordbridge.SupportedFeatures;
 import io.github.dexrnzacattack.rrdiscordbridge.config.ConfigDirectory;
-import io.github.dexrnzacattack.rrdiscordbridge.fabric.events.AdvancementAwardEventWild;
-import io.github.dexrnzacattack.rrdiscordbridge.fabric.events.PlayerCommandEventWild;
+import io.github.dexrnzacattack.rrdiscordbridge.fabric.events.AdvancementAwardEvent;
+import io.github.dexrnzacattack.rrdiscordbridge.fabric.events.PlayerCommandEvent;
 import io.github.dexrnzacattack.rrdiscordbridge.fabric.impls.FabricWildPlayer;
 import io.github.dexrnzacattack.rrdiscordbridge.fabric.impls.FabricWildServer;
 import io.github.dexrnzacattack.rrdiscordbridge.fabric.multiversion.IFabricMod;
@@ -18,7 +18,6 @@ import io.github.dexrnzacattack.rrdiscordbridge.impls.vanilla.advancement.Advanc
 
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
-import net.minecraft.advancements.DisplayInfo;
 import net.minecraft.server.MinecraftServer;
 
 import org.slf4j.LoggerFactory;
@@ -38,22 +37,20 @@ public class FabricWildMod implements IFabricMod {
                     return !c.isCancelled();
                 });
 
-        PlayerCommandEventWild.EVENT.register(
+        PlayerCommandEvent.EVENT.register(
                 (p, s, c) -> {
                     Events.onPlayerCommand(new FabricWildPlayer(p), "/" + s);
                 });
 
-        AdvancementAwardEventWild.EVENT.register(
-                (p, a) -> {
-                    DisplayInfo info = a.getDisplay();
-
-                    if (info == null) return;
+        AdvancementAwardEvent.EVENT.register(
+                (p, a, d) -> {
+                    if (d == null) return;
 
                     Events.onPlayerAchievement(
-                            AdvancementType.getTypeFromName(info.getFrame().getName()),
+                            AdvancementType.getTypeFromName(d.getFrame().getName()),
                             new FabricWildPlayer(p),
-                            info.getTitle().getString(),
-                            info.getDescription().getString());
+                            d.getTitle().getString(),
+                            d.getDescription().getString());
                 });
     }
 

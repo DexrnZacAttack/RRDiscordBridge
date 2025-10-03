@@ -1,6 +1,6 @@
 package io.github.dexrnzacattack.rrdiscordbridge.fabric.mixins;
 
-import io.github.dexrnzacattack.rrdiscordbridge.fabric.events.PlayerCommandEventAllay;
+import io.github.dexrnzacattack.rrdiscordbridge.fabric.events.PlayerCommandEvent;
 
 import net.minecraft.network.protocol.game.ServerboundChatCommandPacket;
 import net.minecraft.server.level.ServerPlayer;
@@ -25,7 +25,7 @@ public class OnAllayPlayerCommandMixin {
                                     "Lnet/minecraft/server/network/ServerGamePacketListenerImpl;performChatCommand(Lnet/minecraft/network/protocol/game/ServerboundChatCommandPacket;)V"))
     public void onPlayerCommand(
             ServerboundChatCommandPacket serverboundChatCommandPacket, CallbackInfo ci) {
-        PlayerCommandEventAllay.EVENT
+        PlayerCommandEvent.EVENT
                 .invoker()
                 .onPlayerCommand(this.player, serverboundChatCommandPacket.command(), ci);
     }

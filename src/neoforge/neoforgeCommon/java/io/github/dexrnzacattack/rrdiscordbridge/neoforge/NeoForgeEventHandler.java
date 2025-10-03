@@ -1,7 +1,6 @@
 package io.github.dexrnzacattack.rrdiscordbridge.neoforge;
 
 import io.github.dexrnzacattack.rrdiscordbridge.Events;
-import io.github.dexrnzacattack.rrdiscordbridge.impls.vanilla.ModernMinecraftCommands;
 import io.github.dexrnzacattack.rrdiscordbridge.neoforge.impls.NeoForgeCancellable;
 import io.github.dexrnzacattack.rrdiscordbridge.neoforge.impls.NeoForgePlayer;
 
@@ -11,7 +10,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.CommandEvent;
-import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.ServerChatEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
