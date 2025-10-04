@@ -4,6 +4,7 @@ import io.github.dexrnzacattack.rrdiscordbridge.Events;
 import io.github.dexrnzacattack.rrdiscordbridge.bukkit.impls.CakeBukkitPlayer;
 
 import org.bukkit.Player;
+import org.bukkit.Entity;
 import org.bukkit.craftbukkit.CraftPlayer;
 import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;

@@ -1,6 +1,8 @@
 package org.bukkit.event;
 
 public abstract class Event {
+    public Event(Type t) {}
+
     public static enum Priority {
         High,
     }

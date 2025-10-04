@@ -50,6 +50,7 @@ val Project.neoforgeTradeMinecraftVersion: String get() = properties["neoforge_t
 val Project.neoforgeTradeVersion: String get() = properties["neoforge_trade_version"].toString()
 val Project.neoForgeVersion: String get() = properties["neoforge_version"].toString()
 
+val Project.useLocalBukkitCake: Boolean get() = properties["use_local_bukkit_cake"].toString().toBoolean() // do I need to do toString?
 val Project.poseidonVersion: String get() = properties["poseidon_version"].toString()
 
 val Project.bukkitCookieVersion: String get() = properties["bukkit_cookie_version"].toString()

@@ -272,6 +272,10 @@ dependencies {
             // all can access common
             add(bukkitCompileOnly.getValue(n).name, bukkitSourceSets.getValue("bukkitCommon").output)
         }
+        if (n == "bukkitCake" && useLocalBukkitCake) {
+            println("Using local jar for bukkitCake")
+            add(bukkitCompileOnly.getValue(n).name, files("libs/bukkitCake.jar"))
+        }
     }
 
     // fabrick
