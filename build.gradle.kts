@@ -408,12 +408,12 @@ fabricVersions.forEach { it ->
         archiveClassifier.set("${it.key.name}-relocated")
         destinationDirectory.set(layout.buildDirectory.dir("tmp/fabric/relocated"))
         relocate(
-            "io.github.dexrnzacattack.rrdiscordbridge.mixins.vanilla",
-            "io.github.dexrnzacattack.rrdiscordbridge.mixins.vanilla.intermediary"
+            "me.dexrn.rrdiscordbridge.mixins.vanilla",
+            "me.dexrn.rrdiscordbridge.mixins.vanilla.intermediary"
         )
         relocate(
-            "io.github.dexrnzacattack.rrdiscordbridge.impls.vanilla",
-            "io.github.dexrnzacattack.rrdiscordbridge.impls.vanilla.intermediary"
+            "me.dexrn.rrdiscordbridge.impls.vanilla",
+            "me.dexrn.rrdiscordbridge.impls.vanilla.intermediary"
         )
     }
 }
@@ -446,12 +446,12 @@ forgeVersions.forEach { it ->
         archiveClassifier.set("${it.key.name}-relocated")
         destinationDirectory.set(layout.buildDirectory.dir("tmp/forge/relocated"))
         relocate(
-            "io.github.dexrnzacattack.rrdiscordbridge.mixins.vanilla",
-            "io.github.dexrnzacattack.rrdiscordbridge.mixins.vanilla.srg"
+            "me.dexrn.rrdiscordbridge.mixins.vanilla",
+            "me.dexrn.rrdiscordbridge.mixins.vanilla.srg"
         )
         relocate(
-            "io.github.dexrnzacattack.rrdiscordbridge.impls.vanilla",
-            "io.github.dexrnzacattack.rrdiscordbridge.impls.vanilla.srg"
+            "me.dexrn.rrdiscordbridge.impls.vanilla",
+            "me.dexrn.rrdiscordbridge.impls.vanilla.srg"
         )
     }
 }
@@ -488,7 +488,7 @@ bukkitVersions.forEach { set ->
 
         from(sourceSets.main.get().output)
 
-        group = "build"
+        group = JavaBasePlugin.BUILD_TASK_NAME
 //        archiveBaseName.set(set.value.jarName)
 
 //        destinationDirectory.set(layout.buildDirectory.dir("src/${set.value.name}"))
@@ -512,14 +512,14 @@ tasks.withType<JavaCompile> {
 }
 
 tasks.register("buildBukkit") {
-    group = "build"
+    group = JavaBasePlugin.BUILD_TASK_NAME
     bukkitVersions.forEach { set ->
         dependsOn("${set.value.name}Jar")
     }
 }
 
 tasks.register("buildMod") {
-    group = "build"
+    group = JavaBasePlugin.BUILD_TASK_NAME
     dependsOn("shadowJar")
 }
 
@@ -529,7 +529,7 @@ tasks.named("build").configure {
 }
 
 tasks.register<Jar>("buildCommon") {
-    group = "build"
+    group = JavaBasePlugin.BUILD_TASK_NAME
     dependsOn("commonShadowJar")
 }
 
@@ -664,6 +664,11 @@ tasks.shadowJar {
     relocate(
         "kotlin",
         "relocated.kotlin"
+    )
+
+    relocate(
+        "org.apache.commons.lang3",
+        "relocated.org.apache.commons.lang3"
     )
 
 //    relocate(

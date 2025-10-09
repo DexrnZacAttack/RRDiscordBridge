@@ -1,23 +1,23 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "io.github.dexrnzacattack.rrdiscordbridge.fabric.mixins",
+  "package": "me.dexrn.rrdiscordbridge.fabric.mixins",
   "compatibilityLevel": "JAVA_17",
   "mixins": [],
   "client": [],
   "server": [
-    "OnTradeAdvancementAwardMixin",
-    "OnVexAdvancementAwardMixin",
-    "OnNetherAdvancementAwardMixin",
-    "OnChatMessageMixin",
-    "OnNetherPlayerCommandMixin",
-    "OnVexPlayerCommandMixin",
-    "OnWildPlayerCommandMixin",
-    "OnTradePlayerCommandMixin",
-    "OnDeathMixin",
-    "OnConsoleCommandMixin"
+    "me.dexrn.rrdiscordbridge.fabric.mixins.OnTradeAdvancementAwardMixin",
+    "me.dexrn.rrdiscordbridge.fabric.mixins.OnVexAdvancementAwardMixin",
+    "me.dexrn.rrdiscordbridge.fabric.mixins.OnNetherAdvancementAwardMixin",
+    "me.dexrn.rrdiscordbridge.fabric.mixins.OnChatMessageMixin",
+    "me.dexrn.rrdiscordbridge.fabric.mixins.OnNetherPlayerCommandMixin",
+    "me.dexrn.rrdiscordbridge.fabric.mixins.OnVexPlayerCommandMixin",
+    "me.dexrn.rrdiscordbridge.fabric.mixins.OnWildPlayerCommandMixin",
+    "me.dexrn.rrdiscordbridge.fabric.mixins.OnTradePlayerCommandMixin",
+    "me.dexrn.rrdiscordbridge.fabric.mixins.OnDeathMixin",
+    "me.dexrn.rrdiscordbridge.fabric.mixins.OnConsoleCommandMixin"
   ],
-  "plugin": "io.github.dexrnzacattack.rrdiscordbridge.fabric.plugins.VersionMixinPlugin",
+  "plugin": "me.dexrn.rrdiscordbridge.fabric.plugins.VersionMixinPlugin",
   "injectors": {
     "defaultRequire": 1
   }

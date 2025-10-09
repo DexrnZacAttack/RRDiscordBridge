@@ -1,0 +1,5 @@
+package me.dexrn.rrdiscordbridge;
+
+public class BuildParameters {
+    public static final String VERSION = "{{ version }}";
+}

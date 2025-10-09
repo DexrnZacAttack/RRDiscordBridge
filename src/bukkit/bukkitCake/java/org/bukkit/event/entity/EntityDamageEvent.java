@@ -22,9 +22,7 @@ public class EntityDamageEvent extends org.bukkit.event.entity.EntityEvent imple
     }
 
     @Override
-    public void setCancelled(boolean b) {
-
-    }
+    public void setCancelled(boolean b) {}
 
     public static enum DamageCause {
         STUB

@@ -4,7 +4,7 @@ author: ${author}
 description: ${description}
 website: ${homepage_url}
 api-version: 1.12
-main: io.github.dexrnzacattack.rrdiscordbridge.bukkit.ColorBukkitPlugin
+main: me.dexrn.rrdiscordbridge.bukkit.ColorBukkitPlugin
 commands:
   discord:
     description: Gives the discord invite link (if enabled)

@@ -5,7 +5,7 @@
 
 Discord bridge/relay plugin that [supports old Minecraft versions and server software](#tested-versions) (Beta 1.4-Release 1.21.1)
 
-For config info, check out [this page](https://rrdiscordbridge.nostalgica.net/javadocs/io/github/dexrnzacattack/rrdiscordbridge/config/Settings.html#field-summary).
+For config info, check out [this page](https://rrdiscordbridge.nostalgica.net/javadocs/me/dexrn/rrdiscordbridge/config/Settings.html#field-summary).
 
 Download: https://modrinth.com/plugin/rrdiscordbridge
 
@@ -46,15 +46,15 @@ See [versions.md](/versions.md) for more info.
   - Built-in extensions:
     - Waypoint embed (Waypoints)
       - Allows for Xaero's Minimap and JourneyMap/VoxelMap waypoints to be embedded in the relay channel.
-      - ### [See config options](https://rrdiscordbridge.nostalgica.net/javadocs/io/github/dexrnzacattack/rrdiscordbridge/extension/extensions/options/WaypointExtensionOptions.html#field-summary)
+      - **[See config options](https://rrdiscordbridge.nostalgica.net/javadocs/me/dexrn/rrdiscordbridge/extensions/options/WaypointExtensionOptions.html#field-summary)**
 
     - Operator Chat (OpChat)
       - Allows for communicating between ops and optionally a (likely private) discord channel.
       - Inspired by MCGalaxy's OPChat feature.
       - Syntax: ## \<msg\>
-      - ### [See config options](https://rrdiscordbridge.nostalgica.net/javadocs/io/github/dexrnzacattack/rrdiscordbridge/extension/extensions/options/OpChatExtensionOptions.html#field-summary)
+      - **[See config options](https://rrdiscordbridge.nostalgica.net/javadocs/me/dexrn/rrdiscordbridge/extensions/options/OpChatExtensionOptions.html#field-summary)**
   - ### For development info, see [the example repo](https://github.com/Nostalgica-Reverie/RRDiscordBridgeExampleExtension)
-- Customizable [color palette](https://rrdiscordbridge.nostalgica.net/javadocs/io/github/dexrnzacattack/rrdiscordbridge/config/ColorPalette.html#field-summary) for messages sent to Discord
+- Customizable [color palette](https://rrdiscordbridge.nostalgica.net/javadocs/me/dexrn/rrdiscordbridge/config/ColorPalette.html#field-summary) for messages sent to Discord
 
 ## Supported versions
 ### CraftBukkit (and forks)
@@ -82,7 +82,8 @@ See [versions.md](/versions.md) for more info.
     - `neoforge.mods.toml` was unused until 1.20.5 
   - [X] 1.20.5-1.21.8
 ### Forge
-  - [ ] 1.20.2
+  - [X] 1.20.1
+  - [X] 1.20.2
   - [X] 1.20.3-1.21.8
 ### Ornithe
   - Coming soon (hopefully)

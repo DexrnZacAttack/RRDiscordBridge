@@ -50,3 +50,4 @@ dependency-reduced-pom.xml
 /javadoc/generated
 /run
 /libs
+/out

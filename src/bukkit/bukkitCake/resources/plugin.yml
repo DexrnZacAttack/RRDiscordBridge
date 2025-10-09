@@ -3,7 +3,7 @@ version: ${version}
 author: ${author}
 description: ${description}
 website: ${homepage_url}
-main: io.github.dexrnzacattack.rrdiscordbridge.bukkit.CakeBukkitPlugin
+main: me.dexrn.rrdiscordbridge.bukkit.CakeBukkitPlugin
 commands:
   discord:
     description: Gives the discord invite link (if enabled)

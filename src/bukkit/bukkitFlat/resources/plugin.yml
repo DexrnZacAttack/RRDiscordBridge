@@ -4,7 +4,7 @@ author: ${author}
 description: ${description}
 website: ${homepage_url}
 api-version: 1.1
-main: io.github.dexrnzacattack.rrdiscordbridge.bukkit.FlatBukkitPlugin
+main: me.dexrn.rrdiscordbridge.bukkit.FlatBukkitPlugin
 commands:
   discord:
     description: Gives the discord invite link (if enabled)

@@ -1,5 +1,3 @@
 package org.bukkit;
 
-public interface Entity {
-
-}
+public interface Entity {}

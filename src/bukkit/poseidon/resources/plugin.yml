@@ -3,7 +3,7 @@ version: ${version}
 author: ${author}
 description: ${description}
 website: ${homepage_url}
-main: io.github.dexrnzacattack.rrdiscordbridge.bukkit.PoseidonPlugin
+main: me.dexrn.rrdiscordbridge.bukkit.PoseidonPlugin
 commands:
   discord:
     description: Gives the discord invite link (if enabled)

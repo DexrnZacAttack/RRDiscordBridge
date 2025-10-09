@@ -1,0 +1,13 @@
+package me.dexrn.rrdiscordbridge.fabric.multiversion;
+
+import com.vdurmont.semver4j.Semver;
+
+import net.minecraft.server.MinecraftServer;
+
+public interface IFabricMod {
+    void init(MinecraftServer server, Semver minecraftVersion);
+
+    void preInit();
+
+    void setupBridge(MinecraftServer server);
+}

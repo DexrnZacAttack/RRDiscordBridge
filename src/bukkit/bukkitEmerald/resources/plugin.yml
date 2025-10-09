@@ -4,7 +4,7 @@ author: ${author}
 description: ${description}
 website: ${homepage_url}
 api-version: 1.3.1
-main: io.github.dexrnzacattack.rrdiscordbridge.bukkit.EmeraldBukkitPlugin
+main: me.dexrn.rrdiscordbridge.bukkit.EmeraldBukkitPlugin
 commands:
   discord:
     description: Gives the discord invite link (if enabled)
