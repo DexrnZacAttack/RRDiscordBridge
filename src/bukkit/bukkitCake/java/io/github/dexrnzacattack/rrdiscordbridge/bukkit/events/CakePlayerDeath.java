@@ -11,6 +11,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityListener;
 
+// unused
 public class CakePlayerDeath extends EntityListener {
     public void onEntityDamage(EntityDamageEvent event) {
         if (event.getEntity() instanceof CraftPlayer) {

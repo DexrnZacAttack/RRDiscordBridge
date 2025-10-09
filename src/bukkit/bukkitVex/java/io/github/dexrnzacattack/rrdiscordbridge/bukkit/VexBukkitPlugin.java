@@ -12,7 +12,7 @@ import org.bukkit.Bukkit;
 
 public class VexBukkitPlugin extends BukkitPlugin {
     @Override
-    public void setupBridge() {
+    protected void setupBridge() {
         // ctor
         RRDiscordBridge.instance =
                 new RRDiscordBridge(
@@ -26,7 +26,7 @@ public class VexBukkitPlugin extends BukkitPlugin {
     }
 
     @Override
-    public void registerEvents() {
+    protected void registerEvents() {
         pluginManager.registerEvents(new BukkitEventHandler(), this);
         pluginManager.registerEvents(new RealmsPlayerChat(), this);
         pluginManager.registerEvents(new PlayerDeath(), this);

@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 
 import java.util.logging.Handler;
 
+/** SLF4J based logger */
 public class SLF4JLogger implements ILogger {
     private final Logger logger;
 

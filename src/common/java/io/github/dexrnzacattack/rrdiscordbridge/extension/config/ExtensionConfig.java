@@ -11,7 +11,9 @@ import com.vdurmont.semver4j.Semver;
 import io.github.dexrnzacattack.rrdiscordbridge.RRDiscordBridge;
 import io.github.dexrnzacattack.rrdiscordbridge.config.IConfig;
 import io.github.dexrnzacattack.rrdiscordbridge.config.adapter.SemverTypeAdapter;
-import io.github.dexrnzacattack.rrdiscordbridge.extension.config.options.BaseExtensionOptions;
+import io.github.dexrnzacattack.rrdiscordbridge.extension.config.options.AbstractExtensionOptions;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -21,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+/** Wraps the extension options */
 public class ExtensionConfig implements IConfig {
     protected transient String name;
     protected transient Semver version;
@@ -32,7 +35,15 @@ public class ExtensionConfig implements IConfig {
 
     @Expose()
     @SerializedName(value = "options")
-    public BaseExtensionOptions options;
+    public AbstractExtensionOptions options;
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append(version)
+                .append(options)
+                .toString();
+    }
 
     ExtensionConfig(Semver version, String name, Path configPath) {
         this.version = version;
@@ -42,7 +53,7 @@ public class ExtensionConfig implements IConfig {
         CONFIG_PATH = configPath;
     }
 
-    public ExtensionConfig(BaseExtensionOptions options, Semver version, String name) {
+    public ExtensionConfig(AbstractExtensionOptions options, Semver version, String name) {
         this.version = version;
         this.configVersion = version;
 
@@ -57,11 +68,11 @@ public class ExtensionConfig implements IConfig {
                         name + ".json");
     }
 
-    public <T extends BaseExtensionOptions> Gson getGson(
-            Class<? extends BaseExtensionOptions> type) {
+    public <T extends AbstractExtensionOptions> Gson getGson(
+            Class<? extends AbstractExtensionOptions> type) {
 
-        RuntimeTypeAdapterFactory<BaseExtensionOptions> configAdapterFactory =
-                RuntimeTypeAdapterFactory.of(BaseExtensionOptions.class, "type", true)
+        RuntimeTypeAdapterFactory<AbstractExtensionOptions> configAdapterFactory =
+                RuntimeTypeAdapterFactory.of(AbstractExtensionOptions.class, "type", true)
                         .registerSubtype(type, this.name);
 
         GsonBuilder builder =
@@ -109,7 +120,7 @@ public class ExtensionConfig implements IConfig {
 
     @Override
     public ExtensionConfig upgrade() {
-        this.options = (BaseExtensionOptions) this.options.upgrade(version, configVersion);
+        this.options = (AbstractExtensionOptions) this.options.upgrade(version, configVersion);
         return this;
     }
 

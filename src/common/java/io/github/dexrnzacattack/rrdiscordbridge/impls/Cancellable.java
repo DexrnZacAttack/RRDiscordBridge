@@ -2,6 +2,7 @@ package io.github.dexrnzacattack.rrdiscordbridge.impls;
 
 import io.github.dexrnzacattack.rrdiscordbridge.interfaces.ICancellable;
 
+/** Cancellable class */
 public class Cancellable implements ICancellable {
     private boolean cancelled = false;
 

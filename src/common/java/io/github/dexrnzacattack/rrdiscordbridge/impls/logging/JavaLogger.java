@@ -5,6 +5,7 @@ import io.github.dexrnzacattack.rrdiscordbridge.interfaces.ILogger;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 
+/** The standard Java Logger */
 public class JavaLogger implements ILogger {
     private final java.util.logging.Logger logger;
 

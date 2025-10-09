@@ -49,7 +49,7 @@ public class CakeBukkitPlugin extends JavaPlugin {
                                 doesMethodExist("org.bukkit.Server", "getConsoleSender")));
     }
 
-    public void registerEvents() {
+    protected void registerEvents() {
         // can't put them all in one file it seems
         pluginManager.registerEvent(
                 Event.Type.PLAYER_CHAT, new CakePlayerChat(), Event.Priority.High, this);
@@ -60,30 +60,30 @@ public class CakeBukkitPlugin extends JavaPlugin {
         //                this);
         pluginManager.registerEvent(
                 Event.Type.PLAYER_JOIN, new CakePlayerJoin(), Event.Priority.High, this);
-        pluginManager.registerEvent(
-                Event.Type.ENTITY_DAMAGED, new CakePlayerDeath(), Event.Priority.High, this);
-        pluginManager.registerEvent(
-                Event.Type.ENTITY_DAMAGEDBY_BLOCK,
-                new CakePlayerDeath(),
-                Event.Priority.High,
-                this);
-        pluginManager.registerEvent(
-                Event.Type.ENTITY_DAMAGEDBY_ENTITY,
-                new CakePlayerDeath(),
-                Event.Priority.High,
-                this);
+//        pluginManager.registerEvent(
+//                Event.Type.ENTITY_DAMAGED, new CakePlayerDeath(), Event.Priority.High, this);
+//        pluginManager.registerEvent(
+//                Event.Type.ENTITY_DAMAGEDBY_BLOCK,
+//                new CakePlayerDeath(),
+//                Event.Priority.High,
+//                this);
+//        pluginManager.registerEvent(
+//                Event.Type.ENTITY_DAMAGEDBY_ENTITY,
+//                new CakePlayerDeath(),
+//                Event.Priority.High,
+//                this);
         //        pluginManager.registerEvent(
         //                Event.Type.PLAYER_KICK, new OldPlayerKick(), Event.Priority.High, this);
         pluginManager.registerEvent(
                 Event.Type.PLAYER_QUIT, new CakePlayerLeave(), Event.Priority.High, this);
-        pluginManager.registerEvent(
-                Event.Type.ENTITY_DEATH, new CakePlayerDeath(), Event.Priority.High, this);
+//        pluginManager.registerEvent(
+//                Event.Type.ENTITY_DEATH, new CakePlayerDeath(), Event.Priority.High, this);
         //        pluginManager.registerEvent(
         //                Event.Type.SERVER_COMMAND, new OldServerCommand(), Event.Priority.High,
         // this);
     }
 
-    public void setupBridge() {
+    protected void setupBridge() {
         // ctor
         RRDiscordBridge.instance =
                 new RRDiscordBridge(

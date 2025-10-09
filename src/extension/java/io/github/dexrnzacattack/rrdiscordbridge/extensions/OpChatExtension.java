@@ -9,9 +9,13 @@ import com.vdurmont.semver4j.Semver;
 
 import io.github.dexrnzacattack.rrdiscordbridge.RRDiscordBridge;
 import io.github.dexrnzacattack.rrdiscordbridge.discord.DiscordBot;
-import io.github.dexrnzacattack.rrdiscordbridge.extension.IBridgeExtension;
+import io.github.dexrnzacattack.rrdiscordbridge.extension.AbstractBridgeExtension;
 import io.github.dexrnzacattack.rrdiscordbridge.extension.config.ExtensionConfig;
-import io.github.dexrnzacattack.rrdiscordbridge.extension.result.ModifiableExtensionChatResult;
+import io.github.dexrnzacattack.rrdiscordbridge.extension.event.events.chat.DiscordChatEvent;
+import io.github.dexrnzacattack.rrdiscordbridge.extension.event.events.ExtensionEvents;
+import io.github.dexrnzacattack.rrdiscordbridge.extension.event.events.chat.MinecraftChatEvent;
+import io.github.dexrnzacattack.rrdiscordbridge.extension.event.registry.ExtensionEventRegistry;
+import io.github.dexrnzacattack.rrdiscordbridge.extension.types.ModifiableMessage;
 import io.github.dexrnzacattack.rrdiscordbridge.extensions.options.OpChatExtensionOptions;
 import io.github.dexrnzacattack.rrdiscordbridge.interfaces.IPlayer;
 
@@ -26,8 +30,8 @@ import java.io.IOException;
 import java.util.List;
 
 // opchatchatchatchatchatchatextension
-public class OpChatExtension implements IBridgeExtension {
-    private final Semver version = new Semver("1.1.0", Semver.SemverType.LOOSE);
+public class OpChatExtension extends AbstractBridgeExtension {
+    private final Semver version = new Semver("1.2.0", Semver.SemverType.LOOSE);
     public WebhookClient opcWebhookClient;
     public Webhook opcWebhook;
     private ExtensionConfig config;
@@ -99,44 +103,36 @@ public class OpChatExtension implements IBridgeExtension {
                 });
         opcBuilder.setWait(true);
         opcWebhookClient = opcBuilder.build();
+
+        ExtensionEventRegistry.getInstance().register(this, ExtensionEvents.MINECRAFT_CHAT, this::onMinecraftChat);
+        ExtensionEventRegistry.getInstance().register(this, ExtensionEvents.DISCORD_CHAT, this::onDiscordChat);
     }
 
-    @Override
-    public void onDisable() {
-        this.config = null;
-        opcWebhook = null;
+    public void onMinecraftChat(MinecraftChatEvent ev) {
+        final IPlayer player = ev.getPlayer();
+        final ModifiableMessage<String> res = ev.getResult();
 
-        if (opcWebhookClient != null) {
-            opcWebhookClient.close();
-            opcWebhookClient = null;
-        }
-    }
+        if (!res.message.trim().startsWith("##")) return;
 
-    @Override
-    public void onMinecraftChat(
-            IPlayer player, String message, ModifiableExtensionChatResult<String> event) {
-        if (!message.trim().startsWith("##")) return;
-
-        message = message.trim().substring(2).trim();
+        res.message = res.message.trim().substring(2).trim();
 
         // in-case the player just sends "##" or "## "
-        if (message.isEmpty()) return;
+        if (res.message.isEmpty()) return;
 
-        event.cancelSendToDiscord();
-        event.cancelSendToMinecraft();
+        res.cancelSendToDiscord();
+        res.cancelSendToMinecraft();
 
         ExtensionConfig config = getConfig();
-        if (config != null)
-            if (!player.isOperator()
-                    && !((OpChatExtensionOptions) config.options).nonOpsCanSendMessages) {
-                player.sendMessage("§cOnly operators are allowed to talk in OpChat.");
-                return;
-            }
+        if (config == null || !player.isOperator()
+                && !((OpChatExtensionOptions) config.options).nonOpsCanSendMessages) {
+            player.sendMessage("§cOnly operators are allowed to talk in OpChat.");
+            return;
+        }
 
-        String opcMsg = String.format("§b[§r%s §b-> §6OPs§b] §r%s", player.getName(), message);
+        String opcMsg = String.format("§b[§r%s §b-> §6OPs§b] §r%s", player.getName(), res.message);
 
         // so that Console can display the messages
-        RRDiscordBridge.logger.info(String.format("[%s -> OPs] %s", player.getName(), message));
+        RRDiscordBridge.logger.info(String.format("[%s -> OPs] %s", player.getName(), res.message));
 
         player.sendMessage(opcMsg);
         for (IPlayer p : player.getServer().getOnlinePlayers()) {
@@ -147,18 +143,20 @@ public class OpChatExtension implements IBridgeExtension {
         }
 
         if (!instance.getSettings().opchatChannelId.isEmpty()) {
-            DiscordBot.sendPlayerMessage(player.getName(), message, opcWebhookClient);
+            DiscordBot.sendPlayerMessage(player.getName(), res.message, opcWebhookClient);
         }
     }
 
-    @Override
-    public void onDiscordChat(Message message, ModifiableExtensionChatResult<Message> event) {
+    public void onDiscordChat(DiscordChatEvent ev) {
+        final Message message = ev.getMessage();
+        final ModifiableMessage<Message> res = ev.getResult();
+
         String author = message.getAuthor().getId();
         if (message.getChannelId().equals(instance.getSettings().opchatChannelId)
                 && !author.equals(instance.getBot().self.getId())
                 && !author.equals(opcWebhook.getId())
                 && !author.equals(instance.getBot().webhook.getId())) {
-            event.cancelSendToMinecraft();
+            ev.getResult().cancelSendToMinecraft();
             String msg =
                     String.format(
                             "§b[§6OPChat§b - §e%s§b]§r %s",
@@ -170,6 +168,19 @@ public class OpChatExtension implements IBridgeExtension {
                 // send the message to all ops
                 if (p.isOperator()) p.sendMessage(msg);
             }
+        }
+    }
+
+    @Override
+    public void onDisable() {
+        ExtensionEventRegistry.getInstance().unregisterAll(this);
+
+        this.config = null;
+        opcWebhook = null;
+
+        if (opcWebhookClient != null) {
+            opcWebhookClient.close();
+            opcWebhookClient = null;
         }
     }
 

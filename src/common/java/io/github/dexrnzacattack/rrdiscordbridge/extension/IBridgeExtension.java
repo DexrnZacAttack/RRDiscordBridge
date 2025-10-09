@@ -6,15 +6,11 @@ import com.vdurmont.semver4j.Semver;
 
 import io.github.dexrnzacattack.rrdiscordbridge.RRDiscordBridge;
 import io.github.dexrnzacattack.rrdiscordbridge.extension.config.ExtensionConfig;
-import io.github.dexrnzacattack.rrdiscordbridge.extension.result.ModifiableExtensionChatResult;
-import io.github.dexrnzacattack.rrdiscordbridge.interfaces.IPlayer;
-
-import net.dv8tion.jda.api.entities.Message;
 
 import javax.annotation.Nullable;
 
 /** Extension base interface */
-public interface IBridgeExtension {
+interface IBridgeExtension {
     /**
      * Gets the name of the Extension
      *
@@ -59,27 +55,6 @@ public interface IBridgeExtension {
         instance.getBridgeExtensions().enabledExtensions.remove(this);
         onDisable();
     }
-
-    /**
-     * Runs when a message is sent in MC chat
-     *
-     * @param message The message
-     * @param player The player
-     * @param event The event
-     */
-    void onMinecraftChat(
-            IPlayer player, String message, ModifiableExtensionChatResult<String> event);
-
-    /**
-     * Runs when a message is sent in the Discord server
-     *
-     * <p>It's global so that things like OpChat can work properly (sends and receives messages from
-     * different channel)
-     *
-     * @param message The JDA message
-     * @param event The event
-     */
-    void onDiscordChat(Message message, ModifiableExtensionChatResult<Message> event);
 
     /**
      * Runs when the bridge is shutting down

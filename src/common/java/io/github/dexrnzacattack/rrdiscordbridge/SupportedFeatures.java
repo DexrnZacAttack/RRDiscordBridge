@@ -1,6 +1,6 @@
 package io.github.dexrnzacattack.rrdiscordbridge;
 
-/** Features supported by the server software */
+/** Features supported by the server */
 public class SupportedFeatures {
     /** Whether the server supports the {@code server.properties} server-name field */
     private boolean hasServerName = false;

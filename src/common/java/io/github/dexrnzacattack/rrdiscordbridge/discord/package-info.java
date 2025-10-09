@@ -1,2 +1,2 @@
-/** Various classes for the Discord bot */
+/** Discord system */
 package io.github.dexrnzacattack.rrdiscordbridge.discord;

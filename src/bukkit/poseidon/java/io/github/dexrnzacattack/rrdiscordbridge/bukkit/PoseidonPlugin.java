@@ -9,7 +9,7 @@ import io.github.dexrnzacattack.rrdiscordbridge.impls.logging.JavaLogger;
 
 public class PoseidonPlugin extends BukkitPlugin {
     @Override
-    public void setupBridge() {
+    protected void setupBridge() {
         // ctor
         RRDiscordBridge.instance =
                 new RRDiscordBridge(
@@ -23,7 +23,7 @@ public class PoseidonPlugin extends BukkitPlugin {
     }
 
     @Override
-    public void registerEvents() {
+    protected void registerEvents() {
         pluginManager.registerEvents(new BukkitEventHandler(), this);
         pluginManager.registerEvents(new PoseidonPlayerChat(), this);
         pluginManager.registerEvents(new PoseidonPlayerDeath(), this);

@@ -6,7 +6,10 @@ import static io.github.dexrnzacattack.rrdiscordbridge.discord.DiscordBot.getNam
 import static io.github.dexrnzacattack.rrdiscordbridge.discord.DiscordBot.trimDiscordMessage;
 
 import io.github.dexrnzacattack.rrdiscordbridge.config.Settings;
-import io.github.dexrnzacattack.rrdiscordbridge.extension.result.ModifiableExtensionChatResult;
+import io.github.dexrnzacattack.rrdiscordbridge.extension.event.events.chat.DiscordChatEvent;
+import io.github.dexrnzacattack.rrdiscordbridge.extension.event.events.ExtensionEvents;
+import io.github.dexrnzacattack.rrdiscordbridge.extension.event.registry.ExtensionEventRegistry;
+import io.github.dexrnzacattack.rrdiscordbridge.extension.types.ModifiableMessage;
 
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -383,10 +386,12 @@ public class DiscordEventHandler extends ListenerAdapter {
         boolean sendMc = true;
 
         if (instance.getBridgeExtensions() != null) {
-            ModifiableExtensionChatResult<Message> ext =
-                    instance.getBridgeExtensions().tryParseDiscord(message);
-            message = ext.message;
-            sendMc = ext.getShouldSendToMinecraft();
+            DiscordChatEvent ev = new DiscordChatEvent(message);
+            ExtensionEventRegistry.getInstance().invoke(ExtensionEvents.DISCORD_CHAT, ev);
+
+            ModifiableMessage<Message> res = ev.getResult();
+            message = res.message;
+            sendMc = res.getShouldSendToMinecraft();
         }
 
         if (message.getMember() != null) author = getName(message.getMember());

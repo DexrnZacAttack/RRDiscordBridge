@@ -12,7 +12,10 @@ import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import io.github.dexrnzacattack.rrdiscordbridge.config.Settings;
 import io.github.dexrnzacattack.rrdiscordbridge.discord.commands.AboutCommand;
 import io.github.dexrnzacattack.rrdiscordbridge.discord.commands.PlayersCommand;
-import io.github.dexrnzacattack.rrdiscordbridge.extension.result.ModifiableExtensionChatResult;
+import io.github.dexrnzacattack.rrdiscordbridge.extension.event.events.ExtensionEvents;
+import io.github.dexrnzacattack.rrdiscordbridge.extension.event.events.chat.MinecraftChatEvent;
+import io.github.dexrnzacattack.rrdiscordbridge.extension.event.registry.ExtensionEventRegistry;
+import io.github.dexrnzacattack.rrdiscordbridge.extension.types.ModifiableMessage;
 import io.github.dexrnzacattack.rrdiscordbridge.game.FormattingCodes;
 import io.github.dexrnzacattack.rrdiscordbridge.interfaces.ICancellable;
 import io.github.dexrnzacattack.rrdiscordbridge.interfaces.IPlayer;
@@ -224,13 +227,16 @@ public class DiscordBot {
         String msg = message;
 
         if (instance.getBridgeExtensions() != null) {
-            ModifiableExtensionChatResult<String> chatExt =
-                    instance.getBridgeExtensions().tryParseMC(player, message);
-            msg = chatExt.message;
+            MinecraftChatEvent ev = new MinecraftChatEvent(player, message);
+            ExtensionEventRegistry.getInstance().invoke(ExtensionEvents.MINECRAFT_CHAT, ev);
 
-            if (!chatExt.getShouldSendToMinecraft()) event.cancel();
+            ModifiableMessage<String> res =
+                    ev.getResult();
+            msg = res.message;
 
-            if (!chatExt.getShouldSendToDiscord()) return;
+            if (!res.getShouldSendToMinecraft()) event.cancel();
+
+            if (!res.getShouldSendToDiscord()) return;
         }
 
         // disallows @everyone lol
@@ -309,11 +315,14 @@ public class DiscordBot {
         String msg = message;
 
         if (instance.getBridgeExtensions() != null) {
-            ModifiableExtensionChatResult<String> chatExt =
-                    instance.getBridgeExtensions().tryParseMC(player, message);
-            msg = chatExt.message;
+            MinecraftChatEvent ev = new MinecraftChatEvent(player, message);
+            ExtensionEventRegistry.getInstance().invoke(ExtensionEvents.MINECRAFT_CHAT, ev);
 
-            if (!(boolean) chatExt.getShouldSendToDiscord()) return;
+            ModifiableMessage<String> res =
+                    ev.getResult();
+            msg = res.message;
+
+            if (!(boolean) res.getShouldSendToDiscord()) return;
         }
 
         AllowedMentions allowedMentions =
@@ -370,11 +379,14 @@ public class DiscordBot {
         String msg = message;
 
         if (instance.getBridgeExtensions() != null) {
-            ModifiableExtensionChatResult<String> chatExt =
-                    instance.getBridgeExtensions().tryParseMC(player, message);
-            msg = chatExt.message;
+            MinecraftChatEvent ev = new MinecraftChatEvent(player, message);
+            ExtensionEventRegistry.getInstance().invoke(ExtensionEvents.MINECRAFT_CHAT, ev);
 
-            if (!(boolean) chatExt.getShouldSendToDiscord()) return;
+            ModifiableMessage<String> res =
+                    ev.getResult();
+            msg = res.message;
+
+            if (!(boolean) res.getShouldSendToDiscord()) return;
         }
 
         AllowedMentions allowedMentions =
@@ -561,6 +573,7 @@ public class DiscordBot {
                                             instance.getSettings().maxMessageSize,
                                             message.getContentDisplay().length()));
         }
+
         return messageTrimmed;
     }
 }

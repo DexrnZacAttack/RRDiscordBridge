@@ -1,23 +1,23 @@
 package io.github.dexrnzacattack.rrdiscordbridge.extensions;
 
 import static io.github.dexrnzacattack.rrdiscordbridge.RRDiscordBridge.instance;
-import static io.github.dexrnzacattack.rrdiscordbridge.RRDiscordBridge.logger;
 
 import club.minnced.discord.webhook.send.*;
 
 import com.vdurmont.semver4j.Semver;
 
 import io.github.dexrnzacattack.rrdiscordbridge.RRDiscordBridge;
-import io.github.dexrnzacattack.rrdiscordbridge.extension.IBridgeExtension;
+import io.github.dexrnzacattack.rrdiscordbridge.extension.AbstractBridgeExtension;
 import io.github.dexrnzacattack.rrdiscordbridge.extension.config.ExtensionConfig;
-import io.github.dexrnzacattack.rrdiscordbridge.extension.result.ModifiableExtensionChatResult;
+import io.github.dexrnzacattack.rrdiscordbridge.extension.event.events.ExtensionEvents;
+import io.github.dexrnzacattack.rrdiscordbridge.extension.event.events.chat.MinecraftChatEvent;
+import io.github.dexrnzacattack.rrdiscordbridge.extension.event.registry.ExtensionEventRegistry;
+import io.github.dexrnzacattack.rrdiscordbridge.extension.types.ModifiableMessage;
 import io.github.dexrnzacattack.rrdiscordbridge.extensions.options.WaypointExtensionOptions;
 import io.github.dexrnzacattack.rrdiscordbridge.extensions.waypoints.Waypoint;
 import io.github.dexrnzacattack.rrdiscordbridge.extensions.waypoints.WaypointType;
 import io.github.dexrnzacattack.rrdiscordbridge.helpers.ColorHelper;
 import io.github.dexrnzacattack.rrdiscordbridge.interfaces.IPlayer;
-
-import net.dv8tion.jda.api.entities.Message;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -25,8 +25,8 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Arrays;
 
-public class WaypointExtension implements IBridgeExtension {
-    private final Semver version = new Semver("1.1.0", Semver.SemverType.LOOSE);
+public class WaypointExtension extends AbstractBridgeExtension {
+    private final Semver version = new Semver("1.2.0", Semver.SemverType.LOOSE);
     public ExtensionConfig config;
 
     @Override
@@ -55,14 +55,20 @@ public class WaypointExtension implements IBridgeExtension {
                             .load();
         } catch (IOException ignored) {
         }
+
+        ExtensionEventRegistry.getInstance().register(this, ExtensionEvents.MINECRAFT_CHAT, this::onMinecraftChat);
     }
 
     @Override
-    public void onDisable() {}
+    public void onDisable() {
+        ExtensionEventRegistry.getInstance().unregisterAll(this);
+    }
 
-    @Override
-    public void onMinecraftChat(
-            IPlayer player, String message, ModifiableExtensionChatResult<String> event) {
+    public void onMinecraftChat(MinecraftChatEvent ev) {
+        final String message = ev.getMessage();
+        final IPlayer player = ev.getPlayer();
+        final ModifiableMessage<String> res = ev.getResult();
+
         try {
             Waypoint waypoint =
                     Arrays.stream(WaypointType.values())
@@ -128,15 +134,11 @@ public class WaypointExtension implements IBridgeExtension {
                             .build();
 
             instance.getBot().webhookClient.send(wMessage);
-            event.cancelSendToDiscord();
-        } catch (Exception ex) {
-            logger.error("shit: ", ex);
+            ev.getResult().cancelSendToDiscord();
+        } catch (Exception ignored) {
             // failed so we just send like nothing happened.
         }
     }
-
-    @Override
-    public void onDiscordChat(Message message, ModifiableExtensionChatResult<Message> event) {}
 
     @Override
     public @Nullable ExtensionConfig getConfig() {

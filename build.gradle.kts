@@ -337,7 +337,7 @@ dependencies {
 
     extensionCompileOnly(common.output)
     extensionCompileOnly("club.minnced:discord-webhooks:0.8.4")
-    extensionCompileOnly("net.dv8tion:JDA:5.5.1")
+    extensionCompileOnly("net.dv8tion:JDA:6.0.0")
     extensionCompileOnly("com.vdurmont:semver4j:3.1.0")
     extensionCompileOnly("com.google.code.gson:gson:2.13.0")
 
@@ -345,12 +345,12 @@ dependencies {
     implementation("com.google.code.gson:gson:2.13.0")
     implementation("org.danilopianini:gson-extras:3.3.0")
     implementation("club.minnced:discord-webhooks:0.8.4")
-    implementation("net.dv8tion:JDA:5.5.1")
+    implementation("net.dv8tion:JDA:6.0.0")
     implementation("me.scarsz.jdaappender:jda5:1.2.3")
     implementation("org.slf4j:slf4j-jdk14:2.0.17")
     implementation("org.apache.logging.log4j:log4j-api:2.25.1")
     implementation("com.vdurmont:semver4j:3.1.0")
-    implementation("org.pf4j:pf4j:3.13.0")
+    implementation("org.apache.commons:commons-lang3:3.19.0")
 }
 
 /** Unimined */

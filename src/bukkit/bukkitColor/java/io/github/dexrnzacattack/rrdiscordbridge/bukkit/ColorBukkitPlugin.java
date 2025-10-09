@@ -9,8 +9,9 @@ import io.github.dexrnzacattack.rrdiscordbridge.config.ConfigDirectory;
 import io.github.dexrnzacattack.rrdiscordbridge.impls.logging.JavaLogger;
 
 public class ColorBukkitPlugin extends BukkitPlugin {
+
     @Override
-    public void setupBridge() {
+    protected void setupBridge() {
         // ctor
         RRDiscordBridge.instance =
                 new RRDiscordBridge(
@@ -24,7 +25,7 @@ public class ColorBukkitPlugin extends BukkitPlugin {
     }
 
     @Override
-    public void registerEvents() {
+    protected void registerEvents() {
         pluginManager.registerEvents(new BukkitEventHandler(), this);
         pluginManager.registerEvents(new PlayerChat(), this);
         pluginManager.registerEvents(new PlayerDeath(), this);

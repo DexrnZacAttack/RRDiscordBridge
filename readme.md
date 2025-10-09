@@ -93,4 +93,4 @@ See [versions.md](/versions.md) for more info.
 - [MCHeads](https://www.mc-heads.net/)
   - Used for player head avatar 
 - [p0t4t0sandwich](https://github.com/p0t4t0sandwich)
-  - Was very helpful in helping me set up gradle and helped me through every issue I had 
+  - Was very helpful in helping me set up gradle and helped me through every issue I had

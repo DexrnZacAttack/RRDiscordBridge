@@ -3,7 +3,7 @@ package io.github.dexrnzacattack.rrdiscordbridge.command.commands;
 import io.github.dexrnzacattack.rrdiscordbridge.RRDiscordBridge;
 import io.github.dexrnzacattack.rrdiscordbridge.command.CommandRegistry;
 import io.github.dexrnzacattack.rrdiscordbridge.command.ICommand;
-import io.github.dexrnzacattack.rrdiscordbridge.extension.IBridgeExtension;
+import io.github.dexrnzacattack.rrdiscordbridge.extension.AbstractBridgeExtension;
 import io.github.dexrnzacattack.rrdiscordbridge.interfaces.ICommandCaller;
 
 /** Handles extensions */
@@ -48,7 +48,7 @@ public class ChatExtensionsCommand implements ICommand {
                     return true;
                 }
 
-                IBridgeExtension iExt =
+                AbstractBridgeExtension iExt =
                         RRDiscordBridge.instance.getBridgeExtensions().getExtension(iExtName);
 
                 if (iExt == null) {
@@ -78,12 +78,12 @@ public class ChatExtensionsCommand implements ICommand {
                                         .size(),
                                 RRDiscordBridge.instance.getBridgeExtensions().extensions.size()));
                 // print enabled first
-                for (IBridgeExtension ext :
+                for (AbstractBridgeExtension ext :
                         RRDiscordBridge.instance.getBridgeExtensions().enabledExtensions) {
                     caller.respond(String.format("§a%s §b(v%s)", ext.getName(), ext.getVersion()));
                 }
 
-                for (IBridgeExtension ext :
+                for (AbstractBridgeExtension ext :
                         RRDiscordBridge.instance.getBridgeExtensions().extensions) {
                     if (!RRDiscordBridge.instance
                             .getBridgeExtensions()
@@ -104,7 +104,7 @@ public class ChatExtensionsCommand implements ICommand {
                     return true;
                 }
 
-                IBridgeExtension dExt =
+                AbstractBridgeExtension dExt =
                         RRDiscordBridge.instance.getBridgeExtensions().getExtension(dExtName);
 
                 if (dExt == null) {
@@ -136,7 +136,7 @@ public class ChatExtensionsCommand implements ICommand {
                     return true;
                 }
 
-                IBridgeExtension ext =
+                AbstractBridgeExtension ext =
                         RRDiscordBridge.instance.getBridgeExtensions().getExtension(extName);
 
                 if (ext == null) {

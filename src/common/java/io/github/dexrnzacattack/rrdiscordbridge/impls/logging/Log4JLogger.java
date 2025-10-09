@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.logging.Handler;
 
+/** Log4J logger */
 public class Log4JLogger implements ILogger {
     private final Logger logger;
 

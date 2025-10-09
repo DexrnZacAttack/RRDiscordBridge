@@ -9,11 +9,11 @@ import io.github.dexrnzacattack.rrdiscordbridge.SupportedFeatures;
 import io.github.dexrnzacattack.rrdiscordbridge.config.ConfigDirectory;
 import io.github.dexrnzacattack.rrdiscordbridge.forge.impls.ForgeTrailsServer;
 import io.github.dexrnzacattack.rrdiscordbridge.forge.multiversion.IForgeMod;
-import io.github.dexrnzacattack.rrdiscordbridge.impls.logging.SLF4JLogger;
+import io.github.dexrnzacattack.rrdiscordbridge.impls.logging.Log4JLogger;
 
 import net.minecraft.server.MinecraftServer;
 
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
 
 public class ForgeTrailsMod implements IForgeMod {
     public ForgeTrailsMod() {
@@ -35,7 +35,7 @@ public class ForgeTrailsMod implements IForgeMod {
         RRDiscordBridge.instance =
                 new RRDiscordBridge(
                         new ForgeTrailsServer(server),
-                        new SLF4JLogger(LoggerFactory.getLogger("RRDiscordBridge")),
+                        new Log4JLogger(LogManager.getLogger("RRDiscordBridge")),
                         ConfigDirectory.MOD);
 
         // then we init

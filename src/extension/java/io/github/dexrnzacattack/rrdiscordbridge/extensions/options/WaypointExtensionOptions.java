@@ -2,9 +2,9 @@ package io.github.dexrnzacattack.rrdiscordbridge.extensions.options;
 
 import com.google.gson.annotations.Expose;
 
-import io.github.dexrnzacattack.rrdiscordbridge.extension.config.options.BaseExtensionOptions;
+import io.github.dexrnzacattack.rrdiscordbridge.extension.config.options.AbstractExtensionOptions;
 
-public class WaypointExtensionOptions extends BaseExtensionOptions {
+public class WaypointExtensionOptions extends AbstractExtensionOptions {
     /** Options for the waypoint badge available with Xaero's Minimap embeds */
     @Expose() public WaypointBadge waypointBadge = new WaypointBadge();
 

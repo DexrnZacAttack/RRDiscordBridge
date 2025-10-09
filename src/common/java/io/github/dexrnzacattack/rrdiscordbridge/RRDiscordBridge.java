@@ -10,7 +10,7 @@ import io.github.dexrnzacattack.rrdiscordbridge.command.commands.ReloadCommand;
 import io.github.dexrnzacattack.rrdiscordbridge.config.ConfigDirectory;
 import io.github.dexrnzacattack.rrdiscordbridge.config.Settings;
 import io.github.dexrnzacattack.rrdiscordbridge.discord.DiscordBot;
-import io.github.dexrnzacattack.rrdiscordbridge.extension.BridgeExtensions;
+import io.github.dexrnzacattack.rrdiscordbridge.extension.BridgeExtensionManager;
 import io.github.dexrnzacattack.rrdiscordbridge.impls.logging.JavaLogger;
 import io.github.dexrnzacattack.rrdiscordbridge.interfaces.ILogger;
 import io.github.dexrnzacattack.rrdiscordbridge.interfaces.IServer;
@@ -59,7 +59,7 @@ public class RRDiscordBridge {
     private Settings settings;
 
     /** Registered extensions */
-    private BridgeExtensions extensions;
+    private BridgeExtensionManager extensions;
 
     /** The server's supported features */
     private SupportedFeatures features;
@@ -156,7 +156,7 @@ public class RRDiscordBridge {
         //        BridgeExtensionsRegisterEvent.register(WaypointExtension.class);
 
         // setup extensions
-        this.extensions = new BridgeExtensions();
+        this.extensions = new BridgeExtensionManager();
 
         this.extensions.registerExtensions();
         this.extensions.sort();
@@ -236,9 +236,9 @@ public class RRDiscordBridge {
     }
 
     /**
-     * @return The instance of {@link BridgeExtensions}
+     * @return The instance of {@link BridgeExtensionManager}
      */
-    public BridgeExtensions getBridgeExtensions() {
+    public BridgeExtensionManager getBridgeExtensions() {
         return extensions;
     }
 

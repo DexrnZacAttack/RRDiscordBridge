@@ -1,9 +1,11 @@
-package io.github.dexrnzacattack.rrdiscordbridge.extension.result;
+package io.github.dexrnzacattack.rrdiscordbridge.extension.types;
 
 import io.github.dexrnzacattack.rrdiscordbridge.impls.Cancellable;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
-/** Result of the extension */
-public class ModifiableExtensionChatResult<T> {
+/** Modifiable message type */
+public class ModifiableMessage<T> {
     /** The string to send */
     public T message;
 
@@ -13,30 +15,30 @@ public class ModifiableExtensionChatResult<T> {
     /** Whether to send to Discord chat */
     private final Cancellable discordCancellable = new Cancellable();
 
-    public ModifiableExtensionChatResult(T message) {
+    public ModifiableMessage(T message) {
         this.message = message;
     }
 
     /** Disallows (cancels) sending the message to Minecraft chat */
-    public ModifiableExtensionChatResult<T> cancelSendToMinecraft() {
+    public ModifiableMessage<T> cancelSendToMinecraft() {
         this.minecraftCancellable.cancel();
         return this;
     }
 
     /** Allows (uncancels) sending the message to Minecraft chat */
-    public ModifiableExtensionChatResult<T> uncancelSendToMinecraft() {
-        this.discordCancellable.uncancel();
+    public ModifiableMessage<T> uncancelSendToMinecraft() {
+        this.minecraftCancellable.uncancel();
         return this;
     }
 
     /** Disallows (cancels) sending the message to Discord */
-    public ModifiableExtensionChatResult<T> cancelSendToDiscord() {
-        this.minecraftCancellable.cancel();
+    public ModifiableMessage<T> cancelSendToDiscord() {
+        this.discordCancellable.cancel();
         return this;
     }
 
     /** Allows (uncancels) sending the message to Discord */
-    public ModifiableExtensionChatResult<T> uncancelSendToDiscord() {
+    public ModifiableMessage<T> uncancelSendToDiscord() {
         this.discordCancellable.uncancel();
         return this;
     }
@@ -51,8 +53,10 @@ public class ModifiableExtensionChatResult<T> {
 
     @Override
     public String toString() {
-        return String.format(
-                "%s (mc: %b, dc: %b)",
-                message, minecraftCancellable.isCancelled(), discordCancellable.isCancelled());
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("toMinecraft", getShouldSendToMinecraft())
+                .append("toDiscord", getShouldSendToDiscord())
+                .append(message)
+                .toString();
     }
 }

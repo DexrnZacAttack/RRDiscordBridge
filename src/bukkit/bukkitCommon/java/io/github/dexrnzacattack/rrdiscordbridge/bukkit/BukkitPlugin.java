@@ -21,7 +21,7 @@ public class BukkitPlugin extends JavaPlugin {
     public static PluginManager pluginManager;
 
     // so it can be overridden
-    public void setupBridge() {
+    protected void setupBridge() {
         // ctor
         RRDiscordBridge.instance =
                 new RRDiscordBridge(
@@ -34,7 +34,7 @@ public class BukkitPlugin extends JavaPlugin {
         setSupportedFeatures();
     }
 
-    public void setSupportedFeatures() {
+    protected void setSupportedFeatures() {
         RRDiscordBridge.instance.setSupportedFeatures(
                 new SupportedFeatures()
                         .setCanGetServerMotd(doesMethodExist("org.bukkit.Server", "getMotd"))
@@ -47,7 +47,7 @@ public class BukkitPlugin extends JavaPlugin {
                                 doesMethodExist("org.bukkit.Server", "getConsoleSender")));
     }
 
-    public void registerEvents() {
+    protected void registerEvents() {
         pluginManager.registerEvents(new BukkitEventHandler(), this);
     }
 

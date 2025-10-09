@@ -9,10 +9,9 @@ import io.github.dexrnzacattack.rrdiscordbridge.impls.logging.JavaLogger;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 
-public abstract class CookieBukkitPlugin extends BukkitPlugin {
-
+public class CookieBukkitPlugin extends BukkitPlugin {
     @Override
-    public void setupBridge() {
+    protected void setupBridge() {
         // ctor
         RRDiscordBridge.instance =
                 new RRDiscordBridge(
@@ -26,7 +25,7 @@ public abstract class CookieBukkitPlugin extends BukkitPlugin {
     }
 
     @Override
-    public void registerEvents() {
+    protected void registerEvents() {
         // can't put them all in one file it seems
         pluginManager.registerEvent(
                 Event.Type.PLAYER_CHAT, new CookiePlayerChat(), Event.Priority.High, this);

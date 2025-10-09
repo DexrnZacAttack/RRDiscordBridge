@@ -5,14 +5,14 @@ import com.vdurmont.semver4j.Semver;
 import io.github.dexrnzacattack.rrdiscordbridge.RRDiscordBridge;
 import io.github.dexrnzacattack.rrdiscordbridge.SupportedFeatures;
 import io.github.dexrnzacattack.rrdiscordbridge.config.ConfigDirectory;
-import io.github.dexrnzacattack.rrdiscordbridge.impls.logging.SLF4JLogger;
+import io.github.dexrnzacattack.rrdiscordbridge.impls.logging.Log4JLogger;
 import io.github.dexrnzacattack.rrdiscordbridge.neoforge.impls.NeoForgeServer;
 import io.github.dexrnzacattack.rrdiscordbridge.neoforge.multiversion.INeoForgeMod;
 
 import net.minecraft.server.MinecraftServer;
 import net.neoforged.neoforge.common.NeoForge;
 
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
 
 public class NeoForgeTradeMod implements INeoForgeMod {
     @Override
@@ -30,7 +30,7 @@ public class NeoForgeTradeMod implements INeoForgeMod {
         RRDiscordBridge.instance =
                 new RRDiscordBridge(
                         new NeoForgeServer(server),
-                        new SLF4JLogger(LoggerFactory.getLogger("RRDiscordBridge")),
+                        new Log4JLogger(LogManager.getLogger("RRDiscordBridge")),
                         ConfigDirectory.MOD);
 
         // then we init
