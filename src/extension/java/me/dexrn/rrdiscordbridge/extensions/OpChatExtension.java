@@ -97,7 +97,7 @@ public class OpChatExtension extends AbstractBridgeExtension {
         opcBuilder.setThreadFactory(
                 (job) -> {
                     Thread thread = new Thread(job);
-                    thread.setName("RRDiscordBridgeBotOpChat");
+                    thread.setName("OpChatClient");
                     thread.setDaemon(true);
                     return thread;
                 });

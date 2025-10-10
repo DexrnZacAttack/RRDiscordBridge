@@ -3,6 +3,7 @@ package me.dexrn.rrdiscordbridge.impls.vanilla;
 import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
 
 import static me.dexrn.rrdiscordbridge.command.CommandRegistry.CommandName.*;
+
 import static net.minecraft.commands.Commands.argument;
 import static net.minecraft.commands.Commands.literal;
 

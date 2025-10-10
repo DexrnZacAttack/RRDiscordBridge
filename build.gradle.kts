@@ -47,7 +47,7 @@ spotless {
 }
 
 /* Source Sets */
-val common: SourceSet by sourceSets.creating {
+sourceSets.main.configure {
     blossom.javaSources {
         property("mod_id", modId)
         property("mod_name", modName)
@@ -150,7 +150,7 @@ val bukkitVersions: Map<SourceSet, BukkitProj> = bukkitProjects.associate { p ->
 
 bukkitProjects.forEach { p ->
     val it = bukkitSourceSets.getValue(p.name)
-    val d = listOf(common, bukkitSourceSets.getValue("bukkitCommon")) + p.deps.map { depName -> bukkitSourceSets.getValue(depName) }
+    val d = listOf(sourceSets.main.get(), bukkitSourceSets.getValue("bukkitCommon")) + p.deps.map { depName -> bukkitSourceSets.getValue(depName) }
     d.forEach { out ->
         if (out.name != p.name) {
             it.compileClasspath += out.output
@@ -209,21 +209,21 @@ val forgeVersions: Map<SourceSet, ForgeProj> = forgeProjects.associate { p ->
     forgeSourceSets.getValue(p.name) to ForgeProj(p.name, p.minecraftVersion, p.loaderVersion)
 }
 
+val mc: SourceSet by sourceSets.creating
+
 val extension: SourceSet by sourceSets.creating
 val extensionCompileOnly: Configuration by configurations.getting
 
 /* CompileOnly */
-val mainCompileOnly: Configuration by configurations.creating
-configurations.compileOnly.get().extendsFrom(mainCompileOnly)
-
-val commonCompileOnly: Configuration by configurations.getting
+val mcCompileOnly: Configuration by configurations.getting
+//configurations.compileOnly.get().extendsFrom(mcCompileOnly)
 
 (fabricCompileOnly + bukkitCompileOnly + neoforgeCompileOnly).forEach {
-    it.value.extendsFrom(commonCompileOnly)
+    it.value.extendsFrom(configurations.compileOnly.get())
 }
 
 /* Implementation */
-val commonImplementation: Configuration by configurations.getting {
+val mainImplementation: Configuration by configurations.creating {
     extendsFrom(configurations.implementation.get())
 }
 
@@ -259,8 +259,8 @@ repositories {
 }
 
 dependencies {
-    commonCompileOnly(libs.annotations)
-    commonCompileOnly(libs.mixin)
+    configurations.compileOnly(libs.annotations)
+    configurations.compileOnly(libs.mixin)
 
     // bugkit
     bukkitProjects.forEach { p ->
@@ -335,11 +335,12 @@ dependencies {
         add(c.name, "com.vdurmont:semver4j:3.1.0")
     }
 
-    extensionCompileOnly(common.output)
+    extensionCompileOnly(sourceSets.main.get().output)
     extensionCompileOnly("club.minnced:discord-webhooks:0.8.4")
     extensionCompileOnly("net.dv8tion:JDA:6.0.0")
     extensionCompileOnly("com.vdurmont:semver4j:3.1.0")
     extensionCompileOnly("com.google.code.gson:gson:2.13.0")
+    mcCompileOnly("com.vdurmont:semver4j:3.1.0")
 
     // common deps
     implementation("com.google.code.gson:gson:2.13.0")
@@ -361,8 +362,8 @@ tasks.withType<RemapJarTask> {
     }
 }
 
-unimined.minecraft {
-    combineWith(common);
+unimined.minecraft(mc) {
+    combineWith(sourceSets.main.get());
     version(minecraftVersion)
     mappings {
         parchment(parchmentMinecraft, parchmentVersion)
@@ -376,7 +377,7 @@ unimined.footgunChecks = false
 
 fabricVersions.forEach { it ->
     unimined.minecraft(it.key) {
-        combineWith(sourceSets.main.get())
+        combineWith(mc)
         version(it.value.minecraftVersion)
 
         mappings {
@@ -420,7 +421,7 @@ fabricVersions.forEach { it ->
 
 forgeVersions.forEach { it ->
     unimined.minecraft(it.key) {
-        combineWith(sourceSets.main.get())
+        combineWith(mc)
         version(it.value.minecraftVersion)
         minecraftForge {
             loader(it.value.loaderVersion)
@@ -458,7 +459,7 @@ forgeVersions.forEach { it ->
 
 neoforgeVersions.forEach { it ->
     unimined.minecraft(it.key) {
-        combineWith(sourceSets.main.get())
+        combineWith(mc)
         version(it.value.minecraftVersion)
         neoForge {
             loader(it.value.loaderVersion)
@@ -479,14 +480,14 @@ neoforgeVersions.forEach { it ->
 bukkitVersions.forEach { set ->
     // Dunno how flexible Unimined is with a custom bukkit source, so I decided just to set it up myself
 //    unimined.minecraft(set.key) {
-//        combineWith(sourceSets.main.get())
+//        combineWith(mc)
 ////        defaultRemapJar = true
 //    }
 
     tasks.register<Jar>("${set.value.name}Jar") {
         println("Registering ${set.value.name}")
 
-        from(sourceSets.main.get().output)
+        from(mc.output)
 
         group = JavaBasePlugin.BUILD_TASK_NAME
 //        archiveBaseName.set(set.value.jarName)
@@ -520,7 +521,7 @@ tasks.register("buildBukkit") {
 
 tasks.register("buildMod") {
     group = JavaBasePlugin.BUILD_TASK_NAME
-    dependsOn("shadowJar")
+    dependsOn("moddedShadowJar")
 }
 
 tasks.named("build").configure {
@@ -528,19 +529,24 @@ tasks.named("build").configure {
     dependsOn("buildMod")
 }
 
-tasks.register<Jar>("buildCommon") {
+tasks.register<Jar>("buildMain") {
     group = JavaBasePlugin.BUILD_TASK_NAME
-    dependsOn("commonShadowJar")
+    dependsOn(mainShadowJar)
 }
 
 tasks.named<Jar>("jar").configure {
     destinationDirectory.set(layout.buildDirectory.dir("tmp/rrdb"))
 }
 
-tasks.named<JavaCompile>("compileCommonJava").configure {
+tasks.named<JavaCompile>("compileJava").configure {
     sourceCompatibility = "1.8"
     targetCompatibility = "1.8"
 }
+
+//tasks.named<Jar>("mcJar").configure {
+//    archiveClassifier = "minecraftCommon";
+//    destinationDirectory.set(layout.buildDirectory.dir("tmp/rrdb"))
+//}
 
 tasks.withType<ProcessResources> {
     filesMatching(listOf(
@@ -580,7 +586,9 @@ val ex = listOf(
 //    "META-INF/versions/**"
 )
 
-val commonShadowJar = tasks.register<ShadowJar>("commonShadowJar") {
+val mainShadowJar = tasks.register<ShadowJar>("mainShadowJar") {
+    archiveClassifier = "main"
+
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     manifest {
         attributes(
@@ -598,7 +606,7 @@ val commonShadowJar = tasks.register<ShadowJar>("commonShadowJar") {
         )
     }
 
-    from(common.output, extension.output)
+    from(sourceSets.main.get().output, extension.output)
 
     from(listOf("README.md", "LICENSE")) {
         into("META-INF")
@@ -609,10 +617,10 @@ bukkitVersions.forEach { set ->
     tasks.register<ShadowJar>("${set.value.name}ShadowJar") {
         archiveClassifier = set.value.jarName
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-        configurations = listOf(project.configurations.getByName("commonRuntimeClasspath"))
-        dependsOn(commonShadowJar)
+        configurations = listOf(project.configurations.getByName("runtimeClasspath"))
+        dependsOn(mainShadowJar)
 
-        from(listOf(sourceSets.main.get().output, extension.output, common.output, bukkitSourceSets.getValue("bukkitCommon").output, set.key.output)
+        from(listOf(mc.output, extension.output, sourceSets.main.get().output, bukkitSourceSets.getValue("bukkitCommon").output, set.key.output)
         + set.value.deps.map { d ->
             bukkitSourceSets.getValue(d).output
         })
@@ -628,10 +636,11 @@ bukkitVersions.forEach { set ->
     }
 }
 
-tasks.shadowJar {
+tasks.register<ShadowJar>("moddedShadowJar") {
     archiveClassifier = "Fabric-Forge-NeoForge"
 
-    dependsOn("commonShadowJar")
+    dependsOn(mainShadowJar)
+    configurations = listOf(project.configurations.getByName("runtimeClasspath"))
 
     fabricVersions.forEach { it ->
         dependsOn("relocate${it.key.name.replaceFirstChar { c -> c.uppercase() }}Jar")
@@ -639,7 +648,7 @@ tasks.shadowJar {
     forgeVersions.forEach { it ->
         dependsOn("relocate${it.key.name.replaceFirstChar { c -> c.uppercase() }}Jar")
     }
-    from(
+    from(mc.output, sourceSets.main.get().output,
         extension.output,
         fabricVersions.map { it ->
             println("Shadowing ${it.key.name}");
@@ -705,8 +714,8 @@ tasks.build.get().dependsOn("spotlessApply")
 tasks.register<Javadoc>("genJavadoc") {
     group = JavaBasePlugin.DOCUMENTATION_GROUP
 
-    source = common.allJava
-    classpath = files(common.output, common.compileClasspath)
+    source = sourceSets.main.get().allJava
+    classpath = files(sourceSets.main.get().output, sourceSets.main.get().compileClasspath)
 
     setDestinationDir(file("javadoc/generated"))
 

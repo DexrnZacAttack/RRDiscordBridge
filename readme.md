@@ -82,6 +82,7 @@ See [versions.md](/versions.md) for more info.
     - `neoforge.mods.toml` was unused until 1.20.5 
   - [X] 1.20.5-1.21.8
 ### Forge
+  - [ ] 1.1-1.20
   - [X] 1.20.1
   - [X] 1.20.2
   - [X] 1.20.3-1.21.8

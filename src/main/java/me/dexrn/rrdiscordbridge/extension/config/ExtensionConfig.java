@@ -24,7 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-/** Wraps the extension options */
+/** Wraps the extension options and handles I/O */
 public class ExtensionConfig implements IConfig {
     protected transient String name;
     protected transient Semver version;
