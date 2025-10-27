@@ -1,27 +1,16 @@
 package me.dexrn.rrdiscordbridge.forge;
 
-import static net.minecraftforge.common.MinecraftForge.EVENT_BUS;
-
 import com.vdurmont.semver4j.Semver;
 
 import me.dexrn.rrdiscordbridge.RRDiscordBridge;
 import me.dexrn.rrdiscordbridge.forge.multiversion.ForgeModsFactory;
-import me.dexrn.rrdiscordbridge.forge.multiversion.IForgeMod;
-import me.dexrn.rrdiscordbridge.impls.vanilla.ModernMinecraftCommands;
+import me.dexrn.rrdiscordbridge.multiversion.AbstractModernMinecraftMod;
 
-import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.event.server.ServerAboutToStartEvent;
-import net.minecraftforge.event.server.ServerStoppingEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 
-@Mod(ForgeMod.MOD_ID)
+@Mod(RRDiscordBridge.MOD_ID)
 public class ForgeMod {
-    public static final String MOD_ID = "rrdiscordbridge";
-    private final IForgeMod mod;
-    private final Semver mcVer;
-
     public ForgeMod() {
         String v =
                 ModList.get()
@@ -31,11 +20,14 @@ public class ForgeMod {
                         .getVersion()
                         .toString();
 
-        mcVer = new Semver(v, Semver.SemverType.LOOSE);
+        Semver mcVer = new Semver(v, Semver.SemverType.LOOSE);
 
+        AbstractModernMinecraftMod mod;
         try {
+            RRDiscordBridge.logger.warn(
+                    "BUG: Console logging does not work under Forge, however you can still run commands.\nSee: https://github.com/DexrnZacAttack/RRDiscordBridge/issues/12");
             ForgeModsFactory factory = new ForgeModsFactory();
-            mod = factory.getForgeMods(mcVer).getInstance();
+            mod = factory.getForgeMods(mcVer).getInstance(mcVer);
         } catch (NullPointerException ex) {
             throw new RuntimeException(
                     String.format(
@@ -44,24 +36,5 @@ public class ForgeMod {
         }
 
         mod.preInit();
-
-        EVENT_BUS.register(this);
-    }
-
-    @SubscribeEvent
-    public void onServerStarting(ServerAboutToStartEvent event) {
-        mod.setupBridge(event.getServer());
-        RRDiscordBridge.logger.info(String.format("Initializing %s", mod.getClass().getName()));
-        mod.init(event.getServer(), mcVer);
-    }
-
-    @SubscribeEvent
-    public void onServerStopping(ServerStoppingEvent event) {
-        RRDiscordBridge.instance.shutdown(false);
-    }
-
-    @SubscribeEvent
-    public void onRegisterCommands(RegisterCommandsEvent event) {
-        ModernMinecraftCommands.register(event.getDispatcher());
     }
 }

@@ -98,7 +98,8 @@ public class ExtensionConfig implements IConfig {
         if (!Files.exists(CONFIG_PATH)) create();
 
         try (FileReader reader = new FileReader(CONFIG_PATH.toFile())) {
-            config = getGson(options.getClass()).fromJson(reader, ExtensionConfig.class).upgrade();
+            Gson gson = getGson(options.getClass());
+            config = gson.fromJson(reader, ExtensionConfig.class).upgrade(gson);
         } catch (IOException e) {
             logger.error(
                     "Exception while reading the config file for extension "
@@ -120,7 +121,7 @@ public class ExtensionConfig implements IConfig {
     }
 
     @Override
-    public ExtensionConfig upgrade() {
+    public ExtensionConfig upgrade(Gson gson) {
         this.options = (AbstractExtensionOptions) this.options.upgrade(version, configVersion);
         return this;
     }

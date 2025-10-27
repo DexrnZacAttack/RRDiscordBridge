@@ -2,9 +2,7 @@ package me.dexrn.rrdiscordbridge.config;
 
 import static me.dexrn.rrdiscordbridge.RRDiscordBridge.logger;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.InstanceCreator;
+import com.google.gson.*;
 import com.vdurmont.semver4j.Semver;
 
 import me.dexrn.rrdiscordbridge.RRDiscordBridge;
@@ -42,12 +40,6 @@ public class Settings implements IConfig {
 
     /** The channel ID for the bot to send console logs to. Also accepts operator commands */
     public String consoleChannelId = "";
-
-    /**
-     * The channel ID for the bot to send and receive opchat messages in. Must have the extension
-     * enabled for it to work.
-     */
-    public String opchatChannelId = "";
 
     /** The invite link to the relay's discord server (must be filled manually) */
     public String discordInvite = "";
@@ -127,7 +119,7 @@ public class Settings implements IConfig {
             throw e;
         }
 
-        settings.upgrade();
+        settings.upgrade(gson);
         settings.colorPalette = colorPalette.load();
 
         settings.save();
@@ -153,7 +145,7 @@ public class Settings implements IConfig {
 
     // TODO: figure out a better way to do this as this will likely get messy
     @Override
-    public Settings upgrade() {
+    public Settings upgrade(Gson gson) {
         String version = this.version == null ? "2.1.0" : this.version;
 
         Semver ver = new Semver(version);
@@ -171,6 +163,23 @@ public class Settings implements IConfig {
 
         if (ver.isLowerThan("2.4.0") && !this.enabledEvents.contains(Events.PLUGIN_RELOAD)) {
             this.enabledEvents.add(Events.PLUGIN_RELOAD);
+        }
+
+        // temporary, remove sometime later.
+        if (ver.isLowerThan("3.0.0")) {
+            try (FileReader reader = new FileReader(configPath.toFile())) {
+                JsonObject o = JsonParser.parseReader(reader).getAsJsonObject();
+
+                String op = o.get("opChatChannelId").getAsString();
+                if (!op.isEmpty())
+                    logger.warn(
+                            "OpChat channel ID has moved to "
+                                    + (configPath.getParent() + "/extensions/config/OpChat.json")
+                                    + "\nPlease move your OpChat channel ID '"
+                                    + op
+                                    + "' to that file.");
+            } catch (Exception ignored) {
+            }
         }
 
         this.version = RRDiscordBridge.getVersion();

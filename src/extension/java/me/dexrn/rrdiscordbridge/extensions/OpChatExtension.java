@@ -31,10 +31,11 @@ import java.util.List;
 
 // opchatchatchatchatchatchatextension
 public class OpChatExtension extends AbstractBridgeExtension {
-    private final Semver version = new Semver("1.2.0", Semver.SemverType.LOOSE);
+    private final Semver version = new Semver("1.2.1", Semver.SemverType.LOOSE);
     public WebhookClient opcWebhookClient;
     public Webhook opcWebhook;
     private ExtensionConfig config;
+    private OpChatExtensionOptions options;
 
     @Override
     public String getName() {
@@ -48,7 +49,7 @@ public class OpChatExtension extends AbstractBridgeExtension {
 
     @Override
     public String getDescription() {
-        return "§bA MCGalaxy inspired extension that sends messages to all online OPs, and optionally a discord channel. §9Syntax: §a## §2<msg>";
+        return "§bA MCGalaxy inspired extension that allows players to send messages to all online OPs, and optionally a discord channel. §9Syntax: §a## §2<msg>";
     }
 
     @Override
@@ -57,22 +58,21 @@ public class OpChatExtension extends AbstractBridgeExtension {
             this.config =
                     new ExtensionConfig(new OpChatExtensionOptions(), version, this.getName())
                             .load();
+            this.options = (OpChatExtensionOptions) this.config.options;
         } catch (IOException ignored) {
         }
 
-        if (instance.getSettings().opchatChannelId.isEmpty()) {
+        if (options.channelId.isEmpty()) {
             RRDiscordBridge.logger.warn(
                     "OPChat channel ID was not specified. Disabling extension.");
             disable();
             return;
         }
 
-        TextChannel opcChannel =
-                instance.getBot().jda.getTextChannelById(instance.getSettings().opchatChannelId);
+        TextChannel opcChannel = instance.getBot().jda.getTextChannelById(options.channelId);
         if (opcChannel == null) {
             RRDiscordBridge.logger.warn(
-                    "Failed to find OPChat channel with ID "
-                            + instance.getSettings().opchatChannelId);
+                    "Failed to find OPChat channel with ID " + options.channelId);
             instance.getBridgeExtensions().enabledExtensions.remove(this);
             onDisable();
             return;
@@ -145,7 +145,7 @@ public class OpChatExtension extends AbstractBridgeExtension {
             if (p.isOperator() && !p.getName().equals(player.getName())) p.sendMessage(opcMsg);
         }
 
-        if (!instance.getSettings().opchatChannelId.isEmpty()) {
+        if (!options.channelId.isEmpty()) {
             DiscordBot.sendPlayerMessage(player.getName(), res.message, opcWebhookClient);
         }
     }
@@ -155,7 +155,7 @@ public class OpChatExtension extends AbstractBridgeExtension {
         final ModifiableMessage<Message> res = ev.getResult();
 
         String author = message.getAuthor().getId();
-        if (message.getChannelId().equals(instance.getSettings().opchatChannelId)
+        if (message.getChannelId().equals(options.channelId)
                 && !author.equals(instance.getBot().self.getId())
                 && !author.equals(opcWebhook.getId())
                 && !author.equals(instance.getBot().webhook.getId())) {

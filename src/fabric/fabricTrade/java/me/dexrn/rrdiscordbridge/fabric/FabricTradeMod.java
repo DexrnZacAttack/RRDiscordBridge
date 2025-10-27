@@ -10,26 +10,31 @@ import me.dexrn.rrdiscordbridge.fabric.events.AdvancementAwardEvent;
 import me.dexrn.rrdiscordbridge.fabric.events.PlayerCommandEvent;
 import me.dexrn.rrdiscordbridge.fabric.impls.FabricPlayer;
 import me.dexrn.rrdiscordbridge.fabric.impls.FabricServer;
-import me.dexrn.rrdiscordbridge.fabric.multiversion.IFabricMod;
 import me.dexrn.rrdiscordbridge.impls.Cancellable;
-import me.dexrn.rrdiscordbridge.impls.logging.SLF4JLogger;
+import me.dexrn.rrdiscordbridge.impls.logging.Log4JLogger;
+import me.dexrn.rrdiscordbridge.impls.vanilla.CommandCaller;
 import me.dexrn.rrdiscordbridge.impls.vanilla.ModernMinecraftCommands;
 import me.dexrn.rrdiscordbridge.impls.vanilla.advancement.AdvancementType;
+import me.dexrn.rrdiscordbridge.multiversion.AbstractModernMinecraftMod;
 
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
 import net.minecraft.server.MinecraftServer;
 
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
 
-public class FabricTradeMod implements IFabricMod {
+public class FabricTradeMod extends AbstractModernMinecraftMod {
+    public FabricTradeMod(Semver minecraftVersion) {
+        super(minecraftVersion);
+    }
+
     @Override
     public void setupBridge(MinecraftServer server) {
         // ctor
         RRDiscordBridge.instance =
                 new RRDiscordBridge(
                         new FabricServer(server),
-                        new SLF4JLogger(LoggerFactory.getLogger("RRDiscordBridge")),
+                        new Log4JLogger(LogManager.getLogger("RRDiscordBridge")),
                         ConfigDirectory.MOD);
 
         // then we init
@@ -46,11 +51,12 @@ public class FabricTradeMod implements IFabricMod {
     @Override
     public void preInit() {
         CommandRegistrationCallback.EVENT.register(
-                (dispatcher, ctx, selection) -> ModernMinecraftCommands.register(dispatcher));
+                (dispatcher, ctx, selection) ->
+                        (new ModernMinecraftCommands<>(CommandCaller::new)).register(dispatcher));
     }
 
     @Override
-    public void init(MinecraftServer server, Semver version) {
+    public void init(MinecraftServer server) {
         ServerMessageEvents.ALLOW_CHAT_MESSAGE.register(
                 (t, p, b) -> {
                     Cancellable c = new Cancellable();
@@ -72,7 +78,7 @@ public class FabricTradeMod implements IFabricMod {
                     if (d == null) return;
 
                     Events.onPlayerAchievement(
-                            AdvancementType.getType(d.getType()),
+                            AdvancementType.getTypeFromName(d.getFrame().getName()),
                             new FabricPlayer(p),
                             d.getTitle().getString(),
                             d.getDescription().getString());

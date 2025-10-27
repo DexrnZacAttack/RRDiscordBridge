@@ -182,6 +182,8 @@ public class Events {
      */
     public static void onPlayerCommand(IPlayer player, String command) {
         // /me
+        // TODO: we should attempt to mixin to the original command handler method for each command
+        // instead of doing this jank!
         if (command.toLowerCase().startsWith("/me ")
                 && command.length() > 4
                 && instance.getSettings().enabledEvents.contains(Settings.Events.ME_COMMAND))

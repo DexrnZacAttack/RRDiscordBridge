@@ -7,23 +7,34 @@ import com.vdurmont.semver4j.Semver;
 import me.dexrn.rrdiscordbridge.RRDiscordBridge;
 import me.dexrn.rrdiscordbridge.SupportedFeatures;
 import me.dexrn.rrdiscordbridge.config.ConfigDirectory;
-import me.dexrn.rrdiscordbridge.forge.impls.ForgeServer;
-import me.dexrn.rrdiscordbridge.forge.multiversion.IForgeMod;
+import me.dexrn.rrdiscordbridge.forge.impls.ForgeTradePlayer;
+import me.dexrn.rrdiscordbridge.forge.impls.ForgeTradeServer;
 import me.dexrn.rrdiscordbridge.impls.logging.Log4JLogger;
+import me.dexrn.rrdiscordbridge.impls.vanilla.CommandCaller;
+import me.dexrn.rrdiscordbridge.impls.vanilla.ModernMinecraftCommands;
+import me.dexrn.rrdiscordbridge.multiversion.AbstractModernMinecraftMod;
 
 import net.minecraft.server.MinecraftServer;
+import net.minecraftforge.event.server.ServerAboutToStartEvent;
+import net.minecraftforge.event.server.ServerStoppingEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import org.apache.logging.log4j.LogManager;
 
-public class ForgeTradeMod implements IForgeMod {
-    public ForgeTradeMod() {
+public class ForgeTradeMod extends AbstractModernMinecraftMod {
+    public ForgeTradeMod(Semver minecraftVer) {
+        super(minecraftVer);
         EVENT_BUS.register(this);
     }
 
     @Override
-    public void init(MinecraftServer server, Semver minecraftVersion) {
-        EVENT_BUS.register(new ForgeEventHandler());
-        EVENT_BUS.register(new ForgeTradeEventHandler());
+    public void init(MinecraftServer server) {
+        EVENT_BUS.register(new ForgeEventHandler<>(ForgeTradeServer::new, ForgeTradePlayer::new));
+        EVENT_BUS.register(
+                new ForgeTradeEventHandler<>(ForgeTradeServer::new, ForgeTradePlayer::new));
+
+        (new ModernMinecraftCommands<>(CommandCaller::new))
+                .register(server.getCommands().getDispatcher());
     }
 
     @Override
@@ -34,7 +45,7 @@ public class ForgeTradeMod implements IForgeMod {
         // ctor
         RRDiscordBridge.instance =
                 new RRDiscordBridge(
-                        new ForgeServer(server),
+                        new ForgeTradeServer(server),
                         new Log4JLogger(LogManager.getLogger("RRDiscordBridge")),
                         ConfigDirectory.MOD);
 
@@ -47,5 +58,15 @@ public class ForgeTradeMod implements IForgeMod {
                         .setCanQueryServerOperators(true)
                         .setCanQueryPlayerHasJoinedBefore(false)
                         .setCanSendConsoleCommands(true));
+    }
+
+    @SubscribeEvent
+    public void onServerStarting(ServerAboutToStartEvent event) {
+        ForgeServerHandler.onServerStarting(event, this);
+    }
+
+    @SubscribeEvent
+    public void onServerStopping(ServerStoppingEvent event) {
+        ForgeServerHandler.onServerStopping(event);
     }
 }

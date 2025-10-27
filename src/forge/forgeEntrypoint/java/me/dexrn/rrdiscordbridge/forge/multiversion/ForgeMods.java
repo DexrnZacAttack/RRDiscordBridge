@@ -1,28 +1,33 @@
 package me.dexrn.rrdiscordbridge.forge.multiversion;
 
-import me.dexrn.rrdiscordbridge.forge.ForgePotMod;
-import me.dexrn.rrdiscordbridge.forge.ForgeTradeMod;
-import me.dexrn.rrdiscordbridge.forge.ForgeTrailsMod;
+import com.vdurmont.semver4j.Semver;
 
-import java.util.function.Supplier;
+import me.dexrn.rrdiscordbridge.forge.*;
+import me.dexrn.rrdiscordbridge.multiversion.AbstractModernMinecraftMod;
+
+import java.util.function.Function;
 
 // Based off https://stackoverflow.com/a/47128240
 /** Defines the Mod classes for each breaking MC version as well as the supported mixins for each */
 public enum ForgeMods {
-    /** 1.20 */
+    /** 1.20.1 */
     TRAILS(ForgeTrailsMod::new),
     /** 1.20.2 */
     TRADE(ForgeTradeMod::new),
-    /** 1.20.3-1.21.8 */
-    POT(ForgePotMod::new);
+    /** 1.20.3-1.20.5 */
+    POT(ForgePotMod::new),
+    /** 1.20.6-1.21.5 */
+    PAWS(ForgePawsMod::new),
+    /** 1.21.6-Latest */
+    SKIES(ForgeCopperMod::new);
 
-    private final Supplier<IForgeMod> supplier;
+    private final Function<Semver, AbstractModernMinecraftMod> supplier;
 
-    ForgeMods(Supplier<IForgeMod> supplier) {
+    ForgeMods(Function<Semver, AbstractModernMinecraftMod> supplier) {
         this.supplier = supplier;
     }
 
-    public IForgeMod getInstance() {
-        return supplier.get();
+    public AbstractModernMinecraftMod getInstance(Semver ver) {
+        return supplier.apply(ver);
     }
 }

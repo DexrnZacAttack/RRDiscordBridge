@@ -35,8 +35,8 @@ public class VersionMixinPlugin implements IMixinConfigPlugin {
 
                             RRDiscordBridge.logger.info(
                                     String.format(
-                                            "[RRDiscordBridge] Using MC version %s for conditional mixins",
-                                            version));
+                                            "[RRDiscordBridge/VersionMixinPlugin] Using MC version %s (%s) for conditional mixins",
+                                            version, mod.name()));
                         });
     }
 

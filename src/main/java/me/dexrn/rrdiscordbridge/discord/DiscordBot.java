@@ -55,13 +55,12 @@ public class DiscordBot {
     /** Updates the player count */
     public final Runnable updatePlayerCountRunnable =
             () -> {
-                if (instance != null && instance.getServer() != null)
-                    this.setPlayerCount(instance.getServer().getOnlinePlayers().length);
+                if (instance != null && instance.getServer() != null) this.setPlayerCount();
             };
 
     /** Creates the bot */
     public DiscordBot() {
-        JDALogger.setFallbackLoggerEnabled(false);
+        JDALogger.setFallbackLoggerEnabled(true);
     }
 
     /**
@@ -119,14 +118,14 @@ public class DiscordBot {
         builder.setThreadFactory(
                 (job) -> {
                     Thread thread = new Thread(job);
-                    thread.setName("RRDiscordBridgeBot");
+                    thread.setName("RRDiscordBridgeWebhook");
                     thread.setDaemon(true);
                     return thread;
                 });
         builder.setWait(true);
         webhookClient = builder.build();
 
-        setPlayerCount();
+        if (instance != null && instance.getServer() != null) setPlayerCount();
 
         channel.getGuild()
                 .updateCommands()
@@ -150,15 +149,7 @@ public class DiscordBot {
 
     /** Sets the RPC status */
     public void setPlayerCount() {
-        Activity activity =
-                Activity.playing(
-                        String.format(
-                                "with %s %s",
-                                instance.getServer().getOnlinePlayers().length,
-                                instance.getServer().getOnlinePlayers().length != 1
-                                        ? "players"
-                                        : "player"));
-        jda.getPresence().setActivity(activity);
+        setPlayerCount(instance.getServer().getOnlinePlayers().length);
     }
 
     /**
@@ -169,6 +160,7 @@ public class DiscordBot {
     public void setPlayerCount(int i) {
         Activity activity =
                 Activity.playing(String.format("with %s %s", i, i != 1 ? "players" : "player"));
+
         jda.getPresence().setActivity(activity);
     }
 

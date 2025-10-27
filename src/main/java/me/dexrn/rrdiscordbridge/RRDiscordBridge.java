@@ -19,6 +19,7 @@ import me.scarsz.jdaappender.LogLevel;
 import me.scarsz.jdaappender.adapter.JavaLoggingAdapter;
 
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -34,6 +35,9 @@ import java.util.logging.Logger;
 public class RRDiscordBridge {
     /** The static instance of RRDiscordBridge */
     public static RRDiscordBridge instance;
+
+    /** Mod ID */
+    public static final String MOD_ID = "rrdiscordbridge";
 
     /**
      * The timestamp of this plugin's initialization
@@ -123,14 +127,19 @@ public class RRDiscordBridge {
             // register console channel handler thing (logs all console messages to discord if set
             // up)
             if (!this.settings.consoleChannelId.isEmpty()) {
+                // seems like forge wrapper probably prevents jdaappender from working properly...
+                // fuck!
                 logger.info("Registering console channel handler");
+                TextChannel c = bot.jda.getTextChannelById(this.settings.consoleChannelId);
                 this.logHandler =
                         new ChannelLoggingHandler(
-                                        () ->
-                                                bot.jda.getTextChannelById(
-                                                        this.settings.consoleChannelId),
+                                        () -> c,
                                         config -> {
-                                            config.setLogLevels(EnumSet.allOf(LogLevel.class));
+                                            config.setLogLevels(
+                                                    EnumSet.of(
+                                                            LogLevel.INFO,
+                                                            LogLevel.WARN,
+                                                            LogLevel.ERROR));
                                             config.setColored(true);
                                             config.setSplitCodeBlockForLinks(false);
                                             config.setAllowLinkEmbeds(true);
@@ -138,21 +147,13 @@ public class RRDiscordBridge {
                                             config.mapLoggerName(
                                                     "net.minecraft.server.MinecraftServer",
                                                     "MinecraftServer");
-                                            config.setLogLevels(
-                                                    EnumSet.of(
-                                                            LogLevel.INFO,
-                                                            LogLevel.WARN,
-                                                            LogLevel.ERROR));
                                         })
-                                .attach()
+                                .attachSystemLogging()
                                 .schedule();
             }
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-
-        //        BridgeExtensionsRegisterEvent.register(OpChatExtension.class);
-        //        BridgeExtensionsRegisterEvent.register(WaypointExtension.class);
 
         // setup extensions
         this.extensions = new BridgeExtensionManager();

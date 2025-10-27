@@ -92,12 +92,12 @@ public class ColorPalette implements IConfig {
             throw e;
         }
 
-        palette.upgrade().save();
+        palette.upgrade(gson).save();
         return palette;
     }
 
     @Override
-    public ColorPalette upgrade() {
+    public ColorPalette upgrade(Gson gson) {
         return this;
     }
 

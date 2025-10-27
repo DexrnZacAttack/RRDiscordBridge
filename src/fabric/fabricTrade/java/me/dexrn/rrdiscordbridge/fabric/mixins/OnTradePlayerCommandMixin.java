@@ -2,6 +2,8 @@ package me.dexrn.rrdiscordbridge.fabric.mixins;
 
 import me.dexrn.rrdiscordbridge.fabric.events.PlayerCommandEvent;
 
+import net.minecraft.network.chat.LastSeenMessages;
+import net.minecraft.network.protocol.game.ServerboundChatCommandPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 
@@ -16,13 +18,16 @@ public class OnTradePlayerCommandMixin {
     @Shadow public ServerPlayer player;
 
     @Inject(
-            method = "performUnsignedChatCommand",
+            method = "performChatCommand",
             at =
                     @At(
                             value = "INVOKE",
                             target =
-                                    "Lnet/minecraft/server/MinecraftServer;getCommands()Lnet/minecraft/commands/Commands;"))
-    public void onPlayerCommand(String command, CallbackInfo ci) {
-        PlayerCommandEvent.EVENT.invoker().onPlayerCommand(this.player, command, ci);
+                                    "Lnet/minecraft/commands/Commands;performCommand(Lcom/mojang/brigadier/ParseResults;Ljava/lang/String;)I"))
+    public void onPlayerCommand(
+            ServerboundChatCommandPacket packet,
+            LastSeenMessages lastSeenMessages,
+            CallbackInfo ci) {
+        PlayerCommandEvent.EVENT.invoker().onPlayerCommand(this.player, packet.command(), ci);
     }
 }

@@ -1,5 +1,7 @@
 package me.dexrn.rrdiscordbridge.config;
 
+import com.google.gson.Gson;
+
 import java.io.IOException;
 
 /** Common config interface */
@@ -17,7 +19,7 @@ public interface IConfig {
      *
      * @return itself after upgrading
      */
-    IConfig upgrade();
+    IConfig upgrade(Gson gson);
 
     /** Writes the config */
     void save();

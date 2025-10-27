@@ -10,21 +10,26 @@ import me.dexrn.rrdiscordbridge.fabric.events.AdvancementAwardEvent;
 import me.dexrn.rrdiscordbridge.fabric.events.PlayerCommandEvent;
 import me.dexrn.rrdiscordbridge.fabric.impls.FabricWildPlayer;
 import me.dexrn.rrdiscordbridge.fabric.impls.FabricWildServer;
-import me.dexrn.rrdiscordbridge.fabric.multiversion.IFabricMod;
 import me.dexrn.rrdiscordbridge.impls.Cancellable;
-import me.dexrn.rrdiscordbridge.impls.logging.SLF4JLogger;
+import me.dexrn.rrdiscordbridge.impls.logging.Log4JLogger;
+import me.dexrn.rrdiscordbridge.impls.vanilla.CommandCaller;
 import me.dexrn.rrdiscordbridge.impls.vanilla.ModernMinecraftCommands;
 import me.dexrn.rrdiscordbridge.impls.vanilla.advancement.AdvancementType;
+import me.dexrn.rrdiscordbridge.multiversion.AbstractModernMinecraftMod;
 
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
 import net.minecraft.server.MinecraftServer;
 
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
 
-public class FabricWildMod implements IFabricMod {
+public class FabricWildMod extends AbstractModernMinecraftMod {
+    public FabricWildMod(Semver minecraftVersion) {
+        super(minecraftVersion);
+    }
+
     @Override
-    public void init(MinecraftServer server, Semver mcVer) {
+    public void init(MinecraftServer server) {
         ServerMessageEvents.ALLOW_CHAT_MESSAGE.register(
                 (m, p, t) -> {
                     if (m.filtered() == null) return true;
@@ -57,7 +62,8 @@ public class FabricWildMod implements IFabricMod {
     @Override
     public void preInit() {
         CommandRegistrationCallback.EVENT.register(
-                (dispatcher, ctx, selection) -> ModernMinecraftCommands.register(dispatcher));
+                (dispatcher, ctx, selection) ->
+                        (new ModernMinecraftCommands<>(CommandCaller::new)).register(dispatcher));
     }
 
     @Override
@@ -66,7 +72,7 @@ public class FabricWildMod implements IFabricMod {
         RRDiscordBridge.instance =
                 new RRDiscordBridge(
                         new FabricWildServer(server),
-                        new SLF4JLogger(LoggerFactory.getLogger("RRDiscordBridge")),
+                        new Log4JLogger(LogManager.getLogger("RRDiscordBridge")),
                         ConfigDirectory.MOD);
 
         // then we init

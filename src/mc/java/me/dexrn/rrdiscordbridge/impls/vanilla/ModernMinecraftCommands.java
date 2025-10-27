@@ -11,15 +11,27 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 
 import me.dexrn.rrdiscordbridge.RRDiscordBridge;
+import me.dexrn.rrdiscordbridge.interfaces.ICommandCaller;
 
 import net.minecraft.commands.CommandSourceStack;
 
-public class ModernMinecraftCommands {
+import java.util.function.Function;
+
+public class ModernMinecraftCommands<C extends ICommandCaller> {
+    public Function<CommandSourceStack, C> commandCallerSupplier;
+
+    // TODO: this can be most definitely cleaned up by just making the function take the template!
+    public ModernMinecraftCommands(Function<CommandSourceStack, C> commandCaller) {
+        commandCallerSupplier = commandCaller;
+    }
+
     // I know you can register subcommands, but I would like to refactor the ChatExt command
     // before doing so.
     // I do intend on doing that as I would like Brigadier's command arg stuff to be usable.
     // Plus, /rdbext list would be available to all.
-    public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+    public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+        RRDiscordBridge.logger.info("Registering commands for " + dispatcher.toString());
+
         // DISCORD
         dispatcher.register(
                 literal(DISCORD.getName())
@@ -29,7 +41,7 @@ public class ModernMinecraftCommands {
                                                         .getCommandRegistry()
                                                         .getCommand(DISCORD)
                                                         .invoke(
-                                                                new CommandCaller(
+                                                                commandCallerSupplier.apply(
                                                                         context.getSource()),
                                                                 new String[0])
                                                 ? 1
@@ -43,7 +55,7 @@ public class ModernMinecraftCommands {
                                                         .getCommandRegistry()
                                                         .getCommand(RELOADCONFIG)
                                                         .invoke(
-                                                                new CommandCaller(
+                                                                commandCallerSupplier.apply(
                                                                         context.getSource()),
                                                                 new String[0])
                                                 ? 1
@@ -61,9 +73,10 @@ public class ModernMinecraftCommands {
                                                                         .getCommandRegistry()
                                                                         .getCommand(RDBEXT)
                                                                         .invoke(
-                                                                                new CommandCaller(
-                                                                                        context
-                                                                                                .getSource()),
+                                                                                commandCallerSupplier
+                                                                                        .apply(
+                                                                                                context
+                                                                                                        .getSource()),
                                                                                 StringArgumentType
                                                                                         .getString(
                                                                                                 context,
@@ -84,9 +97,10 @@ public class ModernMinecraftCommands {
                                                                         .getCommandRegistry()
                                                                         .getCommand(DCBROADCAST)
                                                                         .invoke(
-                                                                                new CommandCaller(
-                                                                                        context
-                                                                                                .getSource()),
+                                                                                commandCallerSupplier
+                                                                                        .apply(
+                                                                                                context
+                                                                                                        .getSource()),
                                                                                 StringArgumentType
                                                                                         .getString(
                                                                                                 context,

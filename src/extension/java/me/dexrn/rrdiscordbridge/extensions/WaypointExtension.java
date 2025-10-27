@@ -26,7 +26,8 @@ import java.net.URLEncoder;
 import java.util.Arrays;
 
 public class WaypointExtension extends AbstractBridgeExtension {
-    private final Semver version = new Semver("1.2.0", Semver.SemverType.LOOSE);
+    private final Semver version = new Semver("1.2.1", Semver.SemverType.LOOSE);
+    public WaypointExtensionOptions options;
     public ExtensionConfig config;
 
     @Override
@@ -53,6 +54,7 @@ public class WaypointExtension extends AbstractBridgeExtension {
             this.config =
                     new ExtensionConfig(new WaypointExtensionOptions(), version, this.getName())
                             .load();
+            this.options = (WaypointExtensionOptions) this.config.options;
         } catch (IOException ignored) {
         }
 
@@ -101,8 +103,6 @@ public class WaypointExtension extends AbstractBridgeExtension {
                     .addField(new WebhookEmbed.EmbedField(true, "X", waypoint.getX()))
                     .addField(new WebhookEmbed.EmbedField(true, "Y", waypoint.getY()))
                     .addField(new WebhookEmbed.EmbedField(true, "Z", waypoint.getZ()));
-
-            WaypointExtensionOptions options = (WaypointExtensionOptions) this.config.options;
 
             String badge = URLEncoder.encode(waypoint.getBadge(), "UTF-8");
             if (options.waypointBadge.useBadgeImage

@@ -3,8 +3,9 @@ package me.dexrn.rrdiscordbridge.neoforge;
 import com.vdurmont.semver4j.Semver;
 
 import me.dexrn.rrdiscordbridge.RRDiscordBridge;
+import me.dexrn.rrdiscordbridge.impls.vanilla.CommandCaller;
 import me.dexrn.rrdiscordbridge.impls.vanilla.ModernMinecraftCommands;
-import me.dexrn.rrdiscordbridge.neoforge.multiversion.INeoForgeMod;
+import me.dexrn.rrdiscordbridge.multiversion.AbstractModernMinecraftMod;
 import me.dexrn.rrdiscordbridge.neoforge.multiversion.NeoForgeModsFactory;
 
 import net.neoforged.bus.api.SubscribeEvent;
@@ -15,11 +16,9 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 
-@Mod(NeoForgeMod.MOD_ID)
+@Mod(RRDiscordBridge.MOD_ID)
 public class NeoForgeMod {
-    public static final String MOD_ID = "rrdiscordbridge";
-    private final INeoForgeMod mod;
-    private final Semver mcVer;
+    private final AbstractModernMinecraftMod mod;
 
     public NeoForgeMod() {
         String v =
@@ -30,10 +29,10 @@ public class NeoForgeMod {
                         .getVersion()
                         .toString();
 
-        mcVer = new Semver(v, Semver.SemverType.LOOSE);
+        Semver mcVer = new Semver(v, Semver.SemverType.LOOSE);
 
         NeoForgeModsFactory factory = new NeoForgeModsFactory();
-        mod = factory.getNeoForgeMods(mcVer).getInstance();
+        mod = factory.getNeoForgeMods(mcVer).getInstance(mcVer);
 
         if (mod == null)
             throw new RuntimeException(
@@ -50,7 +49,7 @@ public class NeoForgeMod {
     public void onServerStarting(ServerAboutToStartEvent event) {
         mod.setupBridge(event.getServer());
         RRDiscordBridge.logger.info(String.format("Initializing %s", mod.getClass().getName()));
-        mod.init(event.getServer(), mcVer);
+        mod.init(event.getServer());
     }
 
     @SubscribeEvent
@@ -60,6 +59,6 @@ public class NeoForgeMod {
 
     @SubscribeEvent
     public void onRegisterCommands(RegisterCommandsEvent event) {
-        ModernMinecraftCommands.register(event.getDispatcher());
+        (new ModernMinecraftCommands<>(CommandCaller::new)).register(event.getDispatcher());
     }
 }

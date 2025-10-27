@@ -6,9 +6,9 @@ import me.dexrn.rrdiscordbridge.Events;
 import me.dexrn.rrdiscordbridge.RRDiscordBridge;
 import me.dexrn.rrdiscordbridge.fabric.events.ConsoleCommandEvent;
 import me.dexrn.rrdiscordbridge.fabric.events.PlayerDeathEvent;
-import me.dexrn.rrdiscordbridge.fabric.impls.FabricPlayer;
+import me.dexrn.rrdiscordbridge.fabric.impls.FabricCopperPlayer;
 import me.dexrn.rrdiscordbridge.fabric.multiversion.FabricModsFactory;
-import me.dexrn.rrdiscordbridge.fabric.multiversion.IFabricMod;
+import me.dexrn.rrdiscordbridge.multiversion.AbstractModernMinecraftMod;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -30,7 +30,9 @@ public class FabricMod implements ModInitializer {
         Semver mcVer = new Semver(v, Semver.SemverType.LOOSE);
 
         FabricModsFactory factory = new FabricModsFactory();
-        IFabricMod mod = factory.getFabricMods(mcVer).getInstance();
+        RRDiscordBridge.logger.warn(
+                "BUG: Console logging does not work under Fabric, however you can still run commands.\nSee: https://github.com/DexrnZacAttack/RRDiscordBridge/issues/12");
+        AbstractModernMinecraftMod mod = factory.getFabricMods(mcVer).getInstance(mcVer);
 
         if (mod == null)
             throw new RuntimeException(
@@ -46,16 +48,16 @@ public class FabricMod implements ModInitializer {
                     mod.setupBridge(server);
                     RRDiscordBridge.logger.info(
                             String.format("Initializing events for %s", mod.getClass().getName()));
-                    mod.init(server, mcVer);
+                    mod.init(server);
                 });
     }
 
     public void initCommonEvents() {
         ServerPlayConnectionEvents.JOIN.register(
-                (i, s, mcs) -> Events.onPlayerJoin(new FabricPlayer(i.player)));
+                (i, s, mcs) -> Events.onPlayerJoin(new FabricCopperPlayer(i.player)));
 
         ServerPlayConnectionEvents.DISCONNECT.register(
-                (i, s) -> Events.onPlayerLeave(new FabricPlayer(i.player)));
+                (i, s) -> Events.onPlayerLeave(new FabricCopperPlayer(i.player)));
 
         ServerLifecycleEvents.SERVER_STOPPED.register(
                 t -> RRDiscordBridge.instance.shutdown(false));
@@ -66,6 +68,6 @@ public class FabricMod implements ModInitializer {
                 });
 
         PlayerDeathEvent.EVENT.register(
-                (p, c) -> Events.onPlayerDeath(new FabricPlayer(p), c.getString()));
+                (p, c) -> Events.onPlayerDeath(new FabricCopperPlayer(p), c.getString()));
     }
 }

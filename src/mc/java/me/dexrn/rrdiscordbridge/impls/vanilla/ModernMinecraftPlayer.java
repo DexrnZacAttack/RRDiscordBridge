@@ -6,6 +6,8 @@ import me.dexrn.rrdiscordbridge.interfaces.IServer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 
+import java.util.Objects;
+
 public class ModernMinecraftPlayer implements IPlayer {
     protected final ServerPlayer player;
 
@@ -13,9 +15,12 @@ public class ModernMinecraftPlayer implements IPlayer {
         this.player = player;
     }
 
+    // TODO: we need to implement permission shit
     @Override
     public boolean isOperator() {
-        return player.getPermissionLevel() > 1;
+        return Objects.requireNonNull(player.getServer())
+                        .getProfilePermissions(player.getGameProfile())
+                > 1;
     }
 
     @Override

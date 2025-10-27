@@ -10,19 +10,24 @@ import me.dexrn.rrdiscordbridge.fabric.events.AdvancementAwardEvent;
 import me.dexrn.rrdiscordbridge.fabric.events.PlayerChatEvent;
 import me.dexrn.rrdiscordbridge.fabric.events.PlayerCommandEvent;
 import me.dexrn.rrdiscordbridge.fabric.impls.CancellableCallbackInfo;
+import me.dexrn.rrdiscordbridge.fabric.impls.FabricNetherCommandCaller;
 import me.dexrn.rrdiscordbridge.fabric.impls.FabricNetherPlayer;
 import me.dexrn.rrdiscordbridge.fabric.impls.FabricNetherServer;
-import me.dexrn.rrdiscordbridge.fabric.multiversion.IFabricMod;
 import me.dexrn.rrdiscordbridge.impls.logging.Log4JLogger;
 import me.dexrn.rrdiscordbridge.impls.vanilla.ModernMinecraftCommands;
 import me.dexrn.rrdiscordbridge.impls.vanilla.advancement.AdvancementType;
+import me.dexrn.rrdiscordbridge.multiversion.AbstractModernMinecraftMod;
 
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.minecraft.server.MinecraftServer;
 
 import org.apache.logging.log4j.LogManager;
 
-public class FabricNetherMod implements IFabricMod {
+public class FabricNetherMod extends AbstractModernMinecraftMod {
+    public FabricNetherMod(Semver minecraftVersion) {
+        super(minecraftVersion);
+    }
+
     @Override
     public void setupBridge(MinecraftServer server) {
         // ctor
@@ -45,7 +50,7 @@ public class FabricNetherMod implements IFabricMod {
 
     // UNFINISHED
     @Override
-    public void init(MinecraftServer server, Semver mcVer) {
+    public void init(MinecraftServer server) {
         PlayerChatEvent.EVENT.register(
                 (p, m, c) -> {
                     Events.onChatMessage(
@@ -72,6 +77,8 @@ public class FabricNetherMod implements IFabricMod {
     @Override
     public void preInit() {
         CommandRegistrationCallback.EVENT.register(
-                (dispatcher, ded) -> ModernMinecraftCommands.register(dispatcher));
+                (dispatcher, ded) ->
+                        (new ModernMinecraftCommands<>(FabricNetherCommandCaller::new))
+                                .register(dispatcher));
     }
 }

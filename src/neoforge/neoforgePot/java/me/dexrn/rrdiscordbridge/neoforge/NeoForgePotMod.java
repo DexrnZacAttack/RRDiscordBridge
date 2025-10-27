@@ -6,19 +6,26 @@ import me.dexrn.rrdiscordbridge.RRDiscordBridge;
 import me.dexrn.rrdiscordbridge.SupportedFeatures;
 import me.dexrn.rrdiscordbridge.config.ConfigDirectory;
 import me.dexrn.rrdiscordbridge.impls.logging.Log4JLogger;
+import me.dexrn.rrdiscordbridge.multiversion.AbstractModernMinecraftMod;
+import me.dexrn.rrdiscordbridge.neoforge.impls.NeoForgePlayer;
 import me.dexrn.rrdiscordbridge.neoforge.impls.NeoForgeServer;
-import me.dexrn.rrdiscordbridge.neoforge.multiversion.INeoForgeMod;
 
 import net.minecraft.server.MinecraftServer;
 import net.neoforged.neoforge.common.NeoForge;
 
 import org.apache.logging.log4j.LogManager;
 
-public class NeoForgePotMod implements INeoForgeMod {
+public class NeoForgePotMod extends AbstractModernMinecraftMod {
+    public NeoForgePotMod(Semver minecraftVer) {
+        super(minecraftVer);
+    }
+
     @Override
-    public void init(MinecraftServer server, Semver minecraftVersion) {
-        NeoForge.EVENT_BUS.register(new NeoForgeEventHandler());
-        NeoForge.EVENT_BUS.register(new NeoForgePotEventHandler());
+    public void init(MinecraftServer server) {
+        NeoForge.EVENT_BUS.register(
+                new NeoForgeEventHandler<>(NeoForgeServer::new, NeoForgePlayer::new));
+        NeoForge.EVENT_BUS.register(
+                new NeoForgePotEventHandler<>(NeoForgeServer::new, NeoForgePlayer::new));
     }
 
     @Override

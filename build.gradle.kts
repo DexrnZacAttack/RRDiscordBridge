@@ -14,6 +14,7 @@ plugins {
     alias(libs.plugins.unimined)
 }
 
+unimined.useGlobalCache = false
 java.toolchain.languageVersion = JavaLanguageVersion.of(javaVersion)
 java.sourceCompatibility = JavaVersion.toVersion(javaVersion)
 java.targetCompatibility = JavaVersion.toVersion(javaVersion)
@@ -86,20 +87,166 @@ data class FabricProj(
     val deps: List<String>,
     val apiVersion: String,
     val minecraftVersion: String,
-    val parchmentMinecraft: String,
-    val parchmentVersion: String,
+    val parchmentMinecraft: String?,
+    val parchmentVersion: String?,
     val fabricApiDeps: List<String>
 )
 
 val fabricProjects = listOf(
-    FabricProj("fabricCommon", listOf(), fabricVersion, minecraftVersion, parchmentMinecraft, parchmentVersion, listOf("api-base", "lifecycle-events-v1", "message-api-v1", "networking-api-v1", "entity-events-v1", "command-api-v2")),
-    FabricProj("fabricEntrypoint", listOf(), fabricVersion, minecraftVersion, parchmentMinecraft, parchmentVersion, listOf("api-base", "lifecycle-events-v1", "message-api-v1", "networking-api-v1", "entity-events-v1", "command-api-v2")),
+    FabricProj(
+        "fabricCommon",
+        listOf(),
+        fabricTradeVersion,
+        fabricTradeMinecraftVersion,
+        fabricTradeParchmentMinecraft,
+        fabricTradeParchmentVersion,
+        listOf(
+            "api-base",
+            "lifecycle-events-v1",
+            "message-api-v1",
+            "networking-api-v1",
+            "entity-events-v1",
+            "command-api-v2"
+        )
+    ),
+    FabricProj(
+        "fabricEntrypoint",
+        listOf(),
+        fabricCopperVersion,
+        fabricCopperMinecraftVersion,
+        fabricCopperParchmentMinecraft,
+        fabricCopperParchmentVersion,
+        listOf(
+            "api-base",
+            "lifecycle-events-v1",
+            "message-api-v1",
+            "networking-api-v1",
+            "entity-events-v1",
+            "command-api-v2"
+        )
+    ),
 
-    FabricProj("fabricNether", listOf(), fabricNetherVersion, fabricNetherMinecraftVersion, fabricNetherParchmentMinecraft, fabricNetherParchmentVersion, listOf("api-base", "lifecycle-events-v1", "networking-api-v1", "entity-events-v1", "command-api-v1")), // Fabric 1.16-1.18.2
-    FabricProj("fabricWild", listOf("fabricVex"), fabricWildVersion, fabricWildMinecraftVersion, fabricWildParchmentMinecraft, fabricWildParchmentVersion, listOf("api-base", "lifecycle-events-v1", "message-api-v1", "networking-api-v1", "entity-events-v1", "command-api-v2")), // Fabric 1.19
-    FabricProj("fabricAllay", listOf("fabricVex"), fabricAllayVersion, fabricAllayMinecraftVersion, fabricAllayParchmentMinecraft, fabricAllayParchmentVersion, listOf("api-base", "lifecycle-events-v1", "message-api-v1", "networking-api-v1", "entity-events-v1", "command-api-v2")), // Fabric 1.19.1-1.19.2
-    FabricProj("fabricVex", listOf(), fabricVexVersion, fabricVexMinecraftVersion, fabricVexParchmentMinecraft, fabricVexParchmentVersion, listOf("api-base", "lifecycle-events-v1", "message-api-v1", "networking-api-v1", "entity-events-v1", "command-api-v2")), // Fabric 1.19.3-1.20.1
-    FabricProj("fabricTrade", listOf(), fabricVersion, minecraftVersion, parchmentMinecraft, parchmentVersion, listOf("api-base", "lifecycle-events-v1", "message-api-v1", "networking-api-v1", "entity-events-v1", "command-api-v2")), // Fabric 1.20.2+
+    FabricProj(
+        "fabricNether",
+        listOf(),
+        fabricNetherVersion,
+        fabricNetherMinecraftVersion,
+        fabricNetherParchmentMinecraft,
+        fabricNetherParchmentVersion,
+        listOf("api-base", "lifecycle-events-v1", "networking-api-v1", "entity-events-v1", "command-api-v1")
+    ), // Fabric 1.16-1.18.2
+    FabricProj(
+        "fabricWild",
+        listOf("fabricVex"),
+        fabricWildVersion,
+        fabricWildMinecraftVersion,
+        fabricWildParchmentMinecraft,
+        fabricWildParchmentVersion,
+        listOf(
+            "api-base",
+            "lifecycle-events-v1",
+            "message-api-v1",
+            "networking-api-v1",
+            "entity-events-v1",
+            "command-api-v2"
+        )
+    ), // Fabric 1.19
+    FabricProj(
+        "fabricAllay",
+        listOf("fabricVex"),
+        fabricAllayVersion,
+        fabricAllayMinecraftVersion,
+        fabricAllayParchmentMinecraft,
+        fabricAllayParchmentVersion,
+        listOf(
+            "api-base",
+            "lifecycle-events-v1",
+            "message-api-v1",
+            "networking-api-v1",
+            "entity-events-v1",
+            "command-api-v2"
+        )
+    ), // Fabric 1.19.1-1.19.2
+    FabricProj(
+        "fabricVex",
+        listOf(),
+        fabricVexVersion,
+        fabricVexMinecraftVersion,
+        fabricVexParchmentMinecraft,
+        fabricVexParchmentVersion,
+        listOf(
+            "api-base",
+            "lifecycle-events-v1",
+            "message-api-v1",
+            "networking-api-v1",
+            "entity-events-v1",
+            "command-api-v2"
+        )
+    ), // Fabric 1.19.3-1.20.1
+    FabricProj(
+        "fabricTrade",
+        listOf(),
+        fabricTradeVersion,
+        fabricTradeMinecraftVersion,
+        fabricTradeParchmentMinecraft,
+        fabricTradeParchmentVersion,
+        listOf(
+            "api-base",
+            "lifecycle-events-v1",
+            "message-api-v1",
+            "networking-api-v1",
+            "entity-events-v1",
+            "command-api-v2"
+        )
+    ), // Fabric 1.20.2
+    FabricProj(
+        "fabricPot",
+        listOf(),
+        fabricPotVersion,
+        fabricPotMinecraftVersion,
+        fabricPotParchmentMinecraft,
+        fabricPotParchmentVersion,
+        listOf(
+            "api-base",
+            "lifecycle-events-v1",
+            "message-api-v1",
+            "networking-api-v1",
+            "entity-events-v1",
+            "command-api-v2"
+        )
+    ), // Fabric 1.20.3-1.20.4
+    FabricProj(
+        "fabricPaws",
+        listOf(),
+        fabricPawsVersion,
+        fabricPawsMinecraftVersion,
+        null,
+        null,
+        listOf(
+            "api-base",
+            "lifecycle-events-v1",
+            "message-api-v1",
+            "networking-api-v1",
+            "entity-events-v1",
+            "command-api-v2"
+        )
+    ), // Fabric 1.20.5-1.21.8
+    FabricProj(
+        "fabricCopper",
+        listOf(),
+        fabricCopperVersion,
+        fabricCopperMinecraftVersion,
+        fabricCopperParchmentMinecraft,
+        fabricCopperParchmentVersion,
+        listOf(
+            "api-base",
+            "lifecycle-events-v1",
+            "message-api-v1",
+            "networking-api-v1",
+            "entity-events-v1",
+            "command-api-v2"
+        )
+    ), // Fabric 1.21.9-Latest
 )
 
 val fabricSourceSets: Map<String, SourceSet> = fabricProjects.associate { p ->
@@ -111,7 +258,15 @@ val fabricCompileOnly: Map<String, Configuration> = fabricProjects.associate { p
 }
 
 val fabricVersions: Map<SourceSet, FabricProj> = fabricProjects.associate { p ->
-    fabricSourceSets.getValue(p.name) to FabricProj(p.name, p.deps, p.apiVersion, p.minecraftVersion, p.parchmentMinecraft, p.parchmentVersion, p.fabricApiDeps)
+    fabricSourceSets.getValue(p.name) to FabricProj(
+        p.name,
+        p.deps,
+        p.apiVersion,
+        p.minecraftVersion,
+        p.parchmentMinecraft,
+        p.parchmentVersion,
+        p.fabricApiDeps
+    )
 }
 
 /* Bukkit */
@@ -124,16 +279,56 @@ data class BukkitProj(
 
 // TODO: once we merge bukkit into one shadowjar we can make bukkitCommon not build it's own jar and deps will not be so messy
 val bukkitProjects = listOf(
-    BukkitProj("bukkitCommon", listOf(), "Bukkit Common", "org.bukkit:bukkit:$bukkitEmeraldMcVersion-$bukkitEmeraldVersion"),
+    BukkitProj(
+        "bukkitCommon",
+        listOf(),
+        "Bukkit Common",
+        "org.bukkit:bukkit:$bukkitEmeraldMcVersion-$bukkitEmeraldVersion"
+    ),
 
-    BukkitProj("poseidon", listOf("bukkitFlat"), "Project Poseidon", "com.legacyminecraft.poseidon:poseidon-craftbukkit:${poseidonVersion}"),
-    BukkitProj("bukkitCake", listOf(), "Bukkit b1.2_01-b1.3_01", "org.bukkit:bukkit:$bukkitCookieMcVersion-$bukkitCookieVersion"),
-    BukkitProj("bukkitCookie", listOf("bukkitFlat"), "Bukkit b1.4-r1.0.1", "org.bukkit:bukkit:$bukkitCookieMcVersion-$bukkitCookieVersion"),
+    BukkitProj(
+        "poseidon",
+        listOf("bukkitFlat"),
+        "Project Poseidon",
+        "com.legacyminecraft.poseidon:poseidon-craftbukkit:${poseidonVersion}"
+    ),
+    BukkitProj(
+        "bukkitCake",
+        listOf(),
+        "Bukkit b1.2_01-b1.3_01",
+        "org.bukkit:bukkit:$bukkitCookieMcVersion-$bukkitCookieVersion"
+    ),
+    BukkitProj(
+        "bukkitCookie",
+        listOf("bukkitFlat"),
+        "Bukkit b1.4-r1.0.1",
+        "org.bukkit:bukkit:$bukkitCookieMcVersion-$bukkitCookieVersion"
+    ),
     BukkitProj("bukkitFlat", listOf(), "Bukkit 1.1-1.2.5", "org.bukkit:bukkit:$bukkitFlatMcVersion-$bukkitFlatVersion"),
-    BukkitProj("bukkitEmerald", listOf(), "Bukkit 1.3.1-1.7.8", "org.bukkit:bukkit:$bukkitEmeraldMcVersion-$bukkitEmeraldVersion"),
-    BukkitProj("bukkitRealms", listOf("bukkitEmerald"), "Bukkit 1.7.9-1.11.2", "org.bukkit:bukkit:$bukkitRealmsMcVersion-$bukkitRealmsVersion"),
-    BukkitProj("bukkitColor", listOf("bukkitEmerald", "bukkitRealms"), "Bukkit 1.12-1.19.1", "org.spigotmc:spigot-api:$bukkitColorMcVersion-$bukkitColorVersion"),
-    BukkitProj("bukkitVex", listOf("bukkitEmerald", "bukkitRealms"), "Bukkit 1.19.2+", "org.spigotmc:spigot-api:$bukkitVexMcVersion-$bukkitVexVersion")
+    BukkitProj(
+        "bukkitEmerald",
+        listOf(),
+        "Bukkit 1.3.1-1.7.8",
+        "org.bukkit:bukkit:$bukkitEmeraldMcVersion-$bukkitEmeraldVersion"
+    ),
+    BukkitProj(
+        "bukkitRealms",
+        listOf("bukkitEmerald"),
+        "Bukkit 1.7.9-1.11.2",
+        "org.bukkit:bukkit:$bukkitRealmsMcVersion-$bukkitRealmsVersion"
+    ),
+    BukkitProj(
+        "bukkitColor",
+        listOf("bukkitEmerald", "bukkitRealms"),
+        "Bukkit 1.12-1.19.1",
+        "org.spigotmc:spigot-api:$bukkitColorMcVersion-$bukkitColorVersion"
+    ),
+    BukkitProj(
+        "bukkitVex",
+        listOf("bukkitEmerald", "bukkitRealms"),
+        "Bukkit 1.19.2+",
+        "org.spigotmc:spigot-api:$bukkitVexMcVersion-$bukkitVexVersion"
+    )
 )
 
 val bukkitSourceSets: Map<String, SourceSet> = bukkitProjects.associate { p ->
@@ -150,7 +345,10 @@ val bukkitVersions: Map<SourceSet, BukkitProj> = bukkitProjects.associate { p ->
 
 bukkitProjects.forEach { p ->
     val it = bukkitSourceSets.getValue(p.name)
-    val d = listOf(sourceSets.main.get(), bukkitSourceSets.getValue("bukkitCommon")) + p.deps.map { depName -> bukkitSourceSets.getValue(depName) }
+    val d = listOf(
+        sourceSets.main.get(),
+        bukkitSourceSets.getValue("bukkitCommon")
+    ) + p.deps.map { depName -> bukkitSourceSets.getValue(depName) }
     d.forEach { out ->
         if (out.name != p.name) {
             it.compileClasspath += out.output
@@ -165,15 +363,18 @@ data class ForgeProj(
     val name: String,
     val minecraftVersion: String,
     val loaderVersion: String,
+    val usesSRG: Boolean,
+    val deps: List<String> = listOf()
 )
 
 val neoforgeProjects = listOf(
-    ForgeProj("neoforgeCommon", neoforgePotMinecraftVersion, neoforgePotVersion),
-    ForgeProj("neoforgeEntrypoint", neoforgePotMinecraftVersion, neoforgePotVersion),
+    ForgeProj("neoforgeCommon", neoforgePotMinecraftVersion, neoforgePotVersion, false),
+    ForgeProj("neoforgeEntrypoint", neoforgePotMinecraftVersion, neoforgePotVersion, false),
 
-    ForgeProj("neoforgePot", neoforgePotMinecraftVersion, neoforgePotVersion),
-    ForgeProj("neoforgeTrade", neoforgeTradeMinecraftVersion, neoforgeTradeVersion),
-)
+    ForgeProj("neoforgeCopper", neoforgeCopperMinecraftVersion, neoforgeCopperVersion, false, listOf("neoforgePot")),
+    ForgeProj("neoforgePot", neoforgePotMinecraftVersion, neoforgePotVersion, false),
+    ForgeProj("neoforgeTrade", neoforgeTradeMinecraftVersion, neoforgeTradeVersion, false),
+    )
 
 val neoforgeSourceSets: Map<String, SourceSet> = neoforgeProjects.associate { p ->
     p.name to createSourceSet(p.name, "neoforge")
@@ -184,17 +385,20 @@ val neoforgeCompileOnly: Map<String, Configuration> = neoforgeProjects.associate
 }
 
 val neoforgeVersions: Map<SourceSet, ForgeProj> = neoforgeProjects.associate { p ->
-    neoforgeSourceSets.getValue(p.name) to ForgeProj(p.name, p.minecraftVersion, p.loaderVersion)
+    neoforgeSourceSets.getValue(p.name) to ForgeProj(p.name, p.minecraftVersion, p.loaderVersion, p.usesSRG, p.deps)
 }
 
 /* Forge */
 val forgeProjects = listOf(
-    ForgeProj("forgeCommon", forgePotMinecraftVersion, forgePotVersion),
-    ForgeProj("forgeEntrypoint", forgePotMinecraftVersion, forgePotVersion),
+    ForgeProj("forgeCommon", forgePotMinecraftVersion, forgePotVersion, true),
+    ForgeProj("forgeEntrypoint", forgePotMinecraftVersion, forgePotVersion, true),
 
-    ForgeProj("forgePot", forgePotMinecraftVersion, forgePotVersion),
-    ForgeProj("forgeTrade", forgeTradeMinecraftVersion, forgeTradeVersion),
-    ForgeProj("forgeTrails", forgeTrailsMinecraftVersion, forgeTrailsVersion),
+    ForgeProj("forgeCopper", forgeCopperMinecraftVersion, forgeCopperVersion, false, listOf("forgeSkies", "forgePaws")),
+    ForgeProj("forgeSkies", forgeSkiesMinecraftVersion, forgeSkiesVersion, false, listOf("forgePaws")),
+    ForgeProj("forgePaws", forgePawsMinecraftVersion, forgePawsVersion, false),
+    ForgeProj("forgePot", forgePotMinecraftVersion, forgePotVersion, true),
+    ForgeProj("forgeTrade", forgeTradeMinecraftVersion, forgeTradeVersion, true),
+    ForgeProj("forgeTrails", forgeTrailsMinecraftVersion, forgeTrailsVersion, true),
 )
 
 val forgeSourceSets: Map<String, SourceSet> = forgeProjects.associate { p ->
@@ -206,7 +410,7 @@ val forgeCompileOnly: Map<String, Configuration> = forgeProjects.associate { p -
 }
 
 val forgeVersions: Map<SourceSet, ForgeProj> = forgeProjects.associate { p ->
-    forgeSourceSets.getValue(p.name) to ForgeProj(p.name, p.minecraftVersion, p.loaderVersion)
+    forgeSourceSets.getValue(p.name) to ForgeProj(p.name, p.minecraftVersion, p.loaderVersion, p.usesSRG, p.deps)
 }
 
 val mc: SourceSet by sourceSets.creating
@@ -318,6 +522,14 @@ dependencies {
         }
     }
 
+    neoforgeProjects.forEach { p ->
+        p.deps.map { depName -> neoforgeSourceSets.getValue(depName) }.forEach { d ->
+            if (d.name != p.name) {
+                add(neoforgeCompileOnly.getValue(p.name).name, d.output)
+            }
+        }
+    }
+
     // froge
     forgeSourceSets.forEach { (n, s) ->
         if (n != "forgeEntrypoint") {
@@ -330,6 +542,14 @@ dependencies {
         }
     }
 
+    forgeProjects.forEach { p ->
+        p.deps.map { depName -> forgeSourceSets.getValue(depName) }.forEach { d ->
+            if (d.name != p.name) {
+                add(forgeCompileOnly.getValue(p.name).name, d.output)
+            }
+        }
+    }
+
     // universal deps
     (fabricCompileOnly + neoforgeCompileOnly + forgeCompileOnly).forEach { (_, c) ->
         add(c.name, "com.vdurmont:semver4j:3.1.0")
@@ -337,7 +557,7 @@ dependencies {
 
     extensionCompileOnly(sourceSets.main.get().output)
     extensionCompileOnly("club.minnced:discord-webhooks:0.8.4")
-    extensionCompileOnly("net.dv8tion:JDA:6.0.0")
+    extensionCompileOnly("net.dv8tion:JDA:6.1.0")
     extensionCompileOnly("com.vdurmont:semver4j:3.1.0")
     extensionCompileOnly("com.google.code.gson:gson:2.13.0")
     mcCompileOnly("com.vdurmont:semver4j:3.1.0")
@@ -346,9 +566,11 @@ dependencies {
     implementation("com.google.code.gson:gson:2.13.0")
     implementation("org.danilopianini:gson-extras:3.3.0")
     implementation("club.minnced:discord-webhooks:0.8.4")
-    implementation("net.dv8tion:JDA:6.0.0")
+    implementation("net.dv8tion:JDA:6.1.0") {
+        exclude(module = "opus-java")
+    }
     implementation("me.scarsz.jdaappender:jda5:1.2.3")
-    implementation("org.slf4j:slf4j-jdk14:2.0.17")
+//    implementation("org.slf4j:slf4j-jdk14:2.0.17")
     implementation("org.apache.logging.log4j:log4j-api:2.25.1")
     implementation("com.vdurmont:semver4j:3.1.0")
     implementation("org.apache.commons:commons-lang3:3.19.0")
@@ -363,10 +585,10 @@ tasks.withType<RemapJarTask> {
 }
 
 unimined.minecraft(mc) {
-    combineWith(sourceSets.main.get());
-    version(minecraftVersion)
+    combineWith(sourceSets.main.get())
+    version(mcMinecraftVersion)
     mappings {
-        parchment(parchmentMinecraft, parchmentVersion)
+        parchment(mcParchmentMinecraft, mcParchmentVersion)
         mojmap()
     }
 
@@ -381,7 +603,9 @@ fabricVersions.forEach { it ->
         version(it.value.minecraftVersion)
 
         mappings {
-            parchment(it.value.parchmentMinecraft, it.value.parchmentVersion)
+            if (it.value.parchmentMinecraft != null && it.value.parchmentVersion != null)
+                parchment(it.value.parchmentMinecraft!!, it.value.parchmentVersion!!)
+
             mojmap()
         }
 
@@ -410,11 +634,11 @@ fabricVersions.forEach { it ->
         destinationDirectory.set(layout.buildDirectory.dir("tmp/fabric/relocated"))
         relocate(
             "me.dexrn.rrdiscordbridge.mixins.vanilla",
-            "me.dexrn.rrdiscordbridge.mixins.vanilla.intermediary"
+            "me.dexrn.rrdiscordbridge.mixins.vanilla.intermediary.${it.value.name.replaceFirstChar { c -> c.lowercase() }}"
         )
         relocate(
             "me.dexrn.rrdiscordbridge.impls.vanilla",
-            "me.dexrn.rrdiscordbridge.impls.vanilla.intermediary"
+            "me.dexrn.rrdiscordbridge.impls.vanilla.intermediary.${it.value.name.replaceFirstChar { c -> c.lowercase() }}"
         )
     }
 }
@@ -441,19 +665,21 @@ forgeVersions.forEach { it ->
         }
     }
 
-    tasks.register<ShadowJar>("relocate${it.key.name.replaceFirstChar { c -> c.uppercase() }}Jar") {
-        dependsOn("remap${it.key.name.replaceFirstChar { c -> c.uppercase() }}Jar")
-        from(zipTree(tasks.getByName<Jar>("remap${it.key.name.replaceFirstChar { c -> c.uppercase() }}Jar").archiveFile.get().asFile))
-        archiveClassifier.set("${it.key.name}-relocated")
-        destinationDirectory.set(layout.buildDirectory.dir("tmp/forge/relocated"))
-        relocate(
-            "me.dexrn.rrdiscordbridge.mixins.vanilla",
-            "me.dexrn.rrdiscordbridge.mixins.vanilla.srg"
-        )
-        relocate(
-            "me.dexrn.rrdiscordbridge.impls.vanilla",
-            "me.dexrn.rrdiscordbridge.impls.vanilla.srg"
-        )
+    if (it.value.usesSRG) {
+        tasks.register<ShadowJar>("relocate${it.key.name.replaceFirstChar { c -> c.uppercase() }}Jar") {
+            dependsOn("remap${it.key.name.replaceFirstChar { c -> c.uppercase() }}Jar")
+            from(zipTree(tasks.getByName<Jar>("remap${it.key.name.replaceFirstChar { c -> c.uppercase() }}Jar").archiveFile.get().asFile))
+            archiveClassifier.set("${it.key.name}-relocated")
+            destinationDirectory.set(layout.buildDirectory.dir("tmp/forge/relocated"))
+            relocate(
+                "me.dexrn.rrdiscordbridge.mixins.vanilla",
+                "me.dexrn.rrdiscordbridge.mixins.vanilla.srg.${it.value.name.replaceFirstChar { c -> c.lowercase() }}"
+            )
+            relocate(
+                "me.dexrn.rrdiscordbridge.impls.vanilla",
+                "me.dexrn.rrdiscordbridge.impls.vanilla.srg.${it.value.name.replaceFirstChar { c -> c.lowercase() }}"
+            )
+        }
     }
 }
 
@@ -506,10 +732,6 @@ bukkitVersions.forEach { set ->
 /** Main */
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
-
-//    if (JavaVersion.current().isJava9Compatible) {
-//        options.release.set(8)
-//    }
 }
 
 tasks.register("buildBukkit") {
@@ -549,18 +771,20 @@ tasks.named<JavaCompile>("compileJava").configure {
 //}
 
 tasks.withType<ProcessResources> {
-    filesMatching(listOf(
-        "bungee.yml",
-        "fabric.mod.json",
-        "pack.mcmeta",
-        "META-INF/mods.toml",
-        "META-INF/neoforge.mods.toml",
-        "plugin.yml",
-        "paper-plugin.yml",
-        "ignite.mod.json",
-        "META-INF/sponge_plugins.json",
-        "velocity-plugin.json"
-    )) {
+    filesMatching(
+        listOf(
+            "bungee.yml",
+            "fabric.mod.json",
+            "pack.mcmeta",
+            "META-INF/mods.toml",
+            "META-INF/neoforge.mods.toml",
+            "plugin.yml",
+            "paper-plugin.yml",
+            "ignite.mod.json",
+            "META-INF/sponge_plugins.json",
+            "velocity-plugin.json"
+        )
+    ) {
         expand(project.properties)
     }
 }
@@ -583,11 +807,12 @@ val ex = listOf(
 //    "org/slf4j/**",
     "org/intellij/**",
     "org/jetbrains/**",
+    "META-INF/maven/**",
 //    "META-INF/versions/**"
 )
 
 val mainShadowJar = tasks.register<ShadowJar>("mainShadowJar") {
-    archiveClassifier = "main"
+    archiveClassifier = ""
 
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     manifest {
@@ -608,6 +833,8 @@ val mainShadowJar = tasks.register<ShadowJar>("mainShadowJar") {
 
     from(sourceSets.main.get().output, extension.output)
 
+    minimize()
+
     from(listOf("README.md", "LICENSE")) {
         into("META-INF")
     }
@@ -620,18 +847,23 @@ bukkitVersions.forEach { set ->
         configurations = listOf(project.configurations.getByName("runtimeClasspath"))
         dependsOn(mainShadowJar)
 
-        from(listOf(mc.output, extension.output, sourceSets.main.get().output, bukkitSourceSets.getValue("bukkitCommon").output, set.key.output)
-        + set.value.deps.map { d ->
-            bukkitSourceSets.getValue(d).output
-        })
+        from(
+            listOf(
+                mc.output,
+                extension.output,
+                sourceSets.main.get().output,
+                bukkitSourceSets.getValue("bukkitCommon").output,
+                set.key.output
+            )
+                    + set.value.deps.map { d ->
+                bukkitSourceSets.getValue(d).output
+            })
 
         if (set.value.name == "bukkitCookie" || set.value.name == "bukkitCake")
             exclude("org/bukkit/**") // stub for old craftbukkit
 
-        relocate(
-            "com.google.gson",
-            "relocated.com.google.gson"
-        )
+        minimize()
+
         exclude(ex)
     }
 }
@@ -642,70 +874,83 @@ tasks.register<ShadowJar>("moddedShadowJar") {
     dependsOn(mainShadowJar)
     configurations = listOf(project.configurations.getByName("runtimeClasspath"))
 
-    fabricVersions.forEach { it ->
+    fabricVersions.forEach {
         dependsOn("relocate${it.key.name.replaceFirstChar { c -> c.uppercase() }}Jar")
     }
-    forgeVersions.forEach { it ->
-        dependsOn("relocate${it.key.name.replaceFirstChar { c -> c.uppercase() }}Jar")
+    forgeVersions.forEach {
+        if (it.value.usesSRG)
+            dependsOn("relocate${it.key.name.replaceFirstChar { c -> c.uppercase() }}Jar")
     }
-    from(mc.output, sourceSets.main.get().output,
-        extension.output,
-        fabricVersions.map { it ->
-            println("Shadowing ${it.key.name}");
+    from(
+        mc.output, extension.output, sourceSets.main.get().output,
+        fabricVersions.map {
+            println("Shadowing ${it.key.name}")
             zipTree(tasks.getByName<Jar>("relocate${it.key.name.replaceFirstChar { c -> c.uppercase() }}Jar").archiveFile.get().asFile)
         },
-        forgeVersions.map { it ->
-            println("Shadowing ${it.key.name}");
-            zipTree(tasks.getByName<Jar>("relocate${it.key.name.replaceFirstChar { c -> c.uppercase() }}Jar").archiveFile.get().asFile)
+        forgeVersions.map {
+            println("Shadowing ${it.key.name}")
+            if (!it.value.usesSRG)
+                it.key.output
+            else
+                zipTree(tasks.getByName<Jar>("relocate${it.key.name.replaceFirstChar { c -> c.uppercase() }}Jar").archiveFile.get().asFile)
         },
-        neoforgeSourceSets.map { it ->
-            println("Shadowing ${it.key}");
+        neoforgeSourceSets.map {
+            println("Shadowing ${it.key}")
             it.value.output
         },
-        )
+    )
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+    minimize()
 
     relocate(
         "org.slf4j",
-        "relocated.org.slf4j"
+        "rrdb_reloc.org.slf4j"
     )
 
     relocate(
         "kotlin",
-        "relocated.kotlin"
+        "rrdb_reloc.kotlin"
     )
 
     relocate(
         "org.apache.commons.lang3",
-        "relocated.org.apache.commons.lang3"
+        "rrdb_reloc.org.apache.commons.lang3"
     )
 
 //    relocate(
 //        "org.apache.logging",
-//        "relocated.org.apache.logging"
+//        "rrdb_reloc.org.apache.logging"
 //    )
 
     relocate(
         "com.fasterxml.jackson",
-        "relocated.com.fasterxml.jackson"
+        "rrdb_reloc.com.fasterxml.jackson"
     )
 
     relocate(
         "com.google.gson",
-        "relocated.com.google.gson"
+        "rrdb_reloc.com.google.gson"
     )
 
     exclude(ex)
-        exclude(listOf(
+    exclude(
+        listOf(
+//            "com/google/gson/**",
+//            "module-info.class",
+            "META-INF/versions/9/module-info.class",
+            "META-INF/versions/9/org/apache/logging/**",
             "org/apache/logging/**",
             "com/google/errorprone/**",
 //            "com/fasterxml/jackson/**",
             "META-INF/services/com.fasterxml.jackson.core.JsonFactory/**",
             "META-INF/services/com.fasterxml.jackson.core.ObjectCodec/**",
-            "META-INF/services/org.slf4j.spi.SLF4JServiceProvider/**",
+//            "META-INF/services/org.slf4j.spi.SLF4JServiceProvider/**",
             "javax/annotation/**",
 //            "org/slf4j/**"
-        ))
+        )
+    )
+
 }
 
 /** Extra */
@@ -724,6 +969,6 @@ tasks.register<Javadoc>("genJavadoc") {
     if (css.exists())
         options {
             this as StandardJavadocDocletOptions
-            stylesheetFile = css;
+            stylesheetFile = css
         }
 }

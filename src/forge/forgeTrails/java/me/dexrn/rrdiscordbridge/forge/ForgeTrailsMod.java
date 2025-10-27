@@ -7,23 +7,34 @@ import com.vdurmont.semver4j.Semver;
 import me.dexrn.rrdiscordbridge.RRDiscordBridge;
 import me.dexrn.rrdiscordbridge.SupportedFeatures;
 import me.dexrn.rrdiscordbridge.config.ConfigDirectory;
+import me.dexrn.rrdiscordbridge.forge.impls.ForgeTrailsPlayer;
 import me.dexrn.rrdiscordbridge.forge.impls.ForgeTrailsServer;
-import me.dexrn.rrdiscordbridge.forge.multiversion.IForgeMod;
 import me.dexrn.rrdiscordbridge.impls.logging.Log4JLogger;
+import me.dexrn.rrdiscordbridge.impls.vanilla.CommandCaller;
+import me.dexrn.rrdiscordbridge.impls.vanilla.ModernMinecraftCommands;
+import me.dexrn.rrdiscordbridge.multiversion.AbstractModernMinecraftMod;
 
 import net.minecraft.server.MinecraftServer;
+import net.minecraftforge.event.server.ServerAboutToStartEvent;
+import net.minecraftforge.event.server.ServerStoppingEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import org.apache.logging.log4j.LogManager;
 
-public class ForgeTrailsMod implements IForgeMod {
-    public ForgeTrailsMod() {
+public class ForgeTrailsMod extends AbstractModernMinecraftMod {
+    public ForgeTrailsMod(Semver minecraftVer) {
+        super(minecraftVer);
         EVENT_BUS.register(this);
     }
 
     @Override
-    public void init(MinecraftServer server, Semver minecraftVersion) {
-        EVENT_BUS.register(new ForgeEventHandler());
-        EVENT_BUS.register(new ForgeTrailsEventHandler());
+    public void init(MinecraftServer server) {
+        EVENT_BUS.register(new ForgeEventHandler<>(ForgeTrailsServer::new, ForgeTrailsPlayer::new));
+        EVENT_BUS.register(
+                new ForgeTrailsEventHandler<>(ForgeTrailsServer::new, ForgeTrailsPlayer::new));
+
+        (new ModernMinecraftCommands<>(CommandCaller::new))
+                .register(server.getCommands().getDispatcher());
     }
 
     @Override
@@ -47,5 +58,15 @@ public class ForgeTrailsMod implements IForgeMod {
                         .setCanQueryServerOperators(true)
                         .setCanQueryPlayerHasJoinedBefore(false)
                         .setCanSendConsoleCommands(true));
+    }
+
+    @SubscribeEvent
+    public void onServerStarting(ServerAboutToStartEvent event) {
+        ForgeServerHandler.onServerStarting(event, this);
+    }
+
+    @SubscribeEvent
+    public void onServerStopping(ServerStoppingEvent event) {
+        ForgeServerHandler.onServerStopping(event);
     }
 }

@@ -11,11 +11,6 @@ public class ForgeTrailsPlayer extends ForgePlayer {
     }
 
     @Override
-    public boolean isOperator() {
-        return player.getServer().getProfilePermissions(player.getGameProfile()) > 1;
-    }
-
-    @Override
     public String getName() {
         return player.getName().getString();
     }
