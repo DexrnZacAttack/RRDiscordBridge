@@ -9,11 +9,6 @@ public class EntityEvent extends Event {
     }
 
     public final Entity getEntity() {
-        return new Entity() { // fuck it
-            @Override
-            public int hashCode() {
-                return super.hashCode();
-            }
-        };
+        return null;
     }
 }
