@@ -34,7 +34,7 @@ public class ForgeCopperMod extends AbstractModernMinecraftMod {
                 MethodHandles.lookup(),
                 new ForgeSkiesEventHandler<>(ForgeCopperServer::new, ForgeCopperPlayer::new));
 
-        (new ModernMinecraftCommands<>(CommandCaller::new))
+        (new ModernMinecraftCommands(CommandCaller::new))
                 .register(server.getCommands().getDispatcher());
     }
 

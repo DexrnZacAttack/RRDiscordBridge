@@ -15,28 +15,18 @@ public class SLF4JLogger implements ILogger {
     }
 
     @Override
-    public void info(String message) {
-        logger.info(message);
+    public void info(String message, Object... fmt) {
+        logger.info(message, fmt);
     }
 
     @Override
-    public void warn(String message) {
-        logger.warn(message);
+    public void warn(String message, Object... fmt) {
+        logger.warn(message, fmt);
     }
 
     @Override
-    public void warn(String message, Throwable ex) {
-        logger.warn(message, ex);
-    }
-
-    @Override
-    public void error(String message) {
-        logger.error(message);
-    }
-
-    @Override
-    public void error(String message, Throwable ex) {
-        logger.error(message, ex);
+    public void error(String message, Object... fmt) {
+        logger.error(message, fmt);
     }
 
     @Override

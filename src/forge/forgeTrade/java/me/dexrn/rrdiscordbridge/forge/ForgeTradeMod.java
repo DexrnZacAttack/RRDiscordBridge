@@ -33,7 +33,7 @@ public class ForgeTradeMod extends AbstractModernMinecraftMod {
         EVENT_BUS.register(
                 new ForgeTradeEventHandler<>(ForgeTradeServer::new, ForgeTradePlayer::new));
 
-        (new ModernMinecraftCommands<>(CommandCaller::new))
+        (new ModernMinecraftCommands(CommandCaller::new))
                 .register(server.getCommands().getDispatcher());
     }
 

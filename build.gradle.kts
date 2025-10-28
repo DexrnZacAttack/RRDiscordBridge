@@ -12,6 +12,7 @@ plugins {
     alias(libs.plugins.shadow)
     alias(libs.plugins.spotless)
     alias(libs.plugins.unimined)
+    alias(libs.plugins.jvmdowngrader)
 }
 
 unimined.useGlobalCache = false
@@ -273,7 +274,6 @@ val fabricVersions: Map<SourceSet, FabricProj> = fabricProjects.associate { p ->
 data class BukkitProj(
     val name: String,
     val deps: List<String>,
-    val jarName: String,
     val mvn: String
 )
 
@@ -282,51 +282,48 @@ val bukkitProjects = listOf(
     BukkitProj(
         "bukkitCommon",
         listOf(),
-        "Bukkit Common",
+        "org.bukkit:bukkit:$bukkitEmeraldMcVersion-$bukkitEmeraldVersion"
+    ),
+    BukkitProj(
+        "bukkitEntrypoint",
+        listOf("poseidon", "bukkitCake", "bukkitCookie", "bukkitFlat", "bukkitEmerald", "bukkitRealms", "bukkitColor", "bukkitVex"),
         "org.bukkit:bukkit:$bukkitEmeraldMcVersion-$bukkitEmeraldVersion"
     ),
 
     BukkitProj(
         "poseidon",
         listOf("bukkitFlat"),
-        "Project Poseidon",
         "com.legacyminecraft.poseidon:poseidon-craftbukkit:${poseidonVersion}"
     ),
     BukkitProj(
         "bukkitCake",
         listOf(),
-        "Bukkit b1.2_01-b1.3_01",
         "org.bukkit:bukkit:$bukkitCookieMcVersion-$bukkitCookieVersion"
     ),
     BukkitProj(
         "bukkitCookie",
         listOf("bukkitFlat"),
-        "Bukkit b1.4-r1.0.1",
         "org.bukkit:bukkit:$bukkitCookieMcVersion-$bukkitCookieVersion"
     ),
-    BukkitProj("bukkitFlat", listOf(), "Bukkit 1.1-1.2.5", "org.bukkit:bukkit:$bukkitFlatMcVersion-$bukkitFlatVersion"),
+    BukkitProj("bukkitFlat", listOf(),  "org.bukkit:bukkit:$bukkitFlatMcVersion-$bukkitFlatVersion"),
     BukkitProj(
         "bukkitEmerald",
         listOf(),
-        "Bukkit 1.3.1-1.7.8",
         "org.bukkit:bukkit:$bukkitEmeraldMcVersion-$bukkitEmeraldVersion"
     ),
     BukkitProj(
         "bukkitRealms",
         listOf("bukkitEmerald"),
-        "Bukkit 1.7.9-1.11.2",
         "org.bukkit:bukkit:$bukkitRealmsMcVersion-$bukkitRealmsVersion"
     ),
     BukkitProj(
         "bukkitColor",
         listOf("bukkitEmerald", "bukkitRealms"),
-        "Bukkit 1.12-1.19.1",
         "org.spigotmc:spigot-api:$bukkitColorMcVersion-$bukkitColorVersion"
     ),
     BukkitProj(
         "bukkitVex",
         listOf("bukkitEmerald", "bukkitRealms"),
-        "Bukkit 1.19.2+",
         "org.spigotmc:spigot-api:$bukkitVexMcVersion-$bukkitVexVersion"
     )
 )
@@ -340,7 +337,7 @@ val bukkitCompileOnly: Map<String, Configuration> = bukkitProjects.associate { p
 }
 
 val bukkitVersions: Map<SourceSet, BukkitProj> = bukkitProjects.associate { p ->
-    bukkitSourceSets.getValue(p.name) to BukkitProj(p.name, p.deps, p.jarName, p.mvn)
+    bukkitSourceSets.getValue(p.name) to BukkitProj(p.name, p.deps, p.mvn)
 }
 
 bukkitProjects.forEach { p ->
@@ -364,16 +361,17 @@ data class ForgeProj(
     val minecraftVersion: String,
     val loaderVersion: String,
     val usesSRG: Boolean,
+    val java: String = "21",
     val deps: List<String> = listOf()
 )
 
 val neoforgeProjects = listOf(
-    ForgeProj("neoforgeCommon", neoforgePotMinecraftVersion, neoforgePotVersion, false),
-    ForgeProj("neoforgeEntrypoint", neoforgePotMinecraftVersion, neoforgePotVersion, false),
+    ForgeProj("neoforgeCommon", neoforgePotMinecraftVersion, neoforgePotVersion, false, "17"),
+    ForgeProj("neoforgeEntrypoint", neoforgePotMinecraftVersion, neoforgePotVersion, false, "17"),
 
-    ForgeProj("neoforgeCopper", neoforgeCopperMinecraftVersion, neoforgeCopperVersion, false, listOf("neoforgePot")),
-    ForgeProj("neoforgePot", neoforgePotMinecraftVersion, neoforgePotVersion, false),
-    ForgeProj("neoforgeTrade", neoforgeTradeMinecraftVersion, neoforgeTradeVersion, false),
+    ForgeProj("neoforgeCopper", neoforgeCopperMinecraftVersion, neoforgeCopperVersion, false, "17", listOf("neoforgePot")),
+    ForgeProj("neoforgePot", neoforgePotMinecraftVersion, neoforgePotVersion, false, "17"),
+    ForgeProj("neoforgeTrade", neoforgeTradeMinecraftVersion, neoforgeTradeVersion, false, "17"),
     )
 
 val neoforgeSourceSets: Map<String, SourceSet> = neoforgeProjects.associate { p ->
@@ -385,20 +383,20 @@ val neoforgeCompileOnly: Map<String, Configuration> = neoforgeProjects.associate
 }
 
 val neoforgeVersions: Map<SourceSet, ForgeProj> = neoforgeProjects.associate { p ->
-    neoforgeSourceSets.getValue(p.name) to ForgeProj(p.name, p.minecraftVersion, p.loaderVersion, p.usesSRG, p.deps)
+    neoforgeSourceSets.getValue(p.name) to ForgeProj(p.name, p.minecraftVersion, p.loaderVersion, p.usesSRG, p.java, p.deps)
 }
 
 /* Forge */
 val forgeProjects = listOf(
-    ForgeProj("forgeCommon", forgePotMinecraftVersion, forgePotVersion, true),
-    ForgeProj("forgeEntrypoint", forgePotMinecraftVersion, forgePotVersion, true),
+    ForgeProj("forgeCommon", forgePotMinecraftVersion, forgePotVersion, true, "17"),
+    ForgeProj("forgeEntrypoint", forgePotMinecraftVersion, forgePotVersion, true, "17"),
 
-    ForgeProj("forgeCopper", forgeCopperMinecraftVersion, forgeCopperVersion, false, listOf("forgeSkies", "forgePaws")),
-    ForgeProj("forgeSkies", forgeSkiesMinecraftVersion, forgeSkiesVersion, false, listOf("forgePaws")),
-    ForgeProj("forgePaws", forgePawsMinecraftVersion, forgePawsVersion, false),
-    ForgeProj("forgePot", forgePotMinecraftVersion, forgePotVersion, true),
-    ForgeProj("forgeTrade", forgeTradeMinecraftVersion, forgeTradeVersion, true),
-    ForgeProj("forgeTrails", forgeTrailsMinecraftVersion, forgeTrailsVersion, true),
+    ForgeProj("forgeCopper", forgeCopperMinecraftVersion, forgeCopperVersion, false, "17", listOf("forgeSkies", "forgePaws")),
+    ForgeProj("forgeSkies", forgeSkiesMinecraftVersion, forgeSkiesVersion, false, "17", listOf("forgePaws")),
+    ForgeProj("forgePaws", forgePawsMinecraftVersion, forgePawsVersion, false, "17"),
+    ForgeProj("forgePot", forgePotMinecraftVersion, forgePotVersion, true, "17"),
+    ForgeProj("forgeTrade", forgeTradeMinecraftVersion, forgeTradeVersion, true, "17"),
+    ForgeProj("forgeTrails", forgeTrailsMinecraftVersion, forgeTrailsVersion, true, "17"),
 )
 
 val forgeSourceSets: Map<String, SourceSet> = forgeProjects.associate { p ->
@@ -410,7 +408,7 @@ val forgeCompileOnly: Map<String, Configuration> = forgeProjects.associate { p -
 }
 
 val forgeVersions: Map<SourceSet, ForgeProj> = forgeProjects.associate { p ->
-    forgeSourceSets.getValue(p.name) to ForgeProj(p.name, p.minecraftVersion, p.loaderVersion, p.usesSRG, p.deps)
+    forgeSourceSets.getValue(p.name) to ForgeProj(p.name, p.minecraftVersion, p.loaderVersion, p.usesSRG, p.java,p.deps)
 }
 
 val mc: SourceSet by sourceSets.creating
@@ -551,8 +549,14 @@ dependencies {
     }
 
     // universal deps
-    (fabricCompileOnly + neoforgeCompileOnly + forgeCompileOnly).forEach { (_, c) ->
+    (fabricCompileOnly + neoforgeCompileOnly + forgeCompileOnly + bukkitCompileOnly).forEach { (_, c) ->
         add(c.name, "com.vdurmont:semver4j:3.1.0")
+        add(c.name, "org.apache.commons:commons-lang3:3.19.0")
+        add(c.name, "commons-io:commons-io:2.20.0")
+    }
+
+    (bukkitCompileOnly).forEach { (_, c) ->
+        add(c.name, mc.output)
     }
 
     extensionCompileOnly(sourceSets.main.get().output)
@@ -561,6 +565,7 @@ dependencies {
     extensionCompileOnly("com.vdurmont:semver4j:3.1.0")
     extensionCompileOnly("com.google.code.gson:gson:2.13.0")
     mcCompileOnly("com.vdurmont:semver4j:3.1.0")
+    mcCompileOnly("org.bukkit:bukkit:$bukkitEmeraldMcVersion-$bukkitEmeraldVersion")
 
     // common deps
     implementation("com.google.code.gson:gson:2.13.0")
@@ -574,6 +579,7 @@ dependencies {
     implementation("org.apache.logging.log4j:log4j-api:2.25.1")
     implementation("com.vdurmont:semver4j:3.1.0")
     implementation("org.apache.commons:commons-lang3:3.19.0")
+    implementation("commons-io:commons-io:2.20.0")
 }
 
 /** Unimined */
@@ -681,6 +687,11 @@ forgeVersions.forEach { it ->
             )
         }
     }
+
+    tasks.named<JavaCompile>("compile${it.key.name.replaceFirstChar { c -> c.uppercase() }}Java").configure {
+        sourceCompatibility = it.value.java
+        targetCompatibility = it.value.java
+    }
 }
 
 neoforgeVersions.forEach { it ->
@@ -701,6 +712,11 @@ neoforgeVersions.forEach { it ->
     tasks.named<Jar>("${it.key.name}Jar").configure {
         destinationDirectory.set(layout.buildDirectory.dir("tmp/neoforge"))
     }
+
+    tasks.named<JavaCompile>("compile${it.key.name.replaceFirstChar { c -> c.uppercase() }}Java").configure {
+        sourceCompatibility = it.value.java
+        targetCompatibility = it.value.java
+    }
 }
 
 bukkitVersions.forEach { set ->
@@ -715,10 +731,10 @@ bukkitVersions.forEach { set ->
 
         from(mc.output)
 
-        group = JavaBasePlugin.BUILD_TASK_NAME
+//        group = JavaBasePlugin.BUILD_TASK_NAME
 //        archiveBaseName.set(set.value.jarName)
 
-//        destinationDirectory.set(layout.buildDirectory.dir("src/${set.value.name}"))
+        destinationDirectory.set(layout.buildDirectory.dir("tmp/bukkit"))
 
         dependsOn("${set.value.name}ShadowJar")
     }
@@ -734,20 +750,12 @@ tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
 }
 
-tasks.register("buildBukkit") {
-    group = JavaBasePlugin.BUILD_TASK_NAME
-    bukkitVersions.forEach { set ->
-        dependsOn("${set.value.name}Jar")
-    }
-}
-
 tasks.register("buildMod") {
     group = JavaBasePlugin.BUILD_TASK_NAME
     dependsOn("moddedShadowJar")
 }
 
 tasks.named("build").configure {
-    dependsOn("buildBukkit")
     dependsOn("buildMod")
 }
 
@@ -763,6 +771,11 @@ tasks.named<Jar>("jar").configure {
 tasks.named<JavaCompile>("compileJava").configure {
     sourceCompatibility = "1.8"
     targetCompatibility = "1.8"
+}
+
+tasks.named<JavaCompile>("compileMcJava").configure {
+    sourceCompatibility = "17"
+    targetCompatibility = "17"
 }
 
 //tasks.named<Jar>("mcJar").configure {
@@ -840,36 +853,8 @@ val mainShadowJar = tasks.register<ShadowJar>("mainShadowJar") {
     }
 }
 
-bukkitVersions.forEach { set ->
-    tasks.register<ShadowJar>("${set.value.name}ShadowJar") {
-        archiveClassifier = set.value.jarName
-        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-        configurations = listOf(project.configurations.getByName("runtimeClasspath"))
-        dependsOn(mainShadowJar)
-
-        from(
-            listOf(
-                mc.output,
-                extension.output,
-                sourceSets.main.get().output,
-                bukkitSourceSets.getValue("bukkitCommon").output,
-                set.key.output
-            )
-                    + set.value.deps.map { d ->
-                bukkitSourceSets.getValue(d).output
-            })
-
-        if (set.value.name == "bukkitCookie" || set.value.name == "bukkitCake")
-            exclude("org/bukkit/**") // stub for old craftbukkit
-
-        minimize()
-
-        exclude(ex)
-    }
-}
-
 tasks.register<ShadowJar>("moddedShadowJar") {
-    archiveClassifier = "Fabric-Forge-NeoForge"
+    archiveClassifier = "AIO" // welcome back terraria aio worlds
 
     dependsOn(mainShadowJar)
     configurations = listOf(project.configurations.getByName("runtimeClasspath"))
@@ -898,6 +883,10 @@ tasks.register<ShadowJar>("moddedShadowJar") {
             println("Shadowing ${it.key}")
             it.value.output
         },
+        bukkitSourceSets.map {
+            println("Shadowing ${it.key}")
+            it.value.output
+        },
     )
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
@@ -914,8 +903,8 @@ tasks.register<ShadowJar>("moddedShadowJar") {
     )
 
     relocate(
-        "org.apache.commons.lang3",
-        "rrdb_reloc.org.apache.commons.lang3"
+        "org.apache.commons",
+        "rrdb_reloc.org.apache.commons"
     )
 
 //    relocate(
@@ -936,6 +925,7 @@ tasks.register<ShadowJar>("moddedShadowJar") {
     exclude(ex)
     exclude(
         listOf(
+            "org/bukkit/**",
 //            "com/google/gson/**",
 //            "module-info.class",
             "META-INF/versions/9/module-info.class",
@@ -960,7 +950,7 @@ tasks.register<Javadoc>("genJavadoc") {
     group = JavaBasePlugin.DOCUMENTATION_GROUP
 
     source = sourceSets.main.get().allJava
-    classpath = files(sourceSets.main.get().output, sourceSets.main.get().compileClasspath)
+    classpath = files(sourceSets.main.get().output, sourceSets.main.get().compileClasspath, extension.output)
 
     setDestinationDir(file("javadoc/generated"))
 

@@ -17,11 +17,11 @@ import net.minecraft.commands.CommandSourceStack;
 
 import java.util.function.Function;
 
-public class ModernMinecraftCommands<C extends ICommandCaller> {
-    public Function<CommandSourceStack, C> commandCallerSupplier;
+public class ModernMinecraftCommands {
+    public Function<CommandSourceStack, ? extends ICommandCaller> commandCallerSupplier;
 
-    // TODO: this can be most definitely cleaned up by just making the function take the template!
-    public ModernMinecraftCommands(Function<CommandSourceStack, C> commandCaller) {
+    public ModernMinecraftCommands(
+            Function<CommandSourceStack, ? extends ICommandCaller> commandCaller) {
         commandCallerSupplier = commandCaller;
     }
 

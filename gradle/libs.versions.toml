@@ -13,7 +13,7 @@ slf4j = { group = "org.slf4j", name = "slf4j-api", version = "2.0.16" }
 
 [plugins]
 blossom = { id = "net.kyori.blossom", version.ref = "blossom" }
-#jvmdowngrader = { id = "xyz.wagyourtail.jvmdowngrader", version.ref = "jvmdowngrader" }
+jvmdowngrader = { id = "xyz.wagyourtail.jvmdowngrader", version.ref = "jvmdowngrader" }
 shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 unimined = { id = "xyz.wagyourtail.unimined", version.ref = "unimined" }

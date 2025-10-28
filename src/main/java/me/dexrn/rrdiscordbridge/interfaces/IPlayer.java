@@ -1,5 +1,6 @@
 package me.dexrn.rrdiscordbridge.interfaces;
 
+// TODO: we should look at adding more methods for API users, such as `void ban();`
 /**
  * Common player methods
  *

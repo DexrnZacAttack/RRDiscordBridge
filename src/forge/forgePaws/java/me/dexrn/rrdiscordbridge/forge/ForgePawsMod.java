@@ -32,7 +32,7 @@ public class ForgePawsMod extends AbstractModernMinecraftMod {
     public void init(MinecraftServer server) {
         EVENT_BUS.register(new ForgePawsEventHandler<>(ForgePawsServer::new, ForgePawsPlayer::new));
 
-        (new ModernMinecraftCommands<>(CommandCaller::new))
+        (new ModernMinecraftCommands(CommandCaller::new))
                 .register(server.getCommands().getDispatcher());
     }
 

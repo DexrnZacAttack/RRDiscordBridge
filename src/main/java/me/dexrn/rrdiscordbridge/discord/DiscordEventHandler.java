@@ -64,7 +64,8 @@ public class DiscordEventHandler extends ListenerAdapter {
         if (member != null
                 && instance.getSettings().discordOperators.contains(member.getId())
                 && instance.getSupportedFeatures().canSendConsoleCommands()) {
-            logger.info(String.format("[Discord Console] %s ran command '%s'", author, text));
+            logger.info("[Discord Console] %s ran command '%s'", author, text);
+            ;
 
             instance.getServer().runCommand(text);
         }

@@ -10,7 +10,8 @@ public class ForgeServerHandler {
     public static void onServerStarting(
             ServerAboutToStartEvent event, AbstractModernMinecraftMod mod) {
         mod.setupBridge(event.getServer());
-        RRDiscordBridge.logger.info(String.format("Initializing %s", mod.getClass().getName()));
+        RRDiscordBridge.logger.info("Initializing %s", mod.getClass().getName());
+        ;
         mod.init(event.getServer());
     }
 

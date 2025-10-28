@@ -72,7 +72,7 @@ public class OpChatExtension extends AbstractBridgeExtension {
         TextChannel opcChannel = instance.getBot().jda.getTextChannelById(options.channelId);
         if (opcChannel == null) {
             RRDiscordBridge.logger.warn(
-                    "Failed to find OPChat channel with ID " + options.channelId);
+                    "Failed to find OPChat channel with ID %s", options.channelId);
             instance.getBridgeExtensions().enabledExtensions.remove(this);
             onDisable();
             return;
@@ -135,7 +135,8 @@ public class OpChatExtension extends AbstractBridgeExtension {
         String opcMsg = String.format("§b[§r%s §b-> §6OPs§b] §r%s", player.getName(), res.message);
 
         // so that Console can display the messages
-        RRDiscordBridge.logger.info(String.format("[%s -> OPs] %s", player.getName(), res.message));
+        RRDiscordBridge.logger.info("[%s -> OPs] %s", player.getName(), res.message);
+        ;
 
         player.sendMessage(opcMsg);
         for (IPlayer p : player.getServer().getOnlinePlayers()) {

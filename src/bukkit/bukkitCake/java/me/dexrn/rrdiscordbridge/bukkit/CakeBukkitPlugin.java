@@ -10,29 +10,21 @@ import me.dexrn.rrdiscordbridge.bukkit.events.CakePlayerLeave;
 import me.dexrn.rrdiscordbridge.bukkit.impls.CakeBukkitServer;
 import me.dexrn.rrdiscordbridge.config.ConfigDirectory;
 import me.dexrn.rrdiscordbridge.impls.logging.JavaLogger;
+import me.dexrn.rrdiscordbridge.multiversion.AbstractBukkitPlugin;
 
 import org.bukkit.event.Event;
-import org.bukkit.plugin.PluginDescriptionFile;
-import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
 import java.util.logging.Logger;
 
-public class CakeBukkitPlugin extends JavaPlugin {
+public class CakeBukkitPlugin extends AbstractBukkitPlugin {
     public static org.bukkit.Server server;
     public static PluginManager pluginManager;
 
-    public CakeBukkitPlugin(
-            PluginLoader pluginLoader,
-            org.bukkit.Server instance,
-            PluginDescriptionFile desc,
-            File folder,
-            File plugin,
-            ClassLoader cLoader) {
-        super(pluginLoader, instance, desc, folder, plugin, cLoader);
-        server = instance;
+    public CakeBukkitPlugin(JavaPlugin plugin) {
+        super(plugin);
+        server = plugin.getServer();
     }
 
     public void setSupportedFeatures() {
@@ -48,17 +40,17 @@ public class CakeBukkitPlugin extends JavaPlugin {
                                 doesMethodExist("org.bukkit.Server", "getConsoleSender")));
     }
 
-    protected void registerEvents() {
+    public void registerEvents() {
         // can't put them all in one file it seems
         pluginManager.registerEvent(
-                Event.Type.PLAYER_CHAT, new CakePlayerChat(), Event.Priority.High, this);
+                Event.Type.PLAYER_CHAT, new CakePlayerChat(), Event.Priority.High, plugin);
         //        pluginManager.registerEvent(
         //                Event.Type.PLAYER_COMMAND_PREPROCESS,
         //                new OldPlayerCommand(),
         //                Event.Priority.High,
         //                this);
         pluginManager.registerEvent(
-                Event.Type.PLAYER_JOIN, new CakePlayerJoin(), Event.Priority.High, this);
+                Event.Type.PLAYER_JOIN, new CakePlayerJoin(), Event.Priority.High, plugin);
         //        pluginManager.registerEvent(
         //                Event.Type.ENTITY_DAMAGED, new CakePlayerDeath(), Event.Priority.High,
         // this);
@@ -75,7 +67,7 @@ public class CakeBukkitPlugin extends JavaPlugin {
         //        pluginManager.registerEvent(
         //                Event.Type.PLAYER_KICK, new OldPlayerKick(), Event.Priority.High, this);
         pluginManager.registerEvent(
-                Event.Type.PLAYER_QUIT, new CakePlayerLeave(), Event.Priority.High, this);
+                Event.Type.PLAYER_QUIT, new CakePlayerLeave(), Event.Priority.High, plugin);
         //        pluginManager.registerEvent(
         //                Event.Type.ENTITY_DEATH, new CakePlayerDeath(), Event.Priority.High,
         // this);
@@ -84,11 +76,11 @@ public class CakeBukkitPlugin extends JavaPlugin {
         // this);
     }
 
-    protected void setupBridge() {
+    public void setupBridge() {
         // ctor
         RRDiscordBridge.instance =
                 new RRDiscordBridge(
-                        new CakeBukkitServer(getServer()),
+                        new CakeBukkitServer(plugin.getServer()),
                         new JavaLogger(Logger.getLogger("RRDiscordBridge")),
                         ConfigDirectory.PLUGIN);
 
@@ -98,17 +90,12 @@ public class CakeBukkitPlugin extends JavaPlugin {
     }
 
     @Override
-    public void onEnable() {
+    public void init() {
         setupBridge();
 
         // plugin manager
-        pluginManager = getServer().getPluginManager();
+        pluginManager = plugin.getServer().getPluginManager();
 
         registerEvents();
-    }
-
-    @Override
-    public void onDisable() {
-        if (RRDiscordBridge.instance != null) RRDiscordBridge.instance.shutdown(false);
     }
 }

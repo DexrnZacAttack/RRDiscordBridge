@@ -34,9 +34,8 @@ public class VersionMixinPlugin implements IMixinConfigPlugin {
                             mod = factory.getFabricMods(version);
 
                             RRDiscordBridge.logger.info(
-                                    String.format(
-                                            "[RRDiscordBridge/VersionMixinPlugin] Using MC version %s (%s) for conditional mixins",
-                                            version, mod.name()));
+                                    "[RRDiscordBridge/VersionMixinPlugin] Using MC version %s (%s) for conditional mixins",
+                                    version, mod.name());
                         });
     }
 

@@ -33,7 +33,7 @@ public class ForgeTrailsMod extends AbstractModernMinecraftMod {
         EVENT_BUS.register(
                 new ForgeTrailsEventHandler<>(ForgeTrailsServer::new, ForgeTrailsPlayer::new));
 
-        (new ModernMinecraftCommands<>(CommandCaller::new))
+        (new ModernMinecraftCommands(CommandCaller::new))
                 .register(server.getCommands().getDispatcher());
     }
 

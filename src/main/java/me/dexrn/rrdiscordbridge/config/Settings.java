@@ -152,9 +152,8 @@ public class Settings implements IConfig {
 
         if (ver.isLowerThan(RRDiscordBridge.getVersion()))
             logger.info(
-                    String.format(
-                            "Config version is older than mod/plugin version (%s < %s), attempting to upgrade%n",
-                            version, RRDiscordBridge.getVersion()));
+                    "Config version is older than mod/plugin version (%s < %s), attempting to upgrade%n",
+                    version, RRDiscordBridge.getVersion());
         else return this;
 
         if (ver.isLowerThan("2.2.0") && !this.enabledEvents.contains(Events.PLAYER_ACHIEVEMENT)) {

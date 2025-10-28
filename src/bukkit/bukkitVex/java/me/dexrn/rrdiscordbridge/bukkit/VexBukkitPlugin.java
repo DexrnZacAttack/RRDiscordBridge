@@ -9,15 +9,20 @@ import me.dexrn.rrdiscordbridge.config.ConfigDirectory;
 import me.dexrn.rrdiscordbridge.impls.logging.JavaLogger;
 
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.java.JavaPlugin;
 
-public class VexBukkitPlugin extends BukkitPlugin {
+public class VexBukkitPlugin extends BaseBukkitPlugin {
+    public VexBukkitPlugin(JavaPlugin plugin) {
+        super(plugin);
+    }
+
     @Override
-    protected void setupBridge() {
+    public void setupBridge() {
         // ctor
         RRDiscordBridge.instance =
                 new RRDiscordBridge(
                         new RealmsBukkitServer(Bukkit.getServer()),
-                        new JavaLogger(getServer().getLogger()),
+                        new JavaLogger(plugin.getServer().getLogger()),
                         ConfigDirectory.PLUGIN);
 
         // then we init
@@ -26,10 +31,10 @@ public class VexBukkitPlugin extends BukkitPlugin {
     }
 
     @Override
-    protected void registerEvents() {
-        pluginManager.registerEvents(new BukkitEventHandler(), this);
-        pluginManager.registerEvents(new RealmsPlayerChat(), this);
-        pluginManager.registerEvents(new PlayerDeath(), this);
-        pluginManager.registerEvents(new PlayerAdvancement(), this);
+    public void registerEvents() {
+        pluginManager.registerEvents(new BukkitEventHandler(), plugin);
+        pluginManager.registerEvents(new RealmsPlayerChat(), plugin);
+        pluginManager.registerEvents(new PlayerDeath(), plugin);
+        pluginManager.registerEvents(new PlayerAdvancement(), plugin);
     }
 }

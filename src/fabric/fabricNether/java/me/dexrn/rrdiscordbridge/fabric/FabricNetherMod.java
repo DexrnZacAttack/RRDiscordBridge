@@ -78,7 +78,7 @@ public class FabricNetherMod extends AbstractModernMinecraftMod {
     public void preInit() {
         CommandRegistrationCallback.EVENT.register(
                 (dispatcher, ded) ->
-                        (new ModernMinecraftCommands<>(FabricNetherCommandCaller::new))
+                        (new ModernMinecraftCommands(FabricNetherCommandCaller::new))
                                 .register(dispatcher));
     }
 }

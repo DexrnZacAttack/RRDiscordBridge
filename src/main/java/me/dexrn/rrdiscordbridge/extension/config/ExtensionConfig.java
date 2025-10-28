@@ -109,10 +109,9 @@ public class ExtensionConfig implements IConfig {
             throw e;
         } catch (com.google.gson.JsonParseException e) {
             logger.error(
-                    String.format(
-                            "Exception while deserializing the config file for extension %s: %s"
-                                    + "\nIs the JSON valid? Make sure the 'type' field is intact and hasn't been changed/removed.",
-                            this.name, e.getMessage()));
+                    "Exception while deserializing the config file for extension %s: %s"
+                            + "\nIs the JSON valid? Make sure the 'type' field is intact and hasn't been changed/removed.",
+                    this.name, e.getMessage());
             throw e;
         }
 

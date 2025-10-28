@@ -34,7 +34,7 @@ public class ForgeSkiesMod extends AbstractModernMinecraftMod {
                 MethodHandles.lookup(),
                 new ForgeSkiesEventHandler<>(ForgePawsServer::new, ForgePawsPlayer::new));
 
-        (new ModernMinecraftCommands<>(CommandCaller::new))
+        (new ModernMinecraftCommands(CommandCaller::new))
                 .register(server.getCommands().getDispatcher());
     }
 

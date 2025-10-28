@@ -28,8 +28,7 @@ public abstract class AbstractEventHandler<
     public AbstractEventHandler(
             Function<MinecraftServerT, ServerT> server,
             Function<MinecraftPlayerT, PlayerT> player) {
-        RRDiscordBridge.logger.info(
-                String.format("Registered mod event handler '%s'", getClass().getName()));
+        RRDiscordBridge.logger.info("Registered mod event handler '%s'", getClass().getName());
 
         this.serverFactory = server;
         this.playerFactory = player;

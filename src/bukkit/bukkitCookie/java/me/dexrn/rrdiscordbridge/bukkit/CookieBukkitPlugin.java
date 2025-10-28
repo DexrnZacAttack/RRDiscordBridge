@@ -8,10 +8,15 @@ import me.dexrn.rrdiscordbridge.impls.logging.JavaLogger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
+import org.bukkit.plugin.java.JavaPlugin;
 
-public class CookieBukkitPlugin extends BukkitPlugin {
+public class CookieBukkitPlugin extends BaseBukkitPlugin {
+    public CookieBukkitPlugin(JavaPlugin plugin) {
+        super(plugin);
+    }
+
     @Override
-    protected void setupBridge() {
+    public void setupBridge() {
         // ctor
         RRDiscordBridge.instance =
                 new RRDiscordBridge(
@@ -25,24 +30,24 @@ public class CookieBukkitPlugin extends BukkitPlugin {
     }
 
     @Override
-    protected void registerEvents() {
+    public void registerEvents() {
         // can't put them all in one file it seems
         pluginManager.registerEvent(
-                Event.Type.PLAYER_CHAT, new CookiePlayerChat(), Event.Priority.High, this);
+                Event.Type.PLAYER_CHAT, new CookiePlayerChat(), Event.Priority.High, plugin);
         pluginManager.registerEvent(
                 Event.Type.PLAYER_COMMAND_PREPROCESS,
                 new CookiePlayerCommand(),
                 Event.Priority.High,
-                this);
+                plugin);
         pluginManager.registerEvent(
-                Event.Type.PLAYER_JOIN, new CookiePlayerJoin(), Event.Priority.High, this);
+                Event.Type.PLAYER_JOIN, new CookiePlayerJoin(), Event.Priority.High, plugin);
         pluginManager.registerEvent(
-                Event.Type.PLAYER_KICK, new CookiePlayerKick(), Event.Priority.High, this);
+                Event.Type.PLAYER_KICK, new CookiePlayerKick(), Event.Priority.High, plugin);
         pluginManager.registerEvent(
-                Event.Type.PLAYER_QUIT, new CookiePlayerLeave(), Event.Priority.High, this);
+                Event.Type.PLAYER_QUIT, new CookiePlayerLeave(), Event.Priority.High, plugin);
         pluginManager.registerEvent(
-                Event.Type.ENTITY_DEATH, new CookiePlayerDeath(), Event.Priority.High, this);
+                Event.Type.ENTITY_DEATH, new CookiePlayerDeath(), Event.Priority.High, plugin);
         pluginManager.registerEvent(
-                Event.Type.SERVER_COMMAND, new CookieServerCommand(), Event.Priority.High, this);
+                Event.Type.SERVER_COMMAND, new CookieServerCommand(), Event.Priority.High, plugin);
     }
 }

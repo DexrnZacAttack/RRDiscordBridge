@@ -32,10 +32,8 @@ public class JarExtensionLoader implements IExtensionLoader {
                                         return j.toURI().toURL();
                                     } catch (MalformedURLException ex) {
                                         logger.error(
-                                                String.format(
-                                                        "Failed to load extension from %s: ",
-                                                        j.getName()),
-                                                ex);
+                                                "Failed to load extension from %s: ",
+                                                j.getName(), ex);
                                         return null;
                                     }
                                 })

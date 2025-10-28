@@ -32,7 +32,7 @@ public class ForgePotMod extends AbstractModernMinecraftMod {
         EVENT_BUS.register(new ForgeEventHandler<>(ForgeServer::new, ForgePlayer::new));
         EVENT_BUS.register(new ForgePotEventHandler<>(ForgeServer::new, ForgePlayer::new));
 
-        (new ModernMinecraftCommands<>(CommandCaller::new))
+        (new ModernMinecraftCommands(CommandCaller::new))
                 .register(server.getCommands().getDispatcher());
     }
 

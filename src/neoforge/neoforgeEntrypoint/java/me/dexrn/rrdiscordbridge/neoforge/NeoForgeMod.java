@@ -48,7 +48,8 @@ public class NeoForgeMod {
     @SubscribeEvent
     public void onServerStarting(ServerAboutToStartEvent event) {
         mod.setupBridge(event.getServer());
-        RRDiscordBridge.logger.info(String.format("Initializing %s", mod.getClass().getName()));
+        RRDiscordBridge.logger.info("Initializing %s", mod.getClass().getName());
+        ;
         mod.init(event.getServer());
     }
 
@@ -59,6 +60,6 @@ public class NeoForgeMod {
 
     @SubscribeEvent
     public void onRegisterCommands(RegisterCommandsEvent event) {
-        (new ModernMinecraftCommands<>(CommandCaller::new)).register(event.getDispatcher());
+        (new ModernMinecraftCommands(CommandCaller::new)).register(event.getDispatcher());
     }
 }

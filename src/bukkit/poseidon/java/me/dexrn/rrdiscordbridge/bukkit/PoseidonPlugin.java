@@ -7,14 +7,20 @@ import me.dexrn.rrdiscordbridge.bukkit.impls.PoseidonServer;
 import me.dexrn.rrdiscordbridge.config.ConfigDirectory;
 import me.dexrn.rrdiscordbridge.impls.logging.JavaLogger;
 
-public class PoseidonPlugin extends BukkitPlugin {
+import org.bukkit.plugin.java.JavaPlugin;
+
+public class PoseidonPlugin extends BaseBukkitPlugin {
+    public PoseidonPlugin(JavaPlugin plugin) {
+        super(plugin);
+    }
+
     @Override
-    protected void setupBridge() {
+    public void setupBridge() {
         // ctor
         RRDiscordBridge.instance =
                 new RRDiscordBridge(
-                        new PoseidonServer(getServer()),
-                        new JavaLogger(getServer().getLogger()),
+                        new PoseidonServer(plugin.getServer()),
+                        new JavaLogger(plugin.getServer().getLogger()),
                         ConfigDirectory.PLUGIN);
 
         // then we init
@@ -23,9 +29,9 @@ public class PoseidonPlugin extends BukkitPlugin {
     }
 
     @Override
-    protected void registerEvents() {
-        pluginManager.registerEvents(new BukkitEventHandler(), this);
-        pluginManager.registerEvents(new PoseidonPlayerChat(), this);
-        pluginManager.registerEvents(new PoseidonPlayerDeath(), this);
+    public void registerEvents() {
+        pluginManager.registerEvents(new BukkitEventHandler(), plugin);
+        pluginManager.registerEvents(new PoseidonPlayerChat(), plugin);
+        pluginManager.registerEvents(new PoseidonPlayerDeath(), plugin);
     }
 }

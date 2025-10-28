@@ -52,7 +52,7 @@ public class FabricCopperMod extends AbstractModernMinecraftMod {
     public void preInit() {
         CommandRegistrationCallback.EVENT.register(
                 (dispatcher, ctx, selection) ->
-                        (new ModernMinecraftCommands<>(CommandCaller::new)).register(dispatcher));
+                        (new ModernMinecraftCommands(CommandCaller::new)).register(dispatcher));
     }
 
     @Override

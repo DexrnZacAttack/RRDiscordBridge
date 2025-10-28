@@ -3,7 +3,9 @@ version: ${version}
 author: ${author}
 description: ${description}
 website: ${homepage_url}
-main: me.dexrn.rrdiscordbridge.bukkit.CakeBukkitPlugin
+api-version: 0.0.0
+main: me.dexrn.rrdiscordbridge.bukkit.BukkitPlugin
+folia-supported: true
 commands:
   discord:
     description: Gives the discord invite link (if enabled)
@@ -23,6 +25,3 @@ commands:
     usage: /rdbext [subcmd] [options...]
     permission: rdbext.use
     permission-message: Only people with rdbext.use can use this command.
-libraries:
-  - net.dv8tion:JDA:5.2.1
-  - club.minnced:discord-webhooks:0.8.4

@@ -52,3 +52,5 @@ dependency-reduced-pom.xml
 /libs
 /out
 /bin
+/buildSrc/.kotlin
+/buildSrc/out

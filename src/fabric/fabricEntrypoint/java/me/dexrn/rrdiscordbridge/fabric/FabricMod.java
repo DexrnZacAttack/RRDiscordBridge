@@ -47,7 +47,7 @@ public class FabricMod implements ModInitializer {
                 server -> {
                     mod.setupBridge(server);
                     RRDiscordBridge.logger.info(
-                            String.format("Initializing events for %s", mod.getClass().getName()));
+                            "Initializing events for %s", mod.getClass().getName());
                     mod.init(server);
                 });
     }

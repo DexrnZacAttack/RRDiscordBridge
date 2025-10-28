@@ -167,8 +167,7 @@ public class RRDiscordBridge {
         this.playerCountUpdater.scheduleAtFixedRate(
                 bot.updatePlayerCountRunnable, 0, 1, TimeUnit.MINUTES);
 
-        RRDiscordBridge.logger.info(
-                String.format("RRDiscordBridge v%s has started.", getVersion()));
+        RRDiscordBridge.logger.info("RRDiscordBridge v%s has started.", getVersion());
         bot.sendEvent(
                 Settings.Events.SERVER_START,
                 new MessageEmbed.AuthorInfo(null, null, null, null),

@@ -2,8 +2,8 @@ package me.dexrn.rrdiscordbridge.impls.logging;
 
 import me.dexrn.rrdiscordbridge.interfaces.ILogger;
 
-import java.util.logging.Handler;
-import java.util.logging.Level;
+import java.util.Date;
+import java.util.logging.*;
 
 /** The standard Java Logger */
 public class JavaLogger implements ILogger {
@@ -11,31 +11,40 @@ public class JavaLogger implements ILogger {
 
     public JavaLogger(java.util.logging.Logger logger) {
         this.logger = logger;
+        // https://www.logicbig.com/tutorials/core-java-tutorial/logging/customizing-default-format.html
+
+        this.logger.setUseParentHandlers(false);
+        ConsoleHandler h = new ConsoleHandler();
+        h.setFormatter(
+                new SimpleFormatter() {
+                    private static final String f = "%1$tF %1$tT [%2$s/%3$s] %4$s %n";
+
+                    @Override
+                    public synchronized String format(LogRecord lr) {
+                        return String.format(
+                                f,
+                                new Date(lr.getMillis()),
+                                lr.getSourceClassName(),
+                                lr.getLevel().getLocalizedName(),
+                                lr.getMessage());
+                    }
+                });
+        this.logger.addHandler(h);
     }
 
     @Override
-    public void info(String message) {
-        this.logger.info(message);
+    public void info(String message, Object... fmt) {
+        this.logger.info(String.format(message, fmt));
     }
 
     @Override
-    public void warn(String message) {
-        this.logger.warning(message);
+    public void warn(String message, Object... fmt) {
+        this.logger.warning(String.format(message, fmt));
     }
 
     @Override
-    public void warn(String message, Throwable ex) {
-        this.logger.log(Level.WARNING, message, ex);
-    }
-
-    @Override
-    public void error(String message) {
-        this.logger.severe(message);
-    }
-
-    @Override
-    public void error(String message, Throwable ex) {
-        this.logger.log(Level.SEVERE, message, ex);
+    public void error(String message, Object... fmt) {
+        this.logger.severe(String.format(message, fmt));
     }
 
     @Override

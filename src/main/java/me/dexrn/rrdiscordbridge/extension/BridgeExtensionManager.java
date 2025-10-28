@@ -84,7 +84,7 @@ public class BridgeExtensionManager {
         try {
             register(ext.getConstructor().newInstance());
         } catch (Exception ex) {
-            logger.error(String.format("Failed to register extension %s: ", ext.getName()), ex);
+            logger.error("Failed to register extension %s: ", ext.getName(), ex);
         }
     }
 
@@ -97,15 +97,10 @@ public class BridgeExtensionManager {
                 ext.onEnable();
             }
         } catch (Exception e) {
-            logger.error(
-                    String.format(
-                            "Failed to register extension %s: %s", ext.getName(), e.toString()),
-                    e);
+            logger.error("Failed to register extension %s: %s", ext.getName(), e.toString(), e);
         } finally {
             if (ext != null)
-                logger.info(
-                        String.format(
-                                "Registered extension %s v%s", ext.getName(), ext.getVersion()));
+                logger.info("Registered extension %s v%s", ext.getName(), ext.getVersion());
         }
     }
 
@@ -118,7 +113,8 @@ public class BridgeExtensionManager {
         ext.onDisable();
         enabledExtensions.remove(ext);
         extensions.remove(ext);
-        logger.info(String.format("Unregistered extension %s", ext.getName()));
+        logger.info("Unregistered extension %s", ext.getName());
+        ;
     }
 
     /**
@@ -130,7 +126,8 @@ public class BridgeExtensionManager {
         ext.onDisable();
         enabledExtensions.remove(ext);
         instance.getSettings().disabledExtensions.add(ext.getName());
-        logger.info(String.format("Disabled extension %s", ext.getName()));
+        logger.info("Disabled extension %s", ext.getName());
+        ;
     }
 
     /**
@@ -142,20 +139,19 @@ public class BridgeExtensionManager {
         ext.onEnable();
         enabledExtensions.add(ext);
         instance.getSettings().disabledExtensions.remove(ext.getName());
-        logger.info(String.format("Enabled extension '%s' v%s", ext.getName(), ext.getVersion()));
+        logger.info("Enabled extension '%s' v%s", ext.getName(), ext.getVersion());
+        ;
 
         Semver compat = ext.getCompatibleVersion();
         Semver current = RRDiscordBridge.getSemver();
         if (current.isGreaterThan(compat))
             logger.warn(
-                    String.format(
-                            "Extension '%s' (v%s) was made for an older version of RRDiscordBridge (v%s > v%s), bugs may arise.",
-                            ext.getName(), ext.getVersion(), current, compat));
+                    "Extension '%s' (v%s) was made for an older version of RRDiscordBridge (v%s > v%s), bugs may arise.",
+                    ext.getName(), ext.getVersion(), current, compat);
         if (current.isLowerThan(compat))
             logger.warn(
-                    String.format(
-                            "Extension '%s' (v%s) was made for a newer version of RRDiscordBridge (v%s < v%s), bugs may arise.",
-                            ext.getName(), ext.getVersion(), current, compat));
+                    "Extension '%s' (v%s) was made for a newer version of RRDiscordBridge (v%s < v%s), bugs may arise.",
+                    ext.getName(), ext.getVersion(), current, compat);
     }
 
     public void shutdown(RRDiscordBridge instance, boolean reloading) {
