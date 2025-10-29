@@ -14,19 +14,20 @@ public class Log4JLogger implements ILogger {
         this.logger = logger;
     }
 
+    // I really didn't want to make this use string.format, but I can't find a way to make one way work for both
     @Override
     public void info(String message, Object... fmt) {
-        logger.info(message, fmt);
+        logger.info(String.format(message, fmt));
     }
 
     @Override
     public void warn(String message, Object... fmt) {
-        logger.warn(message, fmt);
+        logger.warn(String.format(message, fmt));
     }
 
     @Override
     public void error(String message, Object... fmt) {
-        logger.error(message, fmt);
+        logger.error(String.format(message, fmt));
     }
 
     @Override

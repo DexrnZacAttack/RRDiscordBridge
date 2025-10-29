@@ -87,7 +87,7 @@ See [versions.md](https://github.com/DexrnZacAttack/RRDiscordBridge/tree/master/
   - [X] 1.21.9-Latest
 ### Forge
   - [ ] 1.1-1.20
-  - [X] 1.20.1
+  - [X] 1.19.2-1.20.1
   - [X] 1.20.2
   - [X] 1.20.3-1.20.5
   - [X] 1.20.6-1.21.5

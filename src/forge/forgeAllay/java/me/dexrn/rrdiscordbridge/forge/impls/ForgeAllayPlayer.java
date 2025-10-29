@@ -5,8 +5,8 @@ import me.dexrn.rrdiscordbridge.interfaces.IServer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 
-public class ForgeTrailsPlayer extends ForgePlayer {
-    public ForgeTrailsPlayer(ServerPlayer player) {
+public class ForgeAllayPlayer extends ForgePlayer {
+    public ForgeAllayPlayer(ServerPlayer player) {
         super(player);
     }
 
@@ -22,6 +22,6 @@ public class ForgeTrailsPlayer extends ForgePlayer {
 
     @Override
     public IServer getServer() {
-        return new ForgeTrailsServer(player.getServer());
+        return new ForgeAllayServer(player.getServer());
     }
 }

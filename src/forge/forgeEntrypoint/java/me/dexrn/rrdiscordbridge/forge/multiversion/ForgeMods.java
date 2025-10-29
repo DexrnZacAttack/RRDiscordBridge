@@ -10,8 +10,8 @@ import java.util.function.Function;
 // Based off https://stackoverflow.com/a/47128240
 /** Defines the Mod classes for each breaking MC version as well as the supported mixins for each */
 public enum ForgeMods {
-    /** 1.20.1 */
-    TRAILS(ForgeTrailsMod::new),
+    /** 1.19.2-1.20.1 */
+    ALLAY(ForgeAllayMod::new),
     /** 1.20.2 */
     TRADE(ForgeTradeMod::new),
     /** 1.20.3-1.20.5 */

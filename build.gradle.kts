@@ -1,4 +1,5 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import org.gradle.kotlin.dsl.fork
 import org.gradle.kotlin.dsl.java
 import xyz.wagyourtail.unimined.api.minecraft.task.RemapJarTask
 import java.time.Instant
@@ -396,7 +397,7 @@ val forgeProjects = listOf(
     ForgeProj("forgePaws", forgePawsMinecraftVersion, forgePawsVersion, false, "17"),
     ForgeProj("forgePot", forgePotMinecraftVersion, forgePotVersion, true, "17"),
     ForgeProj("forgeTrade", forgeTradeMinecraftVersion, forgeTradeVersion, true, "17"),
-    ForgeProj("forgeTrails", forgeTrailsMinecraftVersion, forgeTrailsVersion, true, "17"),
+    ForgeProj("forgeAllay", forgeAllayMinecraftVersion, forgeAllayVersion, true, "17"),
 )
 
 val forgeSourceSets: Map<String, SourceSet> = forgeProjects.associate { p ->
@@ -773,9 +774,19 @@ tasks.named<JavaCompile>("compileJava").configure {
     targetCompatibility = "1.8"
 }
 
+tasks.named<JavaCompile>("compileExtensionJava").configure {
+    sourceCompatibility = "1.8"
+    targetCompatibility = "1.8"
+}
+
+
 tasks.named<JavaCompile>("compileMcJava").configure {
     sourceCompatibility = "17"
     targetCompatibility = "17"
+}
+
+tasks.withType<JavaCompile>().configureEach {
+    options.isFork = true
 }
 
 //tasks.named<Jar>("mcJar").configure {

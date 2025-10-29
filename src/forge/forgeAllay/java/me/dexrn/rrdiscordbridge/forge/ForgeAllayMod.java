@@ -7,8 +7,8 @@ import com.vdurmont.semver4j.Semver;
 import me.dexrn.rrdiscordbridge.RRDiscordBridge;
 import me.dexrn.rrdiscordbridge.SupportedFeatures;
 import me.dexrn.rrdiscordbridge.config.ConfigDirectory;
-import me.dexrn.rrdiscordbridge.forge.impls.ForgeTrailsPlayer;
-import me.dexrn.rrdiscordbridge.forge.impls.ForgeTrailsServer;
+import me.dexrn.rrdiscordbridge.forge.impls.ForgeAllayPlayer;
+import me.dexrn.rrdiscordbridge.forge.impls.ForgeAllayServer;
 import me.dexrn.rrdiscordbridge.impls.logging.Log4JLogger;
 import me.dexrn.rrdiscordbridge.impls.vanilla.CommandCaller;
 import me.dexrn.rrdiscordbridge.impls.vanilla.ModernMinecraftCommands;
@@ -21,17 +21,17 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import org.apache.logging.log4j.LogManager;
 
-public class ForgeTrailsMod extends AbstractModernMinecraftMod {
-    public ForgeTrailsMod(Semver minecraftVer) {
+public class ForgeAllayMod extends AbstractModernMinecraftMod {
+    public ForgeAllayMod(Semver minecraftVer) {
         super(minecraftVer);
         EVENT_BUS.register(this);
     }
 
     @Override
     public void init(MinecraftServer server) {
-        EVENT_BUS.register(new ForgeEventHandler<>(ForgeTrailsServer::new, ForgeTrailsPlayer::new));
+        EVENT_BUS.register(new ForgeEventHandler<>(ForgeAllayServer::new, ForgeAllayPlayer::new));
         EVENT_BUS.register(
-                new ForgeTrailsEventHandler<>(ForgeTrailsServer::new, ForgeTrailsPlayer::new));
+                new ForgeAllayEventHandler<>(ForgeAllayServer::new, ForgeAllayPlayer::new));
 
         (new ModernMinecraftCommands(CommandCaller::new))
                 .register(server.getCommands().getDispatcher());
@@ -45,7 +45,7 @@ public class ForgeTrailsMod extends AbstractModernMinecraftMod {
         // ctor
         RRDiscordBridge.instance =
                 new RRDiscordBridge(
-                        new ForgeTrailsServer(server),
+                        new ForgeAllayServer(server),
                         new Log4JLogger(LogManager.getLogger("RRDiscordBridge")),
                         ConfigDirectory.MOD);
 

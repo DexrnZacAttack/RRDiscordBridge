@@ -15,7 +15,7 @@ If a version has nothing notable, we choose a name for another close version and
 | Color   | 1.12     |
 | Nether  | 1.16     |
 | Wild    | 1.19     |
-| Allay   | 1.19.1   |
+| Allay   | 1.19.1/2 |
 | Vex     | 1.19.3   |
 | Trails  | 1.20.1   |
 | Trade   | 1.20.2   |

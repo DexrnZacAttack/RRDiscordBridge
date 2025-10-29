@@ -15,9 +15,9 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.util.function.Function;
 
-public class ForgeTrailsEventHandler<S extends ForgeServer, P extends ForgePlayer>
+public class ForgeAllayEventHandler<S extends ForgeServer, P extends ForgePlayer>
         extends AbstractEventHandler<S, P, MinecraftServer, ServerPlayer> {
-    public ForgeTrailsEventHandler(
+    public ForgeAllayEventHandler(
             Function<MinecraftServer, S> server, Function<ServerPlayer, P> player) {
         super(server, player);
     }
