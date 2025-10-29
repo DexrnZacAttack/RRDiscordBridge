@@ -362,17 +362,16 @@ data class ForgeProj(
     val minecraftVersion: String,
     val loaderVersion: String,
     val usesSRG: Boolean,
-    val java: String = "21",
     val deps: List<String> = listOf()
 )
 
 val neoforgeProjects = listOf(
-    ForgeProj("neoforgeCommon", neoforgePotMinecraftVersion, neoforgePotVersion, false, "17"),
-    ForgeProj("neoforgeEntrypoint", neoforgePotMinecraftVersion, neoforgePotVersion, false, "17"),
+    ForgeProj("neoforgeCommon", neoforgePotMinecraftVersion, neoforgePotVersion, false),
+    ForgeProj("neoforgeEntrypoint", neoforgePotMinecraftVersion, neoforgePotVersion, false),
 
-    ForgeProj("neoforgeCopper", neoforgeCopperMinecraftVersion, neoforgeCopperVersion, false, "17", listOf("neoforgePot")),
-    ForgeProj("neoforgePot", neoforgePotMinecraftVersion, neoforgePotVersion, false, "17"),
-    ForgeProj("neoforgeTrade", neoforgeTradeMinecraftVersion, neoforgeTradeVersion, false, "17"),
+    ForgeProj("neoforgeCopper", neoforgeCopperMinecraftVersion, neoforgeCopperVersion, false, listOf("neoforgePot")),
+    ForgeProj("neoforgePot", neoforgePotMinecraftVersion, neoforgePotVersion, false),
+    ForgeProj("neoforgeTrade", neoforgeTradeMinecraftVersion, neoforgeTradeVersion, false),
     )
 
 val neoforgeSourceSets: Map<String, SourceSet> = neoforgeProjects.associate { p ->
@@ -384,20 +383,20 @@ val neoforgeCompileOnly: Map<String, Configuration> = neoforgeProjects.associate
 }
 
 val neoforgeVersions: Map<SourceSet, ForgeProj> = neoforgeProjects.associate { p ->
-    neoforgeSourceSets.getValue(p.name) to ForgeProj(p.name, p.minecraftVersion, p.loaderVersion, p.usesSRG, p.java, p.deps)
+    neoforgeSourceSets.getValue(p.name) to ForgeProj(p.name, p.minecraftVersion, p.loaderVersion, p.usesSRG, p.deps)
 }
 
 /* Forge */
 val forgeProjects = listOf(
-    ForgeProj("forgeCommon", forgePotMinecraftVersion, forgePotVersion, true, "17"),
-    ForgeProj("forgeEntrypoint", forgePotMinecraftVersion, forgePotVersion, true, "17"),
+    ForgeProj("forgeCommon", forgePotMinecraftVersion, forgePotVersion, true),
+    ForgeProj("forgeEntrypoint", forgePotMinecraftVersion, forgePotVersion, true),
 
-    ForgeProj("forgeCopper", forgeCopperMinecraftVersion, forgeCopperVersion, false, "17", listOf("forgeSkies", "forgePaws")),
-    ForgeProj("forgeSkies", forgeSkiesMinecraftVersion, forgeSkiesVersion, false, "17", listOf("forgePaws")),
-    ForgeProj("forgePaws", forgePawsMinecraftVersion, forgePawsVersion, false, "17"),
-    ForgeProj("forgePot", forgePotMinecraftVersion, forgePotVersion, true, "17"),
-    ForgeProj("forgeTrade", forgeTradeMinecraftVersion, forgeTradeVersion, true, "17"),
-    ForgeProj("forgeAllay", forgeAllayMinecraftVersion, forgeAllayVersion, true, "17"),
+    ForgeProj("forgeCopper", forgeCopperMinecraftVersion, forgeCopperVersion, false, listOf("forgeSkies", "forgePaws")),
+    ForgeProj("forgeSkies", forgeSkiesMinecraftVersion, forgeSkiesVersion, false, listOf("forgePaws")),
+    ForgeProj("forgePaws", forgePawsMinecraftVersion, forgePawsVersion, false),
+    ForgeProj("forgePot", forgePotMinecraftVersion, forgePotVersion, true),
+    ForgeProj("forgeTrade", forgeTradeMinecraftVersion, forgeTradeVersion, true),
+    ForgeProj("forgeAllay", forgeAllayMinecraftVersion, forgeAllayVersion, true),
 )
 
 val forgeSourceSets: Map<String, SourceSet> = forgeProjects.associate { p ->
@@ -409,7 +408,7 @@ val forgeCompileOnly: Map<String, Configuration> = forgeProjects.associate { p -
 }
 
 val forgeVersions: Map<SourceSet, ForgeProj> = forgeProjects.associate { p ->
-    forgeSourceSets.getValue(p.name) to ForgeProj(p.name, p.minecraftVersion, p.loaderVersion, p.usesSRG, p.java,p.deps)
+    forgeSourceSets.getValue(p.name) to ForgeProj(p.name, p.minecraftVersion, p.loaderVersion, p.usesSRG, p.deps)
 }
 
 val mc: SourceSet by sourceSets.creating
@@ -688,11 +687,6 @@ forgeVersions.forEach { it ->
             )
         }
     }
-
-    tasks.named<JavaCompile>("compile${it.key.name.replaceFirstChar { c -> c.uppercase() }}Java").configure {
-        sourceCompatibility = it.value.java
-        targetCompatibility = it.value.java
-    }
 }
 
 neoforgeVersions.forEach { it ->
@@ -712,11 +706,6 @@ neoforgeVersions.forEach { it ->
 
     tasks.named<Jar>("${it.key.name}Jar").configure {
         destinationDirectory.set(layout.buildDirectory.dir("tmp/neoforge"))
-    }
-
-    tasks.named<JavaCompile>("compile${it.key.name.replaceFirstChar { c -> c.uppercase() }}Java").configure {
-        sourceCompatibility = it.value.java
-        targetCompatibility = it.value.java
     }
 }
 
@@ -738,11 +727,6 @@ bukkitVersions.forEach { set ->
         destinationDirectory.set(layout.buildDirectory.dir("tmp/bukkit"))
 
         dependsOn("${set.value.name}ShadowJar")
-    }
-
-    tasks.named<JavaCompile>("compile${set.value.name.replaceFirstChar { c -> c.uppercase() }}Java").configure {
-        sourceCompatibility = "1.8"
-        targetCompatibility = "1.8"
     }
 }
 
@@ -769,30 +753,11 @@ tasks.named<Jar>("jar").configure {
     destinationDirectory.set(layout.buildDirectory.dir("tmp/rrdb"))
 }
 
-tasks.named<JavaCompile>("compileJava").configure {
-    sourceCompatibility = "1.8"
-    targetCompatibility = "1.8"
-}
-
-tasks.named<JavaCompile>("compileExtensionJava").configure {
-    sourceCompatibility = "1.8"
-    targetCompatibility = "1.8"
-}
-
-
-tasks.named<JavaCompile>("compileMcJava").configure {
-    sourceCompatibility = "17"
-    targetCompatibility = "17"
-}
-
 tasks.withType<JavaCompile>().configureEach {
     options.isFork = true
+    sourceCompatibility = "1.8"
+    targetCompatibility = "1.8"
 }
-
-//tasks.named<Jar>("mcJar").configure {
-//    archiveClassifier = "minecraftCommon";
-//    destinationDirectory.set(layout.buildDirectory.dir("tmp/rrdb"))
-//}
 
 tasks.withType<ProcessResources> {
     filesMatching(

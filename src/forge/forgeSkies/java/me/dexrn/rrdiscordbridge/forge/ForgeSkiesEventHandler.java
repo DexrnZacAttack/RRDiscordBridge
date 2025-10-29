@@ -14,7 +14,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -67,10 +66,10 @@ public class ForgeSkiesEventHandler<S extends ForgePawsServer, P extends ForgePa
     @SubscribeEvent
     public void onPlayerDeath(LivingDeathEvent event) {
         Entity entity = event.getEntity();
-        if (entity instanceof Player player) {
+        if (entity instanceof ServerPlayer) {
             Events.onPlayerDeath(
-                    createPlayer((ServerPlayer) player),
-                    player.getCombatTracker().getDeathMessage().getString());
+                    createPlayer((ServerPlayer) entity),
+                    ((ServerPlayer) entity).getCombatTracker().getDeathMessage().getString());
         }
     }
 
@@ -79,10 +78,11 @@ public class ForgeSkiesEventHandler<S extends ForgePawsServer, P extends ForgePa
         CommandSourceStack s = event.getParseResults().getContext().getSource();
         String cmd = event.getParseResults().getReader().getString();
 
-        if (s.getEntity() == null) {
+        Entity entity = s.getEntity();
+        if (entity == null) {
             Events.onServerCommand(cmd);
-        } else if (s.getEntity() instanceof ServerPlayer player) {
-            Events.onPlayerCommand(createPlayer(player), "/" + cmd);
+        } else if (entity instanceof ServerPlayer) {
+            Events.onPlayerCommand(createPlayer((ServerPlayer) entity), "/" + cmd);
         }
     }
 }

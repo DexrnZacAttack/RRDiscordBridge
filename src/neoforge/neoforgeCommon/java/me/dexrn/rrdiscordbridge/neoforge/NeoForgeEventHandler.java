@@ -9,8 +9,7 @@ import me.dexrn.rrdiscordbridge.neoforge.impls.NeoForgeServer;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.Entity;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.CommandEvent;
 import net.neoforged.neoforge.event.ServerChatEvent;
@@ -46,11 +45,11 @@ public class NeoForgeEventHandler<S extends NeoForgeServer, P extends NeoForgePl
 
     @SubscribeEvent
     public void onPlayerDeath(LivingDeathEvent event) {
-        LivingEntity entity = event.getEntity();
-        if (entity instanceof Player player) {
+        Entity entity = event.getEntity();
+        if (entity instanceof ServerPlayer) {
             Events.onPlayerDeath(
-                    createPlayer((ServerPlayer) player),
-                    player.getCombatTracker().getDeathMessage().getString());
+                    createPlayer((ServerPlayer) entity),
+                    ((ServerPlayer) entity).getCombatTracker().getDeathMessage().getString());
         }
     }
 
@@ -59,10 +58,11 @@ public class NeoForgeEventHandler<S extends NeoForgeServer, P extends NeoForgePl
         CommandSourceStack s = event.getParseResults().getContext().getSource();
         String cmd = event.getParseResults().getReader().getString();
 
-        if (s.getEntity() == null) {
+        Entity entity = s.getEntity();
+        if (entity == null) {
             Events.onServerCommand(cmd);
-        } else if (s.getEntity() instanceof ServerPlayer player) {
-            Events.onPlayerCommand(createPlayer(player), "/" + cmd);
+        } else if (entity instanceof ServerPlayer) {
+            Events.onPlayerCommand(createPlayer((ServerPlayer) entity), "/" + cmd);
         }
     }
 }
