@@ -3,8 +3,8 @@ package me.dexrn.rrdiscordbridge.forge;
 import me.dexrn.rrdiscordbridge.Events;
 import me.dexrn.rrdiscordbridge.forge.impls.ForgePlayer;
 import me.dexrn.rrdiscordbridge.forge.impls.ForgeServer;
-import me.dexrn.rrdiscordbridge.impls.AbstractEventHandler;
-import me.dexrn.rrdiscordbridge.impls.vanilla.advancement.AdvancementType;
+import me.dexrn.rrdiscordbridge.mc.impls.AbstractEventHandler;
+import me.dexrn.rrdiscordbridge.mc.impls.vanilla.advancement.AdvancementType;
 
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.DisplayInfo;

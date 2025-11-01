@@ -1,5 +1,4 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import org.gradle.kotlin.dsl.fork
 import org.gradle.kotlin.dsl.java
 import xyz.wagyourtail.unimined.api.minecraft.task.RemapJarTask
 import java.time.Instant
@@ -78,8 +77,13 @@ fun getCompileOnly(n: String) = configurations.findByName(n) ?: configurations.c
  */
 fun createSourceSet(n: String, f: String): SourceSet {
     val s = sourceSets.create(n)
-    s.java.srcDir("src/${f}/${n}/java")
-    s.resources.srcDir("src/${f}/${n}/resources")
+    if (!n.endsWith("Entrypoint")) {
+        s.java.srcDir("src/${f}/${n}/java")
+        s.resources.srcDir("src/${f}/${n}/resources")
+    } else {
+        s.java.srcDir("src/entrypoint/${n}/java")
+        s.resources.srcDir("src/entrypoint/${n}/resources")
+    }
     return s
 }
 
@@ -278,7 +282,6 @@ data class BukkitProj(
     val mvn: String
 )
 
-// TODO: once we merge bukkit into one shadowjar we can make bukkitCommon not build it's own jar and deps will not be so messy
 val bukkitProjects = listOf(
     BukkitProj(
         "bukkitCommon",
@@ -361,7 +364,7 @@ data class ForgeProj(
     val name: String,
     val minecraftVersion: String,
     val loaderVersion: String,
-    val usesSRG: Boolean,
+    val remap: Boolean,
     val deps: List<String> = listOf()
 )
 
@@ -383,20 +386,32 @@ val neoforgeCompileOnly: Map<String, Configuration> = neoforgeProjects.associate
 }
 
 val neoforgeVersions: Map<SourceSet, ForgeProj> = neoforgeProjects.associate { p ->
-    neoforgeSourceSets.getValue(p.name) to ForgeProj(p.name, p.minecraftVersion, p.loaderVersion, p.usesSRG, p.deps)
+    neoforgeSourceSets.getValue(p.name) to ForgeProj(p.name, p.minecraftVersion, p.loaderVersion, p.remap, p.deps)
 }
 
 /* Forge */
 val forgeProjects = listOf(
     ForgeProj("forgeCommon", forgePotMinecraftVersion, forgePotVersion, true),
-    ForgeProj("forgeEntrypoint", forgePotMinecraftVersion, forgePotVersion, true),
+    ForgeProj("forgeEntrypoint", forgeAllayHotfixMinecraftVersion, forgeAllayHotfixVersion, true, listOf("forgeCavesEntrypoint", "forgeNetherEntrypoint")),
+    ForgeProj("forgeCavesEntrypoint", forgeAllayHotfixMinecraftVersion, forgeAllayHotfixVersion, true),
+    ForgeProj("forgeNetherEntrypoint", forgeNetherMinecraftVersion, forgeNetherVersion, true),
 
     ForgeProj("forgeCopper", forgeCopperMinecraftVersion, forgeCopperVersion, false, listOf("forgeSkies", "forgePaws")),
     ForgeProj("forgeSkies", forgeSkiesMinecraftVersion, forgeSkiesVersion, false, listOf("forgePaws")),
     ForgeProj("forgePaws", forgePawsMinecraftVersion, forgePawsVersion, false),
     ForgeProj("forgePot", forgePotMinecraftVersion, forgePotVersion, true),
     ForgeProj("forgeTrade", forgeTradeMinecraftVersion, forgeTradeVersion, true),
-    ForgeProj("forgeAllay", forgeAllayMinecraftVersion, forgeAllayVersion, true),
+    ForgeProj("forgeAllayHotfix", forgeAllayHotfixMinecraftVersion, forgeAllayHotfixVersion, true),
+    ForgeProj("forgeAllay", forgeAllayMinecraftVersion, forgeAllayVersion, true, listOf("forgeCliffs")),
+    ForgeProj("forgeWild", forgeWildMinecraftVersion, forgeWildVersion, true, listOf("forgeCliffs")),
+    ForgeProj("forgeCliffs", forgeCliffsMinecraftVersion, forgeCliffsVersion, true),
+    ForgeProj("forgeCaves", forgeCavesMinecraftVersion, forgeCavesVersion, true, listOf("forgeCliffs")),
+    ForgeProj("forgeNether", forgeNetherMinecraftVersion, forgeNetherVersion, true, listOf("forgeCliffs")),
+    )
+
+val forgeEntrypoints = listOf(
+    "forgeCavesEntrypoint",
+    "forgeNetherEntrypoint"
 )
 
 val forgeSourceSets: Map<String, SourceSet> = forgeProjects.associate { p ->
@@ -408,7 +423,7 @@ val forgeCompileOnly: Map<String, Configuration> = forgeProjects.associate { p -
 }
 
 val forgeVersions: Map<SourceSet, ForgeProj> = forgeProjects.associate { p ->
-    forgeSourceSets.getValue(p.name) to ForgeProj(p.name, p.minecraftVersion, p.loaderVersion, p.usesSRG, p.deps)
+    forgeSourceSets.getValue(p.name) to ForgeProj(p.name, p.minecraftVersion, p.loaderVersion, p.remap, p.deps)
 }
 
 val mc: SourceSet by sourceSets.creating
@@ -530,9 +545,12 @@ dependencies {
 
     // froge
     forgeSourceSets.forEach { (n, s) ->
-        if (n != "forgeEntrypoint") {
-            // entrypoint can access all
-            add(forgeCompileOnly.getValue("forgeEntrypoint").name, s.output)
+        if (!n.endsWith("Entrypoint")) {
+            for (e in forgeEntrypoints) {
+                // entrypoint can access all
+                if (e.endsWith("Entrypoint"))
+                    add(forgeCompileOnly.getValue(e).name, s.output)
+            }
         }
         if (n != "forgeCommon") {
             // all can access common
@@ -618,7 +636,7 @@ fabricVersions.forEach { it ->
         fabric {
             loader(fabricLoaderVersion)
             if (it.key.name == "fabricEntrypoint")
-                accessWidener(project.projectDir.resolve("src/fabric/fabricEntrypoint/resources/rrdiscordbridge.accesswidener"))
+                accessWidener(project.projectDir.resolve("src/entrypoint/fabricEntrypoint/resources/rrdiscordbridge.accesswidener"))
         }
 
         defaultRemapJar = true
@@ -646,6 +664,10 @@ fabricVersions.forEach { it ->
             "me.dexrn.rrdiscordbridge.impls.vanilla",
             "me.dexrn.rrdiscordbridge.impls.vanilla.intermediary.${it.value.name.replaceFirstChar { c -> c.lowercase() }}"
         )
+        relocate(
+            "me.dexrn.rrdiscordbridge.mc.impls.vanilla",
+            "me.dexrn.rrdiscordbridge.mc.impls.vanilla.intermediary.${it.value.name.replaceFirstChar { c -> c.lowercase() }}"
+        )
     }
 }
 
@@ -671,7 +693,7 @@ forgeVersions.forEach { it ->
         }
     }
 
-    if (it.value.usesSRG) {
+    if (it.value.remap) {
         tasks.register<ShadowJar>("relocate${it.key.name.replaceFirstChar { c -> c.uppercase() }}Jar") {
             dependsOn("remap${it.key.name.replaceFirstChar { c -> c.uppercase() }}Jar")
             from(zipTree(tasks.getByName<Jar>("remap${it.key.name.replaceFirstChar { c -> c.uppercase() }}Jar").archiveFile.get().asFile))
@@ -684,6 +706,10 @@ forgeVersions.forEach { it ->
             relocate(
                 "me.dexrn.rrdiscordbridge.impls.vanilla",
                 "me.dexrn.rrdiscordbridge.impls.vanilla.srg.${it.value.name.replaceFirstChar { c -> c.lowercase() }}"
+            )
+            relocate(
+                "me.dexrn.rrdiscordbridge.mc.impls.vanilla",
+                "me.dexrn.rrdiscordbridge.mc.impls.vanilla.srg.${it.value.name.replaceFirstChar { c -> c.lowercase() }}"
             )
         }
     }
@@ -839,7 +865,7 @@ tasks.register<ShadowJar>("moddedShadowJar") {
         dependsOn("relocate${it.key.name.replaceFirstChar { c -> c.uppercase() }}Jar")
     }
     forgeVersions.forEach {
-        if (it.value.usesSRG)
+        if (it.value.remap)
             dependsOn("relocate${it.key.name.replaceFirstChar { c -> c.uppercase() }}Jar")
     }
     from(
@@ -850,7 +876,7 @@ tasks.register<ShadowJar>("moddedShadowJar") {
         },
         forgeVersions.map {
             println("Shadowing ${it.key.name}")
-            if (!it.value.usesSRG)
+            if (!it.value.remap)
                 it.key.output
             else
                 zipTree(tasks.getByName<Jar>("relocate${it.key.name.replaceFirstChar { c -> c.uppercase() }}Jar").archiveFile.get().asFile)
@@ -868,10 +894,8 @@ tasks.register<ShadowJar>("moddedShadowJar") {
 
     minimize()
 
-    relocate(
-        "org.slf4j",
-        "rrdb_reloc.org.slf4j"
-    )
+    relocate("org.slf4j", "rrdb_reloc.org.slf4j")
+    relocate("gnu", "rrdb_reloc.gnu")
 
     relocate(
         "kotlin",

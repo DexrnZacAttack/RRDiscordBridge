@@ -12,10 +12,10 @@ import me.dexrn.rrdiscordbridge.fabric.impls.FabricCopperPlayer;
 import me.dexrn.rrdiscordbridge.fabric.impls.FabricCopperServer;
 import me.dexrn.rrdiscordbridge.impls.Cancellable;
 import me.dexrn.rrdiscordbridge.impls.logging.Log4JLogger;
-import me.dexrn.rrdiscordbridge.impls.vanilla.CommandCaller;
-import me.dexrn.rrdiscordbridge.impls.vanilla.ModernMinecraftCommands;
-import me.dexrn.rrdiscordbridge.impls.vanilla.advancement.AdvancementType;
-import me.dexrn.rrdiscordbridge.multiversion.AbstractModernMinecraftMod;
+import me.dexrn.rrdiscordbridge.mc.impls.vanilla.CommandCaller;
+import me.dexrn.rrdiscordbridge.mc.impls.vanilla.ModernMinecraftCommands;
+import me.dexrn.rrdiscordbridge.mc.impls.vanilla.advancement.AdvancementType;
+import me.dexrn.rrdiscordbridge.mc.multiversion.modern.AbstractModernMinecraftMod;
 
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;

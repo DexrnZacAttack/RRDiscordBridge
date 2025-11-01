@@ -8,9 +8,9 @@ import me.dexrn.rrdiscordbridge.config.ConfigDirectory;
 import me.dexrn.rrdiscordbridge.forge.impls.ForgePawsPlayer;
 import me.dexrn.rrdiscordbridge.forge.impls.ForgePawsServer;
 import me.dexrn.rrdiscordbridge.impls.logging.Log4JLogger;
-import me.dexrn.rrdiscordbridge.impls.vanilla.CommandCaller;
-import me.dexrn.rrdiscordbridge.impls.vanilla.ModernMinecraftCommands;
-import me.dexrn.rrdiscordbridge.multiversion.AbstractModernMinecraftMod;
+import me.dexrn.rrdiscordbridge.mc.impls.vanilla.CommandCaller;
+import me.dexrn.rrdiscordbridge.mc.impls.vanilla.ModernMinecraftCommands;
+import me.dexrn.rrdiscordbridge.mc.multiversion.modern.AbstractModernMinecraftMod;
 
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;

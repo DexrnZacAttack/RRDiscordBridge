@@ -12,7 +12,7 @@ import me.dexrn.rrdiscordbridge.bukkit.impls.BukkitServer;
 import me.dexrn.rrdiscordbridge.command.CommandRegistry;
 import me.dexrn.rrdiscordbridge.config.ConfigDirectory;
 import me.dexrn.rrdiscordbridge.impls.logging.JavaLogger;
-import me.dexrn.rrdiscordbridge.multiversion.AbstractBukkitPlugin;
+import me.dexrn.rrdiscordbridge.mc.multiversion.bukkit.AbstractBukkitPlugin;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;

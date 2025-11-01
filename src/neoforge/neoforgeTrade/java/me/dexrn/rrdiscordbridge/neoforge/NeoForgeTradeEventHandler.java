@@ -1,8 +1,8 @@
 package me.dexrn.rrdiscordbridge.neoforge;
 
 import me.dexrn.rrdiscordbridge.Events;
-import me.dexrn.rrdiscordbridge.impls.AbstractEventHandler;
-import me.dexrn.rrdiscordbridge.impls.vanilla.advancement.AdvancementType;
+import me.dexrn.rrdiscordbridge.mc.impls.AbstractEventHandler;
+import me.dexrn.rrdiscordbridge.mc.impls.vanilla.advancement.AdvancementType;
 import me.dexrn.rrdiscordbridge.neoforge.impls.NeoForgePlayer;
 import me.dexrn.rrdiscordbridge.neoforge.impls.NeoForgeServer;
 

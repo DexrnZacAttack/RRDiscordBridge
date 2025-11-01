@@ -4,7 +4,7 @@ import me.dexrn.rrdiscordbridge.Events;
 import me.dexrn.rrdiscordbridge.forge.impls.ForgeCancellable;
 import me.dexrn.rrdiscordbridge.forge.impls.ForgePlayer;
 import me.dexrn.rrdiscordbridge.forge.impls.ForgeServer;
-import me.dexrn.rrdiscordbridge.impls.AbstractEventHandler;
+import me.dexrn.rrdiscordbridge.mc.impls.AbstractEventHandler;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.MinecraftServer;

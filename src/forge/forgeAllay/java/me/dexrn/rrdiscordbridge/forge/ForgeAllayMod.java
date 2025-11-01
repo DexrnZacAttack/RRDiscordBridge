@@ -10,9 +10,9 @@ import me.dexrn.rrdiscordbridge.config.ConfigDirectory;
 import me.dexrn.rrdiscordbridge.forge.impls.ForgeAllayPlayer;
 import me.dexrn.rrdiscordbridge.forge.impls.ForgeAllayServer;
 import me.dexrn.rrdiscordbridge.impls.logging.Log4JLogger;
-import me.dexrn.rrdiscordbridge.impls.vanilla.CommandCaller;
-import me.dexrn.rrdiscordbridge.impls.vanilla.ModernMinecraftCommands;
-import me.dexrn.rrdiscordbridge.multiversion.AbstractModernMinecraftMod;
+import me.dexrn.rrdiscordbridge.mc.impls.vanilla.CommandCaller;
+import me.dexrn.rrdiscordbridge.mc.impls.vanilla.ModernMinecraftCommands;
+import me.dexrn.rrdiscordbridge.mc.multiversion.modern.AbstractModernMinecraftMod;
 
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
@@ -29,9 +29,8 @@ public class ForgeAllayMod extends AbstractModernMinecraftMod {
 
     @Override
     public void init(MinecraftServer server) {
-        EVENT_BUS.register(new ForgeEventHandler<>(ForgeAllayServer::new, ForgeAllayPlayer::new));
         EVENT_BUS.register(
-                new ForgeAllayEventHandler<>(ForgeAllayServer::new, ForgeAllayPlayer::new));
+                new ForgeCliffsEventHandler<>(ForgeAllayServer::new, ForgeAllayPlayer::new));
 
         (new ModernMinecraftCommands(CommandCaller::new))
                 .register(server.getCommands().getDispatcher());

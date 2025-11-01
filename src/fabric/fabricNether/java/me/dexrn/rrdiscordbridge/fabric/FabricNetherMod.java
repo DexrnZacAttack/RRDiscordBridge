@@ -14,9 +14,9 @@ import me.dexrn.rrdiscordbridge.fabric.impls.FabricNetherCommandCaller;
 import me.dexrn.rrdiscordbridge.fabric.impls.FabricNetherPlayer;
 import me.dexrn.rrdiscordbridge.fabric.impls.FabricNetherServer;
 import me.dexrn.rrdiscordbridge.impls.logging.Log4JLogger;
-import me.dexrn.rrdiscordbridge.impls.vanilla.ModernMinecraftCommands;
-import me.dexrn.rrdiscordbridge.impls.vanilla.advancement.AdvancementType;
-import me.dexrn.rrdiscordbridge.multiversion.AbstractModernMinecraftMod;
+import me.dexrn.rrdiscordbridge.mc.impls.vanilla.ModernMinecraftCommands;
+import me.dexrn.rrdiscordbridge.mc.impls.vanilla.advancement.AdvancementType;
+import me.dexrn.rrdiscordbridge.mc.multiversion.modern.AbstractModernMinecraftMod;
 
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.minecraft.server.MinecraftServer;

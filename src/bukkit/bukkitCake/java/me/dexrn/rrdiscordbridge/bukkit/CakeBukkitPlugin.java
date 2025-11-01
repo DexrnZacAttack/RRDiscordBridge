@@ -10,7 +10,7 @@ import me.dexrn.rrdiscordbridge.bukkit.events.CakePlayerLeave;
 import me.dexrn.rrdiscordbridge.bukkit.impls.CakeBukkitServer;
 import me.dexrn.rrdiscordbridge.config.ConfigDirectory;
 import me.dexrn.rrdiscordbridge.impls.logging.JavaLogger;
-import me.dexrn.rrdiscordbridge.multiversion.AbstractBukkitPlugin;
+import me.dexrn.rrdiscordbridge.mc.multiversion.bukkit.AbstractBukkitPlugin;
 
 import org.bukkit.event.Event;
 import org.bukkit.plugin.PluginManager;

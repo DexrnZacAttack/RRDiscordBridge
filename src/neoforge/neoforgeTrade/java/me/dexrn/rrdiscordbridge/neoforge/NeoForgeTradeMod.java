@@ -6,7 +6,7 @@ import me.dexrn.rrdiscordbridge.RRDiscordBridge;
 import me.dexrn.rrdiscordbridge.SupportedFeatures;
 import me.dexrn.rrdiscordbridge.config.ConfigDirectory;
 import me.dexrn.rrdiscordbridge.impls.logging.Log4JLogger;
-import me.dexrn.rrdiscordbridge.multiversion.AbstractModernMinecraftMod;
+import me.dexrn.rrdiscordbridge.mc.multiversion.modern.AbstractModernMinecraftMod;
 import me.dexrn.rrdiscordbridge.neoforge.impls.NeoForgePlayer;
 import me.dexrn.rrdiscordbridge.neoforge.impls.NeoForgeServer;
 

@@ -1,0 +1,27 @@
+name: ${name}
+version: ${version}
+author: ${author}
+description: ${description}
+website: ${homepage_url}
+api-version: 0.0.0
+main: me.dexrn.rrdiscordbridge.entrypoint.BukkitPlugin
+folia-supported: true
+commands:
+  discord:
+    description: Gives the discord invite link (if enabled)
+    usage: /discord
+  dcbroadcast:
+    description: Broadcasts a message to the chat and Discord (but fancy)
+    usage: /dcbroadcast <message>
+    permission: dcbroadcast.use
+    permission-message: Only people with dcbroadcast.use can use this command.
+  reloadrdb:
+    description: Reloads the config (bukkit.reload sucks iirc)
+    usage: /reloadrdb
+    permission: reloadrdb.use
+    permission-message: Only people with reloadrdb.use can use this command.
+  rdbext:
+    description: Manage Extensions from ingame, run /rdbext help for subcommands
+    usage: /rdbext [subcmd] [options...]
+    permission: rdbext.use
+    permission-message: Only people with rdbext.use can use this command.

@@ -1,7 +1,7 @@
 package me.dexrn.rrdiscordbridge.fabric.impls;
 
-import me.dexrn.rrdiscordbridge.impls.vanilla.ModernMinecraftPlayer;
 import me.dexrn.rrdiscordbridge.interfaces.ICommandCaller;
+import me.dexrn.rrdiscordbridge.mc.impls.vanilla.ModernMinecraftPlayer;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.TextComponent;

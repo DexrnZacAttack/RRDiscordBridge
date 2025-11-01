@@ -1,7 +1,7 @@
 package me.dexrn.rrdiscordbridge.fabric.impls;
 
-import me.dexrn.rrdiscordbridge.impls.vanilla.ModernMinecraftServer;
 import me.dexrn.rrdiscordbridge.interfaces.IPlayer;
+import me.dexrn.rrdiscordbridge.mc.impls.vanilla.ModernMinecraftServer;
 
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.loader.api.FabricLoader;

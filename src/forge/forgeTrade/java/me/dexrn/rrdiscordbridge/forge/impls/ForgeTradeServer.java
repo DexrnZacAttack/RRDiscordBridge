@@ -69,11 +69,6 @@ public class ForgeTradeServer extends ForgeServer {
     }
 
     @Override
-    public String getSoftwareName() {
-        return "Minecraft";
-    }
-
-    @Override
     public void runCommand(String command) {
         if (server.isDedicatedServer())
             ((DedicatedServer) server)

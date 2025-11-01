@@ -1,7 +1,7 @@
 package me.dexrn.rrdiscordbridge.neoforge.impls;
 
-import me.dexrn.rrdiscordbridge.impls.vanilla.ModernMinecraftServer;
 import me.dexrn.rrdiscordbridge.interfaces.IPlayer;
+import me.dexrn.rrdiscordbridge.mc.impls.vanilla.ModernMinecraftServer;
 
 import net.minecraft.server.MinecraftServer;
 import net.neoforged.fml.ModList;

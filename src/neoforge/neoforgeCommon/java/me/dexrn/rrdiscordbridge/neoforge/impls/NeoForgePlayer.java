@@ -1,7 +1,7 @@
 package me.dexrn.rrdiscordbridge.neoforge.impls;
 
-import me.dexrn.rrdiscordbridge.impls.vanilla.ModernMinecraftPlayer;
 import me.dexrn.rrdiscordbridge.interfaces.IServer;
+import me.dexrn.rrdiscordbridge.mc.impls.vanilla.ModernMinecraftPlayer;
 
 import net.minecraft.server.level.ServerPlayer;
 
