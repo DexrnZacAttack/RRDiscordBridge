@@ -80,6 +80,13 @@ val Project.forgeCavesMinecraftVersion: String get() = properties["forge_caves_m
 val Project.forgeCavesVersion: String get() = properties["forge_caves_version"].toString()
 val Project.forgeNetherMinecraftVersion: String get() = properties["forge_nether_minecraft_version"].toString()
 val Project.forgeNetherVersion: String get() = properties["forge_nether_version"].toString()
+
+val Project.forgePillageMinecraftVersion: String get() = properties["forge_pillage_minecraft_version"].toString()
+val Project.forgePillageVersion: String get() = properties["forge_pillage_version"].toString()
+
+val Project.forgeAquaticMinecraftVersion: String get() = properties["forge_aquatic_minecraft_version"].toString()
+val Project.forgeAquaticVersion: String get() = properties["forge_aquatic_version"].toString()
+
 val Project.neoforgeCopperMinecraftVersion: String get() = properties["neoforge_copper_minecraft_version"].toString()
 val Project.neoforgeCopperVersion: String get() = properties["neoforge_copper_version"].toString()
 val Project.neoforgePotMinecraftVersion: String get() = properties["neoforge_pot_minecraft_version"].toString()

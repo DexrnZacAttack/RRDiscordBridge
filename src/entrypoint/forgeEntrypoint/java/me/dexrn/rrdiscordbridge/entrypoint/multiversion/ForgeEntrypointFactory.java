@@ -24,7 +24,7 @@ public class ForgeEntrypointFactory {
                 "me.dexrn.rrdiscordbridge.entrypoint.forge.ForgeCavesEntrypoint");
         entrypoints.put(
                 "net.minecraft.util.SharedConstants",
-                "me.dexrn.rrdiscordbridge.entrypoint.forge.ForgeNetherEntrypoint");
+                "me.dexrn.rrdiscordbridge.entrypoint.forge.ForgePillageEntrypoint");
     }
 
     public void getForgeEntrypoint() {

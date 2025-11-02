@@ -18,6 +18,12 @@ import java.util.ServiceLoader;
 
 /** Loads extension jar files onto classpath */
 public class JarExtensionLoader implements IExtensionLoader {
+    private ClassLoader loader;
+
+    public JarExtensionLoader(ClassLoader l) {
+        this.loader = l;
+    }
+
     @Override
     public void registerExtensions(BridgeExtensionManager manager) {
         File e = Paths.get(configDir.getPath(), "extensions").toFile();
@@ -41,7 +47,7 @@ public class JarExtensionLoader implements IExtensionLoader {
                         .toArray(URL[]::new);
 
         try {
-            try (URLClassLoader l = new URLClassLoader(jars, getClass().getClassLoader())) {
+            try (URLClassLoader l = new URLClassLoader(jars, this.loader)) {
                 ServiceLoader<AbstractBridgeExtension> loader =
                         ServiceLoader.load(AbstractBridgeExtension.class, l);
                 loader.forEach(manager::register);

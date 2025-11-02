@@ -358,14 +358,14 @@ bukkitProjects.forEach { p ->
     }
 }
 
-
 /* NeoForge */
 data class ForgeProj(
     val name: String,
     val minecraftVersion: String,
     val loaderVersion: String,
     val remap: Boolean,
-    val deps: List<String> = listOf()
+    val deps: List<String> = listOf(),
+    val useFeather: Boolean = false
 )
 
 val neoforgeProjects = listOf(
@@ -392,9 +392,10 @@ val neoforgeVersions: Map<SourceSet, ForgeProj> = neoforgeProjects.associate { p
 /* Forge */
 val forgeProjects = listOf(
     ForgeProj("forgeCommon", forgePotMinecraftVersion, forgePotVersion, true),
-    ForgeProj("forgeEntrypoint", forgeAllayHotfixMinecraftVersion, forgeAllayHotfixVersion, true, listOf("forgeCavesEntrypoint", "forgeNetherEntrypoint")),
+    ForgeProj("forgeEntrypoint", forgeAllayHotfixMinecraftVersion, forgeAllayHotfixVersion, true, listOf("forgeCavesEntrypoint", "forgePillageEntrypoint", "forgeAquaticEntrypoint")),
     ForgeProj("forgeCavesEntrypoint", forgeAllayHotfixMinecraftVersion, forgeAllayHotfixVersion, true),
-    ForgeProj("forgeNetherEntrypoint", forgeNetherMinecraftVersion, forgeNetherVersion, true),
+    ForgeProj("forgePillageEntrypoint", forgeNetherMinecraftVersion, forgeNetherVersion, true),
+    ForgeProj("forgeAquaticEntrypoint", forgeAquaticMinecraftVersion, forgeAquaticVersion, true, listOf(), true),
 
     ForgeProj("forgeCopper", forgeCopperMinecraftVersion, forgeCopperVersion, false, listOf("forgeSkies", "forgePaws")),
     ForgeProj("forgeSkies", forgeSkiesMinecraftVersion, forgeSkiesVersion, false, listOf("forgePaws")),
@@ -407,11 +408,14 @@ val forgeProjects = listOf(
     ForgeProj("forgeCliffs", forgeCliffsMinecraftVersion, forgeCliffsVersion, true),
     ForgeProj("forgeCaves", forgeCavesMinecraftVersion, forgeCavesVersion, true, listOf("forgeCliffs")),
     ForgeProj("forgeNether", forgeNetherMinecraftVersion, forgeNetherVersion, true, listOf("forgeCliffs")),
-    )
+    ForgeProj("forgePillage", forgePillageMinecraftVersion, forgePillageVersion, true, listOf("forgeNether")),
+    ForgeProj("forgeAquatic", forgeAquaticMinecraftVersion, forgeAquaticVersion, true, listOf("forgeNether"), true),
+)
 
 val forgeEntrypoints = listOf(
     "forgeCavesEntrypoint",
-    "forgeNetherEntrypoint"
+    "forgePillageEntrypoint",
+    "forgeAquaticEntrypoint"
 )
 
 val forgeSourceSets: Map<String, SourceSet> = forgeProjects.associate { p ->
@@ -461,6 +465,7 @@ repositories {
     mavenCentral()
     unimined.fabricMaven()
     unimined.minecraftForgeMaven()
+    unimined.ornitheMaven()
     unimined.neoForgedMaven()
     unimined.parchmentMaven()
     unimined.spongeMaven()
@@ -601,13 +606,6 @@ dependencies {
 }
 
 /** Unimined */
-tasks.withType<RemapJarTask> {
-    mixinRemap {
-        enableBaseMixin()
-        disableRefmap()
-    }
-}
-
 unimined.minecraft(mc) {
     combineWith(sourceSets.main.get())
     version(mcMinecraftVersion)
@@ -623,6 +621,8 @@ unimined.footgunChecks = false
 
 fabricVersions.forEach { it ->
     unimined.minecraft(it.key) {
+        println("========== " + it.value.name + " ==========");
+
         combineWith(mc)
         version(it.value.minecraftVersion)
 
@@ -673,10 +673,25 @@ fabricVersions.forEach { it ->
 
 forgeVersions.forEach { it ->
     unimined.minecraft(it.key) {
+        println("========== " + it.value.name + " ==========");
+
+        if (it.value.useFeather) {
+            mappings {
+                feather(4);
+            }
+        }
+
         combineWith(mc)
         version(it.value.minecraftVersion)
+
         minecraftForge {
             loader(it.value.loaderVersion)
+
+            if (it.value.useFeather) {
+                mappings {
+                    feather(4);
+                }
+            }
         }
         defaultRemapJar = true
     }
@@ -717,6 +732,8 @@ forgeVersions.forEach { it ->
 
 neoforgeVersions.forEach { it ->
     unimined.minecraft(it.key) {
+        println("========== " + it.value.name + " ==========");
+
         combineWith(mc)
         version(it.value.minecraftVersion)
         neoForge {
@@ -753,6 +770,13 @@ bukkitVersions.forEach { set ->
         destinationDirectory.set(layout.buildDirectory.dir("tmp/bukkit"))
 
         dependsOn("${set.value.name}ShadowJar")
+    }
+}
+
+tasks.withType<RemapJarTask> {
+    mixinRemap {
+        enableBaseMixin()
+        disableRefmap()
     }
 }
 

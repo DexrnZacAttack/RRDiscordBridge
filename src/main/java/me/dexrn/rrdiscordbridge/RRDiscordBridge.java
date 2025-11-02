@@ -76,6 +76,9 @@ public class RRDiscordBridge {
     /** The Discord bot */
     private DiscordBot bot;
 
+    /** The classloader used for loading extensions */
+    private ClassLoader classLoader;
+
     /**
      * Sets up part of the plugin
      *
@@ -85,11 +88,18 @@ public class RRDiscordBridge {
      *
      * @param logger The logger to use
      * @param server The server impl to use
+     * @param dir The directory to store config files
+     * @param classLoader The ClassLoader to load extensions with
      */
-    public RRDiscordBridge(IServer server, ILogger logger, ConfigDirectory dir) {
+    public RRDiscordBridge(
+            IServer server, ILogger logger, ConfigDirectory dir, ClassLoader classLoader) {
         configDir = dir;
         this.server = server;
         RRDiscordBridge.logger = logger;
+
+        this.classLoader = this.getClass().getClassLoader();
+
+        if (classLoader != null) this.classLoader = classLoader;
 
         this.commandRegistry =
                 new CommandRegistry()
@@ -108,6 +118,21 @@ public class RRDiscordBridge {
             // get server start time (for runtime stats)
             RRDiscordBridge.serverStartTime = System.currentTimeMillis();
         }
+    }
+
+    /**
+     * Sets up part of the plugin
+     *
+     * <p>Because some fields need access to the {@link #instance static instance of
+     * RRDiscordBridge}, you must call {@link #initialize} after setting the static instance to
+     * fully initialize the plugin.
+     *
+     * @param logger The logger to use
+     * @param server The server impl to use
+     * @param dir The directory to store config files
+     */
+    public RRDiscordBridge(IServer server, ILogger logger, ConfigDirectory dir) {
+        this(server, logger, dir, null);
     }
 
     /**
@@ -156,7 +181,7 @@ public class RRDiscordBridge {
         }
 
         // setup extensions
-        this.extensions = new BridgeExtensionManager();
+        this.extensions = new BridgeExtensionManager(this.classLoader);
 
         this.extensions.registerExtensions();
         this.extensions.sort();

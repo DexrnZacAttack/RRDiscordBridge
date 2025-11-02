@@ -16,6 +16,7 @@ public class ForgeNetherModsFactory {
     TreeMap<Semver, ForgeNetherMods> mods = new TreeMap<>();
 
     public ForgeNetherModsFactory() {
+        mods.put(new Semver("1.15", Semver.SemverType.LOOSE), ForgeNetherMods.PILLAGE);
         mods.put(new Semver("1.16", Semver.SemverType.LOOSE), ForgeNetherMods.NETHER);
     }
 

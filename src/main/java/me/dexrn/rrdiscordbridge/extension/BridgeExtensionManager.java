@@ -25,9 +25,9 @@ public class BridgeExtensionManager {
     /** List of all extension loaders */
     private final List<IExtensionLoader> loaders = new ArrayList<>();
 
-    public BridgeExtensionManager() {
+    public BridgeExtensionManager(ClassLoader loader) {
         loaders.add(new EventExtensionLoader());
-        loaders.add(new JarExtensionLoader());
+        loaders.add(new JarExtensionLoader(loader));
     }
 
     /** Registers all extensions */
@@ -114,7 +114,6 @@ public class BridgeExtensionManager {
         enabledExtensions.remove(ext);
         extensions.remove(ext);
         logger.info("Unregistered extension %s", ext.getName());
-        ;
     }
 
     /**
