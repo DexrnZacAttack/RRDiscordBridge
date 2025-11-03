@@ -2,7 +2,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.gradle.kotlin.dsl.java
 import xyz.wagyourtail.unimined.api.minecraft.task.RemapJarTask
 import java.time.Instant
-
+// this build script is a mess
 plugins {
     id("java")
     id("maven-publish")
@@ -427,7 +427,7 @@ val forgeCompileOnly: Map<String, Configuration> = forgeProjects.associate { p -
 }
 
 val forgeVersions: Map<SourceSet, ForgeProj> = forgeProjects.associate { p ->
-    forgeSourceSets.getValue(p.name) to ForgeProj(p.name, p.minecraftVersion, p.loaderVersion, p.remap, p.deps)
+    forgeSourceSets.getValue(p.name) to ForgeProj(p.name, p.minecraftVersion, p.loaderVersion, p.remap, p.deps, p.useFeather)
 }
 
 val mc: SourceSet by sourceSets.creating
@@ -606,6 +606,8 @@ dependencies {
 }
 
 /** Unimined */
+unimined.footgunChecks = false
+
 unimined.minecraft(mc) {
     combineWith(sourceSets.main.get())
     version(mcMinecraftVersion)
@@ -616,8 +618,6 @@ unimined.minecraft(mc) {
 
     defaultRemapJar = false
 }
-
-unimined.footgunChecks = false
 
 fabricVersions.forEach { it ->
     unimined.minecraft(it.key) {
@@ -672,26 +672,40 @@ fabricVersions.forEach { it ->
 }
 
 forgeVersions.forEach { it ->
+    println("========== " + it.value.name + " ==========");
     unimined.minecraft(it.key) {
-        println("========== " + it.value.name + " ==========");
-
         if (it.value.useFeather) {
+            println("Using feather mappings")
+            combineWith(sourceSets.main.get())
             mappings {
+                ornitheGenVersion = 2;
+
+                searge()
+                calamus()
                 feather(4);
+                stub.withMappings("searge", "intermediary") {
+                    // METHODs net/minecraft/entity/item/EntityMinecart/[net/minecraft/entity/item/EntityMinecartFurnace/func_174898_m, getMaxSpeed]()D -> getMaxSpeed
+                    c(
+                        "apn",
+                        listOf(
+                            "net/minecraft/entity/item/EntityMinecartFurnace",
+                        )
+                    ) {
+                        m("getMaxSpeed", "()D", "func_174898_m", "getMaxSpeedFeather")
+                    }
+                }
+            }
+        } else {
+            combineWith(mc)
+            mappings {
+                mojmap()
             }
         }
 
-        combineWith(mc)
         version(it.value.minecraftVersion)
 
         minecraftForge {
             loader(it.value.loaderVersion)
-
-            if (it.value.useFeather) {
-                mappings {
-                    feather(4);
-                }
-            }
         }
         defaultRemapJar = true
     }
