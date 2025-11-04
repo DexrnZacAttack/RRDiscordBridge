@@ -59,6 +59,7 @@ sourceSets.main.configure {
         property("description", description)
         property("homepage_url", homepageUrl)
         property("source_url", sourceUrl)
+        property("issue_url", issueUrl)
         property("modrinth_url", modrinthUrl)
         property("discord_url", discordUrl)
         property("logo", logo)
@@ -85,6 +86,10 @@ fun createSourceSet(n: String, f: String): SourceSet {
         s.resources.srcDir("src/entrypoint/${n}/resources")
     }
     return s
+}
+
+fun log(type: String, s: String, vararg args: Any) {
+    println("[RRDiscordBridge/$type] ${String.format(s, args)}");
 }
 
 /* Fabric */
@@ -394,12 +399,14 @@ val neoforgeVersions: Map<SourceSet, ForgeProj> = neoforgeProjects.associate { p
 val forgeProjects = listOf(
     ForgeProj("forgeCommon", forgePotMinecraftVersion, forgePotVersion, true),
     ForgeProj("forgeEntrypoint", forgeAllayHotfixMinecraftVersion, forgeAllayHotfixVersion, true, listOf("forgeCavesEntrypoint", "forgePillageEntrypoint", "forgeAquaticEntrypoint")),
+    ForgeProj("forgeLegacyEntrypoint", forgeColorMinecraftVersion, forgeColorVersion, true, listOf("forgeCavesEntrypoint", "forgePillageEntrypoint", "forgeAquaticEntrypoint", "mc"), forgeColorMcpVersion, forgeColorMcpChannel), // todo use 1.7 ver for cpw??
     ForgeProj("forgeCavesEntrypoint", forgeAllayHotfixMinecraftVersion, forgeAllayHotfixVersion, true),
     ForgeProj("forgePillageEntrypoint", forgeNetherMinecraftVersion, forgeNetherVersion, true),
-    ForgeProj("forgeAquaticEntrypoint", forgeAquaticMinecraftVersion, forgeAquaticVersion, true, listOf("mc"), "20180921-1.13", "snapshot"),
+    ForgeProj("forgeAquaticEntrypoint", forgeAquaticMinecraftVersion, forgeAquaticVersion, true, listOf("mc"), forgeAquaticMcpVersion, forgeAquaticMcpChannel),
 
     ForgeProj("forgeCopper", forgeCopperMinecraftVersion, forgeCopperVersion, false, listOf("forgeSkies", "forgePaws")),
     ForgeProj("forgeSkies", forgeSkiesMinecraftVersion, forgeSkiesVersion, false, listOf("forgePaws")),
+    /*paws :3*/
     ForgeProj("forgePaws", forgePawsMinecraftVersion, forgePawsVersion, false),
     ForgeProj("forgePot", forgePotMinecraftVersion, forgePotVersion, true),
     ForgeProj("forgeTrade", forgeTradeMinecraftVersion, forgeTradeVersion, true),
@@ -410,8 +417,10 @@ val forgeProjects = listOf(
     ForgeProj("forgeCaves", forgeCavesMinecraftVersion, forgeCavesVersion, true, listOf("forgeCliffs")),
     ForgeProj("forgeNether", forgeNetherMinecraftVersion, forgeNetherVersion, true, listOf("forgeCliffs")),
     ForgeProj("forgePillage", forgePillageMinecraftVersion, forgePillageVersion, true, listOf("forgeNether")),
-    ForgeProj("forgeAquatic", forgeAquaticMinecraftVersion, forgeAquaticVersion, true, listOf("forgeNether", "mc"), "20180921-1.13", "snapshot"),
-)
+    ForgeProj("forgeAquatic", forgeAquaticMinecraftVersion, forgeAquaticVersion, true, listOf("forgeNether", "mc"), forgeAquaticMcpVersion, forgeAquaticMcpChannel),
+    ForgeProj("forgeColor", forgeColorMinecraftVersion, forgeColorVersion, true, listOf("forgeAquatic", "mc"), forgeColorMcpVersion, forgeColorMcpChannel),
+
+    )
 
 val forgeEntrypoints = listOf(
     "forgeCavesEntrypoint",
@@ -496,7 +505,7 @@ dependencies {
             add(bukkitCompileOnly.getValue(n).name, bukkitSourceSets.getValue("bukkitCommon").output)
         }
         if (n == "bukkitCake" && useLocalBukkitCake) {
-            println("Using local jar for bukkitCake")
+            log("BukkitDeps", "Using local jar for bukkitCake")
             add(bukkitCompileOnly.getValue(n).name, files("libs/bukkitCake.jar"))
         }
     }
@@ -622,7 +631,7 @@ unimined.minecraft(mc) {
 
 fabricVersions.forEach { it ->
     unimined.minecraft(it.key) {
-        println("========== " + it.value.name + " ==========");
+        log("UniminedFabric", "========== " + it.value.name + " ==========");
 
         combineWith(mc)
         version(it.value.minecraftVersion)
@@ -673,10 +682,10 @@ fabricVersions.forEach { it ->
 }
 
 forgeVersions.forEach { it ->
-    println("========== " + it.value.name + " ==========");
+    log("UniminedForge", "========== " + it.value.name + " ==========");
     unimined.minecraft(it.key) {
         if (!it.value.mcpVersion.isEmpty()) {
-            println("Using feather mappings")
+            log("UniminedForge", "Using feather mappings")
             combineWith(sourceSets.main.get())
             mappings {
                 searge()
@@ -732,25 +741,27 @@ forgeVersions.forEach { it ->
             from(zipTree(tasks.getByName<Jar>("remap${it.key.name.replaceFirstChar { c -> c.uppercase() }}Jar").archiveFile.get().asFile))
             archiveClassifier.set("${it.key.name}-relocated")
             destinationDirectory.set(layout.buildDirectory.dir("tmp/forge/relocated"))
-            relocate(
-                "me.dexrn.rrdiscordbridge.mixins.vanilla",
-                "me.dexrn.rrdiscordbridge.mixins.vanilla.srg.${it.value.name.replaceFirstChar { c -> c.lowercase() }}"
-            )
-            relocate(
-                "me.dexrn.rrdiscordbridge.impls.vanilla",
-                "me.dexrn.rrdiscordbridge.impls.vanilla.srg.${it.value.name.replaceFirstChar { c -> c.lowercase() }}"
-            )
-            relocate(
-                "me.dexrn.rrdiscordbridge.mc.impls.vanilla",
-                "me.dexrn.rrdiscordbridge.mc.impls.vanilla.srg.${it.value.name.replaceFirstChar { c -> c.lowercase() }}"
-            )
+            if (it.value.mcpVersion.isEmpty()) {
+                relocate(
+                    "me.dexrn.rrdiscordbridge.mixins.vanilla",
+                    "me.dexrn.rrdiscordbridge.mixins.vanilla.srg.${it.value.name.replaceFirstChar { c -> c.lowercase() }}"
+                )
+                relocate(
+                    "me.dexrn.rrdiscordbridge.impls.vanilla",
+                    "me.dexrn.rrdiscordbridge.impls.vanilla.srg.${it.value.name.replaceFirstChar { c -> c.lowercase() }}"
+                )
+                relocate(
+                    "me.dexrn.rrdiscordbridge.mc.impls.vanilla",
+                    "me.dexrn.rrdiscordbridge.mc.impls.vanilla.srg.${it.value.name.replaceFirstChar { c -> c.lowercase() }}"
+                )
+            }
         }
     }
 }
 
 neoforgeVersions.forEach { it ->
     unimined.minecraft(it.key) {
-        println("========== " + it.value.name + " ==========");
+        log("NeoForgeUnimined", "========== " + it.value.name + " ==========");
 
         combineWith(mc)
         version(it.value.minecraftVersion)
@@ -778,7 +789,7 @@ bukkitVersions.forEach { set ->
 //    }
 
     tasks.register<Jar>("${set.value.name}Jar") {
-        println("Registering ${set.value.name}")
+        log("BukkitSourceSets", "Registering ${set.value.name}")
 
         from(mc.output)
 
@@ -833,6 +844,7 @@ tasks.withType<ProcessResources> {
             "bungee.yml",
             "fabric.mod.json",
             "pack.mcmeta",
+            "META-INF/mcmod.info",
             "META-INF/mods.toml",
             "META-INF/neoforge.mods.toml",
             "plugin.yml",
@@ -913,22 +925,22 @@ tasks.register<ShadowJar>("moddedShadowJar") {
     from(
         mc.output, extension.output, sourceSets.main.get().output,
         fabricVersions.map {
-            println("Shadowing ${it.key.name}")
+            log("ShadowModdedJar/Fabric", "Shadowing ${it.key.name}")
             zipTree(tasks.getByName<Jar>("relocate${it.key.name.replaceFirstChar { c -> c.uppercase() }}Jar").archiveFile.get().asFile)
         },
         forgeVersions.map {
-            println("Shadowing ${it.key.name}")
+            log("ShadowModdedJar/Forge", "Shadowing ${it.key.name}")
             if (!it.value.remap)
                 it.key.output
             else
                 zipTree(tasks.getByName<Jar>("relocate${it.key.name.replaceFirstChar { c -> c.uppercase() }}Jar").archiveFile.get().asFile)
         },
         neoforgeSourceSets.map {
-            println("Shadowing ${it.key}")
+            log("ShadowModdedJar/NeoForge", "Shadowing ${it.key}")
             it.value.output
         },
         bukkitSourceSets.map {
-            println("Shadowing ${it.key}")
+            log("ShadowModdedJar/Bukkit", "Shadowing ${it.key}")
             it.value.output
         },
     )

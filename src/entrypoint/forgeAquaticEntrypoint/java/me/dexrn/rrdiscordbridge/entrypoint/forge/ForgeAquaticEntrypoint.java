@@ -6,12 +6,12 @@ import me.dexrn.rrdiscordbridge.RRDiscordBridge;
 import me.dexrn.rrdiscordbridge.entrypoint.forge.multiversion.ForgeAquaticModsFactory;
 import me.dexrn.rrdiscordbridge.mc.multiversion.forge.IForgeEntrypoint;
 import me.dexrn.rrdiscordbridge.mc.multiversion.modern.AbstractModernMinecraftMod;
-import net.minecraftforge.versions.mcp.MCPVersion;
 
+import net.minecraft.client.Minecraft;
 
 public class ForgeAquaticEntrypoint implements IForgeEntrypoint {
     public ForgeAquaticEntrypoint() {
-        String v = MCPVersion.getMCVersion();
+        String v = Minecraft.getInstance().getVersion();
 
         Semver mcVer = new Semver(v, Semver.SemverType.LOOSE);
 

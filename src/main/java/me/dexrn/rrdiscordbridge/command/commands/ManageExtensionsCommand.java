@@ -7,7 +7,7 @@ import me.dexrn.rrdiscordbridge.extension.AbstractBridgeExtension;
 import me.dexrn.rrdiscordbridge.interfaces.ICommandCaller;
 
 /** Handles extensions */
-public class ChatExtensionsCommand implements ICommand {
+public class ManageExtensionsCommand implements ICommand {
     @Override
     public CommandRegistry.CommandName getCommandName() {
         return CommandRegistry.CommandName.RDBEXT;

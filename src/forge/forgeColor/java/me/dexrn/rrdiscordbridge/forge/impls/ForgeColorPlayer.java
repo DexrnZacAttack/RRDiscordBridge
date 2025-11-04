@@ -4,15 +4,14 @@ import me.dexrn.rrdiscordbridge.interfaces.IPlayer;
 import me.dexrn.rrdiscordbridge.interfaces.IServer;
 
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.text.ChatType;
 import net.minecraft.util.text.TextComponentString;
 
 import java.util.Objects;
 
-public class ForgeAquaticPlayer implements IPlayer {
+public class ForgeColorPlayer implements IPlayer {
     EntityPlayerMP player; // oh no
 
-    public ForgeAquaticPlayer(EntityPlayerMP player) {
+    public ForgeColorPlayer(EntityPlayerMP player) {
         this.player = player;
     }
 
@@ -22,7 +21,10 @@ public class ForgeAquaticPlayer implements IPlayer {
     @Override
     public boolean isOperator() {
         return Objects.requireNonNull(player.getServer())
-                        .getPermissionLevel(player.getGameProfile())
+                        .getPlayerList()
+                        .getOppedPlayers()
+                        .getEntry(player.getGameProfile())
+                        .getPermissionLevel()
                 > 1;
     }
 
@@ -31,12 +33,12 @@ public class ForgeAquaticPlayer implements IPlayer {
      */
     @Override
     public String getName() {
-        return player.getName().getString();
+        return player.getName();
     }
 
     @Override
     public void sendMessage(String message) {
-        player.sendMessage(new TextComponentString(message), ChatType.SYSTEM);
+        player.sendMessage(new TextComponentString(message));
     }
 
     /**
@@ -49,6 +51,6 @@ public class ForgeAquaticPlayer implements IPlayer {
 
     @Override
     public IServer getServer() {
-        return new ForgeAquaticServer(player.server);
+        return new ForgeColorServer(player.getServer());
     }
 }

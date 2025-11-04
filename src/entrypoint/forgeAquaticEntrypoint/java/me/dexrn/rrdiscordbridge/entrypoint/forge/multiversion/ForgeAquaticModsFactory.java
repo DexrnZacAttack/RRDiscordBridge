@@ -16,6 +16,7 @@ public class ForgeAquaticModsFactory {
     TreeMap<Semver, ForgeAquaticMods> mods = new TreeMap<>();
 
     public ForgeAquaticModsFactory() {
+        mods.put(new Semver("1.12", Semver.SemverType.LOOSE), ForgeAquaticMods.COLOR);
         mods.put(new Semver("1.13", Semver.SemverType.LOOSE), ForgeAquaticMods.AQUATIC);
     }
 

@@ -1,0 +1,16 @@
+[
+  {
+    "modid": "${mod_id}",
+    "name": "${mod_name}",
+    "description": "${description}",
+    "version": "${version}",
+    "mcversion": "1.0.0",
+    "url": "${modrinth_url}",
+    "updateUrl": "${update_json_url}",
+    "authorList": ["DexrnZacAttack"],
+    "credits": "",
+    "logoFile": "${logo}",
+    "screenshots": [],
+    "dependencies": []
+  }
+]

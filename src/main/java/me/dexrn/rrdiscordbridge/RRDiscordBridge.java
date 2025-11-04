@@ -4,8 +4,8 @@ import com.vdurmont.semver4j.Semver;
 
 import me.dexrn.rrdiscordbridge.command.CommandRegistry;
 import me.dexrn.rrdiscordbridge.command.commands.BroadcastCommand;
-import me.dexrn.rrdiscordbridge.command.commands.ChatExtensionsCommand;
 import me.dexrn.rrdiscordbridge.command.commands.DiscordLinkCommand;
+import me.dexrn.rrdiscordbridge.command.commands.ManageExtensionsCommand;
 import me.dexrn.rrdiscordbridge.command.commands.ReloadCommand;
 import me.dexrn.rrdiscordbridge.config.ConfigDirectory;
 import me.dexrn.rrdiscordbridge.config.Settings;
@@ -103,7 +103,7 @@ public class RRDiscordBridge {
 
         this.commandRegistry =
                 new CommandRegistry()
-                        .register(new ChatExtensionsCommand())
+                        .register(new ManageExtensionsCommand())
                         .register(new DiscordLinkCommand())
                         .register(new BroadcastCommand())
                         .register(new ReloadCommand());

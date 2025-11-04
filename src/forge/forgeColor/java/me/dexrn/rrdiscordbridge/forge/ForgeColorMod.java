@@ -7,34 +7,35 @@ import com.vdurmont.semver4j.Semver;
 import me.dexrn.rrdiscordbridge.RRDiscordBridge;
 import me.dexrn.rrdiscordbridge.SupportedFeatures;
 import me.dexrn.rrdiscordbridge.config.ConfigDirectory;
-import me.dexrn.rrdiscordbridge.forge.impls.ForgePillagePlayer;
-import me.dexrn.rrdiscordbridge.forge.impls.ForgePillageServer;
-import me.dexrn.rrdiscordbridge.forge.impls.ForgeNetherCommandCaller;
-import me.dexrn.rrdiscordbridge.forge.impls.ForgeNetherServerHandler;
+import me.dexrn.rrdiscordbridge.forge.impls.*;
 import me.dexrn.rrdiscordbridge.impls.logging.Log4JLogger;
-import me.dexrn.rrdiscordbridge.mc.impls.vanilla.ModernMinecraftCommands;
 import me.dexrn.rrdiscordbridge.mc.multiversion.modern.AbstractModernMinecraftMod;
 
+import net.minecraft.command.CommandHandler;
+import net.minecraft.command.ICommandManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
-import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
+import net.minecraftforge.fml.common.event.FMLServerAboutToStartEvent;
+import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import org.apache.logging.log4j.LogManager;
 
-public class ForgePillageMod extends AbstractModernMinecraftMod {
-    public ForgePillageMod(Semver minecraftVer) {
+public class ForgeColorMod extends AbstractModernMinecraftMod {
+    public ForgeColorMod(Semver minecraftVer) {
         super(minecraftVer);
         EVENT_BUS.register(this);
     }
 
     @Override
     public void init(MinecraftServer server) {
-        EVENT_BUS.register(new ForgeNetherEventHandler<>(ForgePillageServer::new, ForgePillagePlayer::new));
+        EVENT_BUS.register(
+                new ForgeColorEventHandler<>(ForgeColorServer::new, ForgeColorPlayer::new));
 
-        (new ModernMinecraftCommands(ForgeNetherCommandCaller::new))
-                .register(server.getCommands().getDispatcher());
+        ICommandManager m = server.getCommandManager();
+
+        if (m instanceof CommandHandler)
+            new ForgeColorMinecraftCommands().register((CommandHandler) m);
     }
 
     @Override
@@ -45,7 +46,7 @@ public class ForgePillageMod extends AbstractModernMinecraftMod {
         // ctor
         RRDiscordBridge.instance =
                 new RRDiscordBridge(
-                        new ForgePillageServer(server),
+                        new ForgeColorServer(server),
                         new Log4JLogger(LogManager.getLogger("RRDiscordBridge")),
                         ConfigDirectory.MOD,
                         MinecraftForge.class.getClassLoader());
@@ -63,11 +64,11 @@ public class ForgePillageMod extends AbstractModernMinecraftMod {
 
     @SubscribeEvent
     public void onServerStarting(FMLServerAboutToStartEvent event) {
-        ForgeNetherServerHandler.onServerStarting(event, this);
+        ForgeColorServerHandler.onServerStarting(event, this);
     }
 
     @SubscribeEvent
     public void onServerStopping(FMLServerStoppingEvent event) {
-        ForgeNetherServerHandler.onServerStopping(event);
+        ForgeColorServerHandler.onServerStopping(event);
     }
 }

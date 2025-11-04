@@ -86,6 +86,13 @@ val Project.forgePillageVersion: String get() = properties["forge_pillage_versio
 
 val Project.forgeAquaticMinecraftVersion: String get() = properties["forge_aquatic_minecraft_version"].toString()
 val Project.forgeAquaticVersion: String get() = properties["forge_aquatic_version"].toString()
+val Project.forgeAquaticMcpVersion: String get() = properties["forge_aquatic_mcp_version"].toString()
+val Project.forgeAquaticMcpChannel: String get() = properties["forge_aquatic_mcp_channel"].toString()
+
+val Project.forgeColorMinecraftVersion: String get() = properties["forge_color_minecraft_version"].toString()
+val Project.forgeColorVersion: String get() = properties["forge_color_version"].toString()
+val Project.forgeColorMcpVersion: String get() = properties["forge_color_mcp_version"].toString()
+val Project.forgeColorMcpChannel: String get() = properties["forge_color_mcp_channel"].toString()
 
 val Project.neoforgeCopperMinecraftVersion: String get() = properties["neoforge_copper_minecraft_version"].toString()
 val Project.neoforgeCopperVersion: String get() = properties["neoforge_copper_version"].toString()

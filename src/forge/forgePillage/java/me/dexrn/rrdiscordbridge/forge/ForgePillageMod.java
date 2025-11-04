@@ -7,10 +7,10 @@ import com.vdurmont.semver4j.Semver;
 import me.dexrn.rrdiscordbridge.RRDiscordBridge;
 import me.dexrn.rrdiscordbridge.SupportedFeatures;
 import me.dexrn.rrdiscordbridge.config.ConfigDirectory;
-import me.dexrn.rrdiscordbridge.forge.impls.ForgePillagePlayer;
-import me.dexrn.rrdiscordbridge.forge.impls.ForgePillageServer;
 import me.dexrn.rrdiscordbridge.forge.impls.ForgeNetherCommandCaller;
 import me.dexrn.rrdiscordbridge.forge.impls.ForgeNetherServerHandler;
+import me.dexrn.rrdiscordbridge.forge.impls.ForgePillagePlayer;
+import me.dexrn.rrdiscordbridge.forge.impls.ForgePillageServer;
 import me.dexrn.rrdiscordbridge.impls.logging.Log4JLogger;
 import me.dexrn.rrdiscordbridge.mc.impls.vanilla.ModernMinecraftCommands;
 import me.dexrn.rrdiscordbridge.mc.multiversion.modern.AbstractModernMinecraftMod;
@@ -31,7 +31,8 @@ public class ForgePillageMod extends AbstractModernMinecraftMod {
 
     @Override
     public void init(MinecraftServer server) {
-        EVENT_BUS.register(new ForgeNetherEventHandler<>(ForgePillageServer::new, ForgePillagePlayer::new));
+        EVENT_BUS.register(
+                new ForgeNetherEventHandler<>(ForgePillageServer::new, ForgePillagePlayer::new));
 
         (new ModernMinecraftCommands(ForgeNetherCommandCaller::new))
                 .register(server.getCommands().getDispatcher());

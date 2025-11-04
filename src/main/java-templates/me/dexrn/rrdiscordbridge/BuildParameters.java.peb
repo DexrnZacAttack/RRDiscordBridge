@@ -2,4 +2,15 @@ package me.dexrn.rrdiscordbridge;
 
 public class BuildParameters {
     public static final String VERSION = "{{ version }}";
+    public static final String NAME = "{{ mod_name }}";
+    public static final String MOD_ID = "{{ mod_id }}";
+    public static final String DESCRIPTION = "{{ description }}";
+    public static final String LICENSE = "{{ license }}";
+    public static final String AUTHOR = "{{ author }}";
+    public static final String MODRINTH_URL = "{{ modrinth_url }}";
+    public static final String HOMEPAGE_URL = "{{ homepage_url }}";
+    public static final String SOURCE_URL = "{{ source_url }}";
+    public static final String ISSUE_URL = "{{ issue_url }}";
+    public static final String DISCORD_URL = "{{ discord_url }}";
+    public static final String LOGO = "{{ logo }}";
 }

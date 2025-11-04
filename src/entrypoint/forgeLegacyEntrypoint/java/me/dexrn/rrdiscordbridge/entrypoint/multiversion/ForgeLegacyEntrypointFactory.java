@@ -15,19 +15,13 @@ import java.util.Map;
 import java.util.TreeMap;
 
 // hello boss,
-public class ForgeEntrypointFactory {
+public class ForgeLegacyEntrypointFactory {
     TreeMap<String, String> entrypoints = new TreeMap<>();
 
-    public ForgeEntrypointFactory() {
-        entrypoints.put(
-                "net.minecraft.SharedConstants",
-                "me.dexrn.rrdiscordbridge.entrypoint.forge.ForgeCavesEntrypoint");
+    public ForgeLegacyEntrypointFactory() {
         entrypoints.put(
                 "net.minecraftforge.versions.mcp.MCPVersion",
                 "me.dexrn.rrdiscordbridge.entrypoint.forge.ForgeAquaticEntrypoint");
-        entrypoints.put(
-                "net.minecraft.util.SharedConstants",
-                "me.dexrn.rrdiscordbridge.entrypoint.forge.ForgePillageEntrypoint");
     }
 
     public void getForgeEntrypoint() {

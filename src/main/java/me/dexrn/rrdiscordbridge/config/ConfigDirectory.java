@@ -1,11 +1,13 @@
 package me.dexrn.rrdiscordbridge.config;
 
+import java.nio.file.Paths;
+
 /** Config Directory preset */
 public enum ConfigDirectory {
     /** Default folder for Fabric, Forge, NeoForge, etc */
-    MOD("config/RRDiscordBridge"),
+    MOD(Paths.get("config", "RRDiscordBridge").toString()),
     /** Default folder for Bukkit, Spigot, Paper, etc */
-    PLUGIN("plugins/RRDiscordBridge");
+    PLUGIN(Paths.get("plugins", "RRDiscordBridge").toString());
 
     private final String path;
 

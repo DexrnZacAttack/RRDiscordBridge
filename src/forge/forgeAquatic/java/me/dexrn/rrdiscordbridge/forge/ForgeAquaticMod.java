@@ -9,7 +9,6 @@ import me.dexrn.rrdiscordbridge.SupportedFeatures;
 import me.dexrn.rrdiscordbridge.config.ConfigDirectory;
 import me.dexrn.rrdiscordbridge.forge.impls.*;
 import me.dexrn.rrdiscordbridge.impls.logging.Log4JLogger;
-import me.dexrn.rrdiscordbridge.mc.impls.vanilla.ModernMinecraftCommands;
 import me.dexrn.rrdiscordbridge.mc.multiversion.modern.AbstractModernMinecraftMod;
 
 import net.minecraft.server.MinecraftServer;
@@ -28,7 +27,8 @@ public class ForgeAquaticMod extends AbstractModernMinecraftMod {
 
     @Override
     public void init(MinecraftServer server) {
-        EVENT_BUS.register(new ForgeAquaticEventHandler<>(ForgeAquaticServer::new, ForgeAquaticPlayer::new));
+        EVENT_BUS.register(
+                new ForgeAquaticEventHandler<>(ForgeAquaticServer::new, ForgeAquaticPlayer::new));
 
         (new ForgeAquaticMinecraftCommands(ForgeAquaticCommandCaller::new))
                 .register(server.getCommandManager().getDispatcher());
@@ -60,11 +60,11 @@ public class ForgeAquaticMod extends AbstractModernMinecraftMod {
 
     @SubscribeEvent
     public void onServerStarting(FMLServerAboutToStartEvent event) {
-        ForgeNetherServerHandler.onServerStarting(event, this);
+        ForgeAquaticServerHandler.onServerStarting(event, this);
     }
 
     @SubscribeEvent
     public void onServerStopping(FMLServerStoppingEvent event) {
-        ForgeNetherServerHandler.onServerStopping(event);
+        ForgeAquaticServerHandler.onServerStopping(event);
     }
 }
