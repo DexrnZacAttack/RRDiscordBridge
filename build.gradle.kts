@@ -365,7 +365,8 @@ data class ForgeProj(
     val loaderVersion: String,
     val remap: Boolean,
     val deps: List<String> = listOf(),
-    val useFeather: Boolean = false
+    val mcpVersion: String = "",
+    val mcpBuild: String = ""
 )
 
 val neoforgeProjects = listOf(
@@ -395,7 +396,7 @@ val forgeProjects = listOf(
     ForgeProj("forgeEntrypoint", forgeAllayHotfixMinecraftVersion, forgeAllayHotfixVersion, true, listOf("forgeCavesEntrypoint", "forgePillageEntrypoint", "forgeAquaticEntrypoint")),
     ForgeProj("forgeCavesEntrypoint", forgeAllayHotfixMinecraftVersion, forgeAllayHotfixVersion, true),
     ForgeProj("forgePillageEntrypoint", forgeNetherMinecraftVersion, forgeNetherVersion, true),
-    ForgeProj("forgeAquaticEntrypoint", forgeAquaticMinecraftVersion, forgeAquaticVersion, true, listOf(), true),
+    ForgeProj("forgeAquaticEntrypoint", forgeAquaticMinecraftVersion, forgeAquaticVersion, true, listOf("mc"), "20180921-1.13", "snapshot"),
 
     ForgeProj("forgeCopper", forgeCopperMinecraftVersion, forgeCopperVersion, false, listOf("forgeSkies", "forgePaws")),
     ForgeProj("forgeSkies", forgeSkiesMinecraftVersion, forgeSkiesVersion, false, listOf("forgePaws")),
@@ -409,7 +410,7 @@ val forgeProjects = listOf(
     ForgeProj("forgeCaves", forgeCavesMinecraftVersion, forgeCavesVersion, true, listOf("forgeCliffs")),
     ForgeProj("forgeNether", forgeNetherMinecraftVersion, forgeNetherVersion, true, listOf("forgeCliffs")),
     ForgeProj("forgePillage", forgePillageMinecraftVersion, forgePillageVersion, true, listOf("forgeNether")),
-    ForgeProj("forgeAquatic", forgeAquaticMinecraftVersion, forgeAquaticVersion, true, listOf("forgeNether"), true),
+    ForgeProj("forgeAquatic", forgeAquaticMinecraftVersion, forgeAquaticVersion, true, listOf("forgeNether", "mc"), "20180921-1.13", "snapshot"),
 )
 
 val forgeEntrypoints = listOf(
@@ -427,7 +428,7 @@ val forgeCompileOnly: Map<String, Configuration> = forgeProjects.associate { p -
 }
 
 val forgeVersions: Map<SourceSet, ForgeProj> = forgeProjects.associate { p ->
-    forgeSourceSets.getValue(p.name) to ForgeProj(p.name, p.minecraftVersion, p.loaderVersion, p.remap, p.deps, p.useFeather)
+    forgeSourceSets.getValue(p.name) to ForgeProj(p.name, p.minecraftVersion, p.loaderVersion, p.remap, p.deps, p.mcpVersion, p.mcpBuild)
 }
 
 val mc: SourceSet by sourceSets.creating
@@ -478,6 +479,14 @@ repositories {
     flatDir { // OLDER BUKKIT
         dirs("libs")
     }
+}
+
+fun sourceSetExists(sourceSetName: String): Boolean {
+    val sourceSet = sourceSets.find {
+        it.name == sourceSetName
+    }
+
+    return null != sourceSet && !sourceSet.compileClasspath.isEmpty && !sourceSet.runtimeClasspath.isEmpty
 }
 
 dependencies {
@@ -564,12 +573,16 @@ dependencies {
     }
 
     forgeProjects.forEach { p ->
-        p.deps.map { depName -> forgeSourceSets.getValue(depName) }.forEach { d ->
+        p.deps.map { depName -> sourceSets[depName] }.forEach { d ->
             if (d.name != p.name) {
                 add(forgeCompileOnly.getValue(p.name).name, d.output)
             }
         }
     }
+
+//    listOf("forgeAquaticEntrypoint", "forgeAquatic").forEach {
+//        add(it, mc.output);
+//    }
 
     // universal deps
     (fabricCompileOnly + neoforgeCompileOnly + forgeCompileOnly + bukkitCompileOnly).forEach { (_, c) ->
@@ -674,26 +687,29 @@ fabricVersions.forEach { it ->
 forgeVersions.forEach { it ->
     println("========== " + it.value.name + " ==========");
     unimined.minecraft(it.key) {
-        if (it.value.useFeather) {
+        if (!it.value.mcpVersion.isEmpty()) {
             println("Using feather mappings")
             combineWith(sourceSets.main.get())
             mappings {
-                ornitheGenVersion = 2;
-
                 searge()
-                calamus()
-                feather(4);
-                stub.withMappings("searge", "intermediary") {
-                    // METHODs net/minecraft/entity/item/EntityMinecart/[net/minecraft/entity/item/EntityMinecartFurnace/func_174898_m, getMaxSpeed]()D -> getMaxSpeed
-                    c(
-                        "apn",
-                        listOf(
-                            "net/minecraft/entity/item/EntityMinecartFurnace",
-                        )
-                    ) {
-                        m("getMaxSpeed", "()D", "func_174898_m", "getMaxSpeedFeather")
-                    }
-                }
+                mcp(it.value.mcpBuild, it.value.mcpVersion)
+
+//                ornitheGenVersion = 2;
+//
+//                searge()
+//                calamus()
+//                feather(4); //what the fuck is feather(4)
+//                stub.withMappings("searge", "intermediary") {
+//                    // METHODs net/minecraft/entity/item/EntityMinecart/[net/minecraft/entity/item/EntityMinecartFurnace/func_174898_m, getMaxSpeed]()D -> getMaxSpeed
+//                    c(
+//                        "apn",
+//                        listOf(
+//                            "net/minecraft/entity/item/EntityMinecartFurnace",
+//                        )
+//                    ) {
+//                        m("getMaxSpeed", "()D", "func_174898_m", "getMaxSpeedFeather")
+//                    }
+//                }
             }
         } else {
             combineWith(mc)

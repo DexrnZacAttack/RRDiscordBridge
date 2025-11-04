@@ -3,22 +3,19 @@ package me.dexrn.rrdiscordbridge.entrypoint.forge.multiversion;
 import com.vdurmont.semver4j.Semver;
 
 import me.dexrn.rrdiscordbridge.forge.ForgeAquaticMod;
-import me.dexrn.rrdiscordbridge.forge.ForgeNetherMod;
 import me.dexrn.rrdiscordbridge.mc.multiversion.modern.AbstractModernMinecraftMod;
 
 import java.util.function.Function;
 
 // Based off https://stackoverflow.com/a/47128240
 /** Defines the Mod classes for each breaking MC version as well as the supported mixins for each */
-public enum ForgeNetherMods {
-    /** 1.14-1.15.2 */
-    PILLAGE(ForgeAquaticMod::new),
-    /** 1.16-1.16.5 */
-    NETHER(ForgeNetherMod::new);
+public enum ForgeAquaticMods {
+    /** ?-1.13.2 */
+    AQUATIC(ForgeAquaticMod::new);
 
     private final Function<Semver, AbstractModernMinecraftMod> supplier;
 
-    ForgeNetherMods(Function<Semver, AbstractModernMinecraftMod> supplier) {
+    ForgeAquaticMods(Function<Semver, AbstractModernMinecraftMod> supplier) {
         this.supplier = supplier;
     }
 
