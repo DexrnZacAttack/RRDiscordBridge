@@ -481,14 +481,6 @@ repositories {
     }
 }
 
-fun sourceSetExists(sourceSetName: String): Boolean {
-    val sourceSet = sourceSets.find {
-        it.name == sourceSetName
-    }
-
-    return null != sourceSet && !sourceSet.compileClasspath.isEmpty && !sourceSet.runtimeClasspath.isEmpty
-}
-
 dependencies {
     configurations.compileOnly(libs.annotations)
     configurations.compileOnly(libs.mixin)
@@ -579,10 +571,6 @@ dependencies {
             }
         }
     }
-
-//    listOf("forgeAquaticEntrypoint", "forgeAquatic").forEach {
-//        add(it, mc.output);
-//    }
 
     // universal deps
     (fabricCompileOnly + neoforgeCompileOnly + forgeCompileOnly + bukkitCompileOnly).forEach { (_, c) ->
