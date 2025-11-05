@@ -87,6 +87,15 @@ See [versions.md](https://github.com/DexrnZacAttack/RRDiscordBridge/tree/master/
   - [X] 1.21.9-Latest
 ### Forge
   - [ ] 1.1-1.20
+  - [X] 1.12-1.12.2
+    - Server stopped message does NOT work!
+  - [X] 1.13-1.13.2
+  - [X] 1.14-1.15.2
+  - [X] 1.16-1.16.5
+  - [X] 1.17-1.17.3
+  - [X] 1.18-1.18.2
+  - [X] 1.19
+  - [X] 1.19.1
   - [X] 1.19.2-1.20.1
   - [X] 1.20.2
   - [X] 1.20.3-1.20.5

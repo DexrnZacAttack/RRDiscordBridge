@@ -8,7 +8,7 @@
     "url": "${modrinth_url}",
     "updateUrl": "${update_json_url}",
     "authorList": ["DexrnZacAttack"],
-    "credits": "",
+    "credits": "p0t4t0sandwich, genericpnpmonit0r, icanttellyou, mudkipdev",
     "logoFile": "${logo}",
     "screenshots": [],
     "dependencies": []

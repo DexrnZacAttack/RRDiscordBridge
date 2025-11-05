@@ -9,6 +9,7 @@ import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 
+// TODO move commands package to legacyMc sourceset
 public class CommandDiscord extends CommandBase {
     ICommand command =
             RRDiscordBridge.instance

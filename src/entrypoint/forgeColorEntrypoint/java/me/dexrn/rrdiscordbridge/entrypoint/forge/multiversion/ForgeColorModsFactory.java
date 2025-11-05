@@ -12,20 +12,20 @@ import java.nio.file.Paths;
 import java.util.TreeMap;
 
 // hello boss,
-public class ForgeAquaticModsFactory {
-    TreeMap<Semver, ForgeAquaticMods> mods = new TreeMap<>();
+public class ForgeColorModsFactory {
+    TreeMap<Semver, ForgeColorMods> mods = new TreeMap<>();
 
-    public ForgeAquaticModsFactory() {
-        mods.put(new Semver("1.13", Semver.SemverType.LOOSE), ForgeAquaticMods.AQUATIC);
+    public ForgeColorModsFactory() {
+        mods.put(new Semver("1.12", Semver.SemverType.LOOSE), ForgeColorMods.COLOR);
     }
 
-    public ForgeAquaticMods getForgeMods(Semver ver) {
+    public ForgeColorMods getForgeMods(Semver ver) {
         try {
             // allows the user to just force a certain mod class if wanted
             File forced =
                     Paths.get(ConfigDirectory.MOD.getPath(), "mainClassOverride.txt").toFile();
             if (forced.exists() && forced.isFile())
-                return ForgeAquaticMods.valueOf(FileUtils.readFileToString(forced, "utf-8"));
+                return ForgeColorMods.valueOf(FileUtils.readFileToString(forced, "utf-8"));
         } catch (IOException ex) {
             throw new RuntimeException("Couldn't read from main class override", ex);
         }

@@ -12,7 +12,6 @@ import me.dexrn.rrdiscordbridge.impls.logging.Log4JLogger;
 import me.dexrn.rrdiscordbridge.mc.multiversion.modern.AbstractModernMinecraftMod;
 
 import net.minecraft.server.MinecraftServer;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
 import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
@@ -45,7 +44,7 @@ public class ForgeAquaticMod extends AbstractModernMinecraftMod {
                         new ForgeAquaticServer(server),
                         new Log4JLogger(LogManager.getLogger("RRDiscordBridge")),
                         ConfigDirectory.MOD,
-                        MinecraftForge.class.getClassLoader());
+                        MinecraftServer.class.getClassLoader());
 
         // then we init
         RRDiscordBridge.instance.initialize();

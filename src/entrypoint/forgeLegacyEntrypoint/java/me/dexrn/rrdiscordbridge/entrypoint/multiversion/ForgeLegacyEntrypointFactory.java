@@ -18,11 +18,7 @@ import java.util.TreeMap;
 public class ForgeLegacyEntrypointFactory {
     TreeMap<String, String> entrypoints = new TreeMap<>();
 
-    public ForgeLegacyEntrypointFactory() {
-        entrypoints.put(
-                "net.minecraftforge.versions.mcp.MCPVersion",
-                "me.dexrn.rrdiscordbridge.entrypoint.forge.ForgeAquaticEntrypoint");
-    }
+    public ForgeLegacyEntrypointFactory() {}
 
     public void getForgeEntrypoint() {
         try {

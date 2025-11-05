@@ -21,6 +21,8 @@ public class ForgeColorServer implements IServer {
 
     @Override
     public IPlayer[] getOnlinePlayers() {
+        if (server == null || server.getPlayerList() == null) return new IPlayer[0];
+
         return server.getPlayerList().getPlayers().stream()
                 .filter(Objects::nonNull)
                 .map(ForgeColorPlayer::new)

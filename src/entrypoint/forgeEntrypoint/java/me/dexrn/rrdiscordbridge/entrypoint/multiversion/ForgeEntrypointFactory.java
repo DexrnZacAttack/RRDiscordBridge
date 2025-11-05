@@ -26,6 +26,9 @@ public class ForgeEntrypointFactory {
                 "net.minecraftforge.versions.mcp.MCPVersion",
                 "me.dexrn.rrdiscordbridge.entrypoint.forge.ForgeAquaticEntrypoint");
         entrypoints.put(
+                "net.minecraftforge.fml.common.Loader",
+                "me.dexrn.rrdiscordbridge.entrypoint.forge.ForgeColorEntrypoint");
+        entrypoints.put(
                 "net.minecraft.util.SharedConstants",
                 "me.dexrn.rrdiscordbridge.entrypoint.forge.ForgePillageEntrypoint");
     }
@@ -36,7 +39,7 @@ public class ForgeEntrypointFactory {
                     Paths.get(ConfigDirectory.MOD.getPath(), "entrypointClassOverride.txt")
                             .toFile();
             if (forced.exists() && forced.isFile())
-                Class.forName(entrypoints.get(FileUtils.readFileToString(forced, "utf-8")))
+                Class.forName(FileUtils.readFileToString(forced, "utf-8"))
                         .getConstructor()
                         .newInstance();
         } catch (IOException ex) {
@@ -45,7 +48,8 @@ public class ForgeEntrypointFactory {
                 | NoSuchMethodException
                 | InstantiationException
                 | IllegalAccessException
-                | InvocationTargetException ex) { // how many do you need
+                | InvocationTargetException
+                | NullPointerException ex) { // how many do you need
             throw new RuntimeException("Couldn't instantiate entrypoint class override", ex);
         }
 

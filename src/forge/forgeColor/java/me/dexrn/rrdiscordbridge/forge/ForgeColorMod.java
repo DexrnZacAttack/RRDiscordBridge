@@ -14,10 +14,7 @@ import me.dexrn.rrdiscordbridge.mc.multiversion.modern.AbstractModernMinecraftMo
 import net.minecraft.command.CommandHandler;
 import net.minecraft.command.ICommandManager;
 import net.minecraft.server.MinecraftServer;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.event.FMLServerAboutToStartEvent;
-import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import org.apache.logging.log4j.LogManager;
 
@@ -25,6 +22,14 @@ public class ForgeColorMod extends AbstractModernMinecraftMod {
     public ForgeColorMod(Semver minecraftVer) {
         super(minecraftVer);
         EVENT_BUS.register(this);
+        Runtime.getRuntime()
+                .addShutdownHook(
+                        new Thread() {
+                            @Override
+                            public void run() {
+                                super.run();
+                            }
+                        });
     }
 
     @Override
@@ -39,7 +44,10 @@ public class ForgeColorMod extends AbstractModernMinecraftMod {
     }
 
     @Override
-    public void preInit() {}
+    public void preInit() {
+        ForgeColorServerHandler.onServerStarting(
+                FMLCommonHandler.instance().getMinecraftServerInstance(), this);
+    }
 
     @Override
     public void setupBridge(MinecraftServer server) {
@@ -49,7 +57,7 @@ public class ForgeColorMod extends AbstractModernMinecraftMod {
                         new ForgeColorServer(server),
                         new Log4JLogger(LogManager.getLogger("RRDiscordBridge")),
                         ConfigDirectory.MOD,
-                        MinecraftForge.class.getClassLoader());
+                        MinecraftServer.class.getClassLoader());
 
         // then we init
         RRDiscordBridge.instance.initialize();
@@ -60,15 +68,5 @@ public class ForgeColorMod extends AbstractModernMinecraftMod {
                         .setCanQueryServerOperators(true)
                         .setCanQueryPlayerHasJoinedBefore(false)
                         .setCanSendConsoleCommands(true));
-    }
-
-    @SubscribeEvent
-    public void onServerStarting(FMLServerAboutToStartEvent event) {
-        ForgeColorServerHandler.onServerStarting(event, this);
-    }
-
-    @SubscribeEvent
-    public void onServerStopping(FMLServerStoppingEvent event) {
-        ForgeColorServerHandler.onServerStopping(event);
     }
 }

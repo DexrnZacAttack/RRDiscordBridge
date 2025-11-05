@@ -39,7 +39,7 @@ clientSideOnly=false
     #logoFile="examplemod.png" #optional
 
     # A text field displayed in the mod UI
-    #credits="" #optional
+    credits="p0t4t0sandwich, genericpnpmonit0r, icanttellyou, mudkipdev" #optional
 
     # A text field displayed in the mod UI
     authors="${author}" #optional

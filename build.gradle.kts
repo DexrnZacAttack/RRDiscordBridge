@@ -398,11 +398,12 @@ val neoforgeVersions: Map<SourceSet, ForgeProj> = neoforgeProjects.associate { p
 /* Forge */
 val forgeProjects = listOf(
     ForgeProj("forgeCommon", forgePotMinecraftVersion, forgePotVersion, true),
-    ForgeProj("forgeEntrypoint", forgeAllayHotfixMinecraftVersion, forgeAllayHotfixVersion, true, listOf("forgeCavesEntrypoint", "forgePillageEntrypoint", "forgeAquaticEntrypoint")),
-    ForgeProj("forgeLegacyEntrypoint", forgeColorMinecraftVersion, forgeColorVersion, true, listOf("forgeCavesEntrypoint", "forgePillageEntrypoint", "forgeAquaticEntrypoint", "mc"), forgeColorMcpVersion, forgeColorMcpChannel), // todo use 1.7 ver for cpw??
+    ForgeProj("forgeEntrypoint", forgeColorMinecraftVersion, forgeColorVersion, true, listOf("forgeCavesEntrypoint", "forgePillageEntrypoint", "forgeAquaticEntrypoint", "mc"), forgeColorMcpVersion, forgeColorMcpChannel),
+    ForgeProj("forgeLegacyEntrypoint", forgeWorldMinecraftVersion, forgeWorldVersion, true, listOf("forgeCavesEntrypoint", "forgePillageEntrypoint", "forgeAquaticEntrypoint", "mc"), forgeWorldMcpVersion, forgeWorldMcpChannel), // todo use 1.7 ver for cpw??
     ForgeProj("forgeCavesEntrypoint", forgeAllayHotfixMinecraftVersion, forgeAllayHotfixVersion, true),
     ForgeProj("forgePillageEntrypoint", forgeNetherMinecraftVersion, forgeNetherVersion, true),
     ForgeProj("forgeAquaticEntrypoint", forgeAquaticMinecraftVersion, forgeAquaticVersion, true, listOf("mc"), forgeAquaticMcpVersion, forgeAquaticMcpChannel),
+    ForgeProj("forgeColorEntrypoint", forgeColorMinecraftVersion, forgeColorVersion, true, listOf("mc"), forgeColorMcpVersion, forgeColorMcpChannel),
 
     ForgeProj("forgeCopper", forgeCopperMinecraftVersion, forgeCopperVersion, false, listOf("forgeSkies", "forgePaws")),
     ForgeProj("forgeSkies", forgeSkiesMinecraftVersion, forgeSkiesVersion, false, listOf("forgePaws")),
@@ -425,7 +426,8 @@ val forgeProjects = listOf(
 val forgeEntrypoints = listOf(
     "forgeCavesEntrypoint",
     "forgePillageEntrypoint",
-    "forgeAquaticEntrypoint"
+    "forgeAquaticEntrypoint",
+    "forgeColorEntrypoint"
 )
 
 val forgeSourceSets: Map<String, SourceSet> = forgeProjects.associate { p ->
@@ -844,7 +846,7 @@ tasks.withType<ProcessResources> {
             "bungee.yml",
             "fabric.mod.json",
             "pack.mcmeta",
-            "META-INF/mcmod.info",
+            "mcmod.info",
             "META-INF/mods.toml",
             "META-INF/neoforge.mods.toml",
             "plugin.yml",
@@ -867,6 +869,7 @@ val ex = listOf(
     "google/protobuf/**",
     "club/minnced/opus/util/*",
     "tomp2p/opuswrapper/*",
+    "net/minecraftforge/**",
 //    "org/apache/logging/**",
     "/META-INF/services/org.apache.logging.log4j.util.PropertySource",
     "com/google/errorprone/**",

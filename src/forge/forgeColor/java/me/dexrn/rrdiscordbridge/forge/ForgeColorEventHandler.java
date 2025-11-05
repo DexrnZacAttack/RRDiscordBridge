@@ -55,7 +55,7 @@ public class ForgeColorEventHandler<S extends IServer, P extends IPlayer>
                     ((EntityPlayerMP) entity)
                             .getCombatTracker()
                             .getDeathMessage()
-                            .getFormattedText());
+                            .getUnformattedText());
         }
     }
 
@@ -81,8 +81,8 @@ public class ForgeColorEventHandler<S extends IServer, P extends IPlayer>
             Events.onPlayerAchievement(
                     AdvancementType.getTypeFromName(info.getFrame().getName()),
                     createPlayer((EntityPlayerMP) event.getEntityPlayer()),
-                    info.getTitle().getFormattedText(),
-                    info.getDescription().getFormattedText());
+                    info.getTitle().getUnformattedText(),
+                    info.getDescription().getUnformattedText());
         }
     }
 }
