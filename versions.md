@@ -10,6 +10,7 @@ If a version has nothing notable, we choose a name for another close version and
 | Cake        | b1.2     |
 | Cookie      | b1.4     |
 | Flat        | 1.1      |
+| Jungle      | 1.2.1    |
 | Emerald     | 1.3.1    |
 | Realms      | 1.7.9    |
 | Color       | 1.12     |
