@@ -12,6 +12,9 @@ Download: https://modrinth.com/plugin/rrdiscordbridge
 When reading the source code, you may notice that the projects have odd names, this is to make the source look slightly cleaner.
 See [versions.md](https://github.com/DexrnZacAttack/RRDiscordBridge/tree/master/versions.md) for more info.
 
+> [!IMPORTANT]
+> Pull Requests and Issues are only accepted on the [Codeberg repo](https://codeberg.org/Nostalgica-Reverie/RRDiscordBridge).
+
 ## Features
 - Message Relay
 - [Version support](#supported-versions)
