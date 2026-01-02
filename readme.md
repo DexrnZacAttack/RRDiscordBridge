@@ -3,6 +3,8 @@
 [![Docs](https://img.shields.io/badge/Read%20Documentation-4e5151?logo=gitbook)](https://rrdiscordbridge.nostalgica.net/javadocs)
 [![Discord](https://dcbadge.limes.pink/api/server/k2wGKEaCRA)](https://discord.gg/k2wGKEaCRA)
 
+test
+
 Discord bridge/relay plugin that [supports old Minecraft versions and server software](#tested-versions) (Beta 1.4-Release 1.21.1)
 
 For config info, check out [this page](https://rrdiscordbridge.nostalgica.net/javadocs/me/dexrn/rrdiscordbridge/config/Settings.html#field-summary).
@@ -111,4 +113,5 @@ See [versions.md](https://github.com/DexrnZacAttack/RRDiscordBridge/tree/master/
 - [MCHeads](https://www.mc-heads.net/)
   - Used for player head avatar 
 - [p0t4t0sandwich](https://github.com/p0t4t0sandwich)
+
   - Was very helpful in helping me set up gradle and helped me through every issue I had
