@@ -6,9 +6,9 @@ on:
 
 jobs:
   close:
+    permissions: write-all
     runs-on: ubuntu-latest
     steps:
-      - run: gh pr close $ISSUE -c "This PR has been closed because the repo is mirrored from the [Codeberg repo](https://codeberg.org/Nostalgica-Reverie/RRDiscordBridge). Please fork the repo there, push your changes, and make a PR."
+      - run: gh pr close "${{ github.event.pull_request.html_url }}" -c "This PR has been closed because the repo is mirrored from the [Codeberg repo](https://codeberg.org/Nostalgica-Reverie/RRDiscordBridge). Please fork the repo there, push your changes, and make a PR."
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ISSUE: ${{ github.event.issue.html_url }}
