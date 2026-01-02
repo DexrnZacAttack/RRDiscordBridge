@@ -1,0 +1,63 @@
+name: Update JavaDoc
+
+on: push
+
+jobs:
+  javadoc:
+    runs-on: ubuntu-latest
+
+    permissions:
+      # Give the default GITHUB_TOKEN write permission to commit and push the
+      # added or changed files to the repository.
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Checkout website repo
+        uses: actions/checkout@v4
+        with:
+          repository: Nostalgica-Reverie/Website
+          ref: rrdc-javadocs
+          token: ${{ secrets.NR_WEBSITE_TOKEN }}
+          path: Nostalgica-Reverie/Website
+
+      - uses: actions/setup-java@v4
+        name: Setup Java 21
+        with:
+          distribution: 'temurin' # See 'Supported distributions' for available options
+          java-version: '21'
+
+      - name: Generate JavaDoc
+        run: ./gradlew genJavadoc
+
+      - name: List files
+        run: ls -la
+
+      - name: Copy to repo
+        run: rm -rf Nostalgica-Reverie/Website/* && cp -r "${{ github.workspace }}/javadoc/generated/." Nostalgica-Reverie/Website/
+
+      - uses: stefanzweifel/git-auto-commit-action@v6
+        with:
+          # Optional. Commit message for the created commit.
+          # Defaults to "Apply automatic changes"
+          commit_message: Update RRDiscordBridge JavaDoc
+      
+          # Optional. Remote branch name where commit is going to be pushed to. 
+          # Defaults to the current branch.
+          branch: rrdc-javadocs
+      
+          commit_options: '--no-verify --signoff'
+      
+          repository: Nostalgica-Reverie/Website
+      
+          commit_user_name: RRDiscordBridge JavaDoc Action # defaults to "github-actions[bot]"
+      
+          # Optional. Options used by `git-add`.
+          # See https://git-scm.com/docs/git-add#_options
+          add_options: '-A'
+      
+          # Optional. Prevents the shell from expanding filenames. 
+          # Details: https://www.gnu.org/software/bash/manual/html_node/Filename-Expansion.html
+          disable_globbing: true
