@@ -57,6 +57,9 @@ val Project.fabricCopperParchmentVersion: String get() = properties["fabric_copp
 val Project.fabricCopperMinecraftVersion: String get() = properties["fabric_copper_minecraft_version"].toString()
 val Project.fabricCopperVersion: String get() = properties["fabric_copper_version"].toString()
 
+val Project.fabricMayhemMinecraftVersion: String get() = properties["fabric_mayhem_minecraft_version"].toString()
+val Project.fabricMayhemVersion: String get() = properties["fabric_mayhem_version"].toString()
+
 val Project.fabricLoaderVersion: String get() = properties["fabric_loader_version"].toString()
 val Project.forgeCopperMinecraftVersion: String get() = properties["forge_copper_minecraft_version"].toString()
 val Project.forgeCopperVersion: String get() = properties["forge_copper_version"].toString()

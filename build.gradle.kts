@@ -257,7 +257,23 @@ val fabricProjects = listOf(
             "entity-events-v1",
             "command-api-v2"
         )
-    ), // Fabric 1.21.9-Latest
+    ), // Fabric 1.21.9-1.21.10
+	FabricProj(
+		"fabricMayhem",
+		listOf(),
+		fabricMayhemVersion,
+		fabricMayhemMinecraftVersion,
+		null,
+		null,
+		listOf(
+			"api-base",
+			"lifecycle-events-v1",
+			"message-api-v1",
+			"networking-api-v1",
+			"entity-events-v1",
+			"command-api-v2"
+		)
+	), // Fabric 1.21.11-Latest
 )
 
 val fabricSourceSets: Map<String, SourceSet> = fabricProjects.associate { p ->
@@ -487,6 +503,8 @@ repositories {
     maven("https://nexus.scarsz.me/content/repositories/releases")
     maven("https://repository.johnymuffin.com/repository/maven-public/") // PP
     maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/") // "Bukkit" 1.12.2+
+	maven(" https://repo.carm.cc/repository/maven-public/") // More Bukkit (because md-5 is dead???)
+	maven("https://maven.elmakers.com/repository/") // Even more bukkit
     flatDir { // OLDER BUKKIT
         dirs("libs")
     }

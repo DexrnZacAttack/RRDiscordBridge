@@ -27,3 +27,4 @@ If a version has nothing notable, we choose a name for another close version and
 | Paws        | 1.20.5/6 |
 | Skies       | 1.21.6   |
 | Copper      | 1.21.9   |
+| Mayhem      | 1.21.11  |
