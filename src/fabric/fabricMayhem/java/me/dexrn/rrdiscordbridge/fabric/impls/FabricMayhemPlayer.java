@@ -16,7 +16,9 @@ public class FabricMayhemPlayer extends FabricPlayer {
     @Override
     public boolean isOperator() {
         return Objects.requireNonNull(player.level().getServer())
-                        .getProfilePermissions(player.nameAndId()).level().isEqualOrHigherThan(PermissionLevel.ADMINS);
+                .getProfilePermissions(player.nameAndId())
+                .level()
+                .isEqualOrHigherThan(PermissionLevel.ADMINS);
     }
 
     @Override

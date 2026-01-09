@@ -5,7 +5,6 @@ import me.dexrn.rrdiscordbridge.interfaces.IPlayer;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.minecraft.server.MinecraftServer;
 
-import java.util.Objects;
 import java.util.UUID;
 
 public class FabricMayhemServer extends FabricServer {
