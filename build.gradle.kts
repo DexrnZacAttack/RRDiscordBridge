@@ -92,6 +92,15 @@ fun log(type: String, s: String, vararg args: Any) {
     println("[RRDiscordBridge/$type] ${String.format(s, args)}");
 }
 
+val mc: SourceSet by sourceSets.creating
+val mcMayhem: SourceSet by sourceSets.creating
+
+val extension: SourceSet by sourceSets.creating
+val extensionCompileOnly: Configuration by configurations.getting
+
+val mcCompileOnly: Configuration by configurations.getting
+val mcMayhemCompileOnly: Configuration by configurations.getting
+
 /* Fabric */
 data class FabricProj(
     val name: String,
@@ -258,22 +267,22 @@ val fabricProjects = listOf(
             "command-api-v2"
         )
     ), // Fabric 1.21.9-1.21.10
-	FabricProj(
-		"fabricMayhem",
-		listOf(),
-		fabricMayhemVersion,
-		fabricMayhemMinecraftVersion,
-		null,
-		null,
-		listOf(
-			"api-base",
-			"lifecycle-events-v1",
-			"message-api-v1",
-			"networking-api-v1",
-			"entity-events-v1",
-			"command-api-v2"
-		)
-	), // Fabric 1.21.11-Latest
+    FabricProj(
+        "fabricMayhem",
+        listOf(),
+        fabricMayhemVersion,
+        fabricMayhemMinecraftVersion,
+        null,
+        null,
+        listOf(
+            "api-base",
+            "lifecycle-events-v1",
+            "message-api-v1",
+            "networking-api-v1",
+            "entity-events-v1",
+            "command-api-v2"
+        )
+    ), // Fabric 1.21.11-Latest
 )
 
 val fabricSourceSets: Map<String, SourceSet> = fabricProjects.associate { p ->
@@ -497,14 +506,14 @@ repositories {
     unimined.neoForgedMaven()
     unimined.parchmentMaven()
     unimined.spongeMaven()
-    maven("https://repo.md-5.net/content/groups/public") // Bukkit
+    maven("https://repo.md-5.net/content/repositories/") // Bukkit
     maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
     maven("https://nexus.scarsz.me/content/repositories/releases")
     maven("https://repository.johnymuffin.com/repository/maven-public/") // PP
     maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/") // "Bukkit" 1.12.2+
-	maven(" https://repo.carm.cc/repository/maven-public/") // More Bukkit (because md-5 is dead???)
-	maven("https://maven.elmakers.com/repository/") // Even more bukkit
+    maven(" https://repo.carm.cc/repository/maven-public/") // More Bukkit (because md-5 is dead???)
+    maven("https://maven.elmakers.com/repository/") // Even more bukkit
     flatDir { // OLDER BUKKIT
         dirs("libs")
     }
@@ -601,6 +610,9 @@ dependencies {
         }
     }
 
+    add(mcMayhemCompileOnly.name, mc.output)
+    add("fabricMayhemCompileOnly", mcMayhem.output)
+
     // universal deps
     (fabricCompileOnly + neoforgeCompileOnly + forgeCompileOnly + bukkitCompileOnly).forEach { (_, c) ->
         add(c.name, "com.vdurmont:semver4j:3.1.0")
@@ -617,6 +629,7 @@ dependencies {
     extensionCompileOnly("net.dv8tion:JDA:6.1.0")
     extensionCompileOnly("com.vdurmont:semver4j:3.1.0")
     extensionCompileOnly("com.google.code.gson:gson:2.13.0")
+    mcMayhemCompileOnly("com.vdurmont:semver4j:3.1.0")
     mcCompileOnly("com.vdurmont:semver4j:3.1.0")
     mcCompileOnly("org.bukkit:bukkit:$bukkitEmeraldMcVersion-$bukkitEmeraldVersion")
 
@@ -649,6 +662,16 @@ unimined.minecraft(mc) {
     defaultRemapJar = false
 }
 
+unimined.minecraft(mcMayhem) {
+    combineWith(sourceSets.main.get())
+    version(mcMayhemMinecraftVersion)
+    mappings {
+        mojmap()
+    }
+
+    defaultRemapJar = false
+}
+
 fabricVersions.forEach { it ->
     unimined.minecraft(it.key) {
         log("UniminedFabric", "========== " + it.value.name + " ==========");
@@ -673,6 +696,7 @@ fabricVersions.forEach { it ->
     }
 
     tasks.named<Jar>("${it.key.name}Jar").configure {
+        from(mcMayhem.output)
         destinationDirectory.set(layout.buildDirectory.dir("tmp/fabric"))
     }
 
@@ -744,6 +768,7 @@ forgeVersions.forEach { it ->
     }
 
     tasks.named<Jar>("${it.key.name}Jar").configure {
+        from(mcMayhem.output)
         destinationDirectory.set(layout.buildDirectory.dir("tmp/forge"))
     }
 
@@ -797,6 +822,7 @@ neoforgeVersions.forEach { it ->
     }
 
     tasks.named<Jar>("${it.key.name}Jar").configure {
+        from(mcMayhem.output)
         destinationDirectory.set(layout.buildDirectory.dir("tmp/neoforge"))
     }
 }
@@ -944,7 +970,7 @@ tasks.register<ShadowJar>("moddedShadowJar") {
             dependsOn("relocate${it.key.name.replaceFirstChar { c -> c.uppercase() }}Jar")
     }
     from(
-        mc.output, extension.output, sourceSets.main.get().output,
+        mc.output, mcMayhem.output, extension.output, sourceSets.main.get().output,
         fabricVersions.map {
             log("ShadowModdedJar/Fabric", "Shadowing ${it.key.name}")
             zipTree(tasks.getByName<Jar>("relocate${it.key.name.replaceFirstChar { c -> c.uppercase() }}Jar").archiveFile.get().asFile)

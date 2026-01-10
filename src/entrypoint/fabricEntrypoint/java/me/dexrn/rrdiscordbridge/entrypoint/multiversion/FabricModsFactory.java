@@ -16,7 +16,7 @@ public class FabricModsFactory {
     TreeMap<Semver, FabricMods> mods = new TreeMap<>();
 
     public FabricModsFactory() {
-		mods.put(new Semver("1.21.11", Semver.SemverType.LOOSE), FabricMods.MAYHEM);
+        mods.put(new Semver("1.21.11", Semver.SemverType.LOOSE), FabricMods.MAYHEM);
         mods.put(new Semver("1.21.9", Semver.SemverType.LOOSE), FabricMods.COPPER);
         mods.put(new Semver("1.20.5", Semver.SemverType.LOOSE), FabricMods.PAWS);
         mods.put(new Semver("1.20.3", Semver.SemverType.LOOSE), FabricMods.POT);

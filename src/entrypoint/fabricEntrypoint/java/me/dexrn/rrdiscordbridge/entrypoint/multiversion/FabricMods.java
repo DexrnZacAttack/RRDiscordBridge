@@ -83,14 +83,14 @@ public enum FabricMods {
                 "OnDeathMixin",
                 "OnConsoleCommandMixin"
             }),
-	MAYHEM(
-		FabricMayhemMod::new,
-		new String[] {
-			"OnTradeAdvancementAwardMixin",
-			"OnPawsPlayerCommandMixin",
-			"OnDeathMixin",
-			"OnConsoleCommandMixin"
-		});
+    MAYHEM(
+            FabricMayhemMod::new,
+            new String[] {
+                "OnTradeAdvancementAwardMixin",
+                "OnPawsPlayerCommandMixin",
+                "OnDeathMixin",
+                "OnConsoleCommandMixin"
+            });
 
     private final Function<Semver, AbstractModernMinecraftMod> supplier;
     private final String[] supportedMixins;

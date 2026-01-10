@@ -8,12 +8,12 @@ import me.dexrn.rrdiscordbridge.SupportedFeatures;
 import me.dexrn.rrdiscordbridge.config.ConfigDirectory;
 import me.dexrn.rrdiscordbridge.fabric.events.AdvancementAwardEvent;
 import me.dexrn.rrdiscordbridge.fabric.events.PlayerCommandEvent;
+import me.dexrn.rrdiscordbridge.fabric.impls.FabricMayhemCommandCaller;
 import me.dexrn.rrdiscordbridge.fabric.impls.FabricMayhemPlayer;
 import me.dexrn.rrdiscordbridge.fabric.impls.FabricMayhemServer;
 import me.dexrn.rrdiscordbridge.impls.Cancellable;
 import me.dexrn.rrdiscordbridge.impls.logging.Log4JLogger;
-import me.dexrn.rrdiscordbridge.mc.impls.vanilla.CommandCaller;
-import me.dexrn.rrdiscordbridge.mc.impls.vanilla.ModernMinecraftCommands;
+import me.dexrn.rrdiscordbridge.mc.impls.vanilla.MayhemMinecraftCommands;
 import me.dexrn.rrdiscordbridge.mc.impls.vanilla.advancement.AdvancementType;
 import me.dexrn.rrdiscordbridge.mc.multiversion.modern.AbstractModernMinecraftMod;
 
@@ -52,7 +52,8 @@ public class FabricMayhemMod extends AbstractModernMinecraftMod {
     public void preInit() {
         CommandRegistrationCallback.EVENT.register(
                 (dispatcher, ctx, selection) ->
-                        (new ModernMinecraftCommands(CommandCaller::new)).register(dispatcher));
+                        (new MayhemMinecraftCommands(FabricMayhemCommandCaller::new))
+                                .register(dispatcher));
     }
 
     @Override

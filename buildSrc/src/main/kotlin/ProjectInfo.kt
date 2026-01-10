@@ -19,6 +19,8 @@ val Project.mcParchmentMinecraft: String get() = properties["mc_parchment_minecr
 val Project.mcParchmentVersion: String get() = properties["mc_parchment_version"].toString()
 val Project.mcMinecraftVersion: String get() = properties["mc_minecraft_version"].toString()
 
+val Project.mcMayhemMinecraftVersion: String get() = properties["mc_mayhem_minecraft_version"].toString()
+
 val Project.fabricNetherParchmentMinecraft: String get() = properties["fabric_nether_parchment_minecraft"].toString()
 val Project.fabricNetherParchmentVersion: String get() = properties["fabric_nether_parchment_version"].toString()
 val Project.fabricNetherMinecraftVersion: String get() = properties["fabric_nether_minecraft_version"].toString()
