@@ -5,6 +5,10 @@
 
 Discord bridge/relay plugin that [supports old Minecraft versions and server software](#tested-versions) (Beta 1.4-Release 1.21.1)
 
+> [!NOTE]
+> RRDB is on hiatus while I focus on a few other projects.
+> I expect to be back around October to finish up the build script rewrite and add support for other platforms and newer Minecraft versions.
+
 For config info, check out [this page](https://rrdiscordbridge.nostalgica.net/javadocs/me/dexrn/rrdiscordbridge/config/Settings.html#field-summary).
 
 Download: https://modrinth.com/plugin/rrdiscordbridge
